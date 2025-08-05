@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { PatientForm } from "@/components/PatientForm";
-import { CancerTypeSelector, Regimen } from "@/components/CancerTypeSelector";
+import { CancerTypeSelector } from "@/components/CancerTypeSelector";
 import { DoseCalculator } from "@/components/DoseCalculator";
 import { toast } from "@/hooks/use-toast";
 import { Info } from "lucide-react";
+import { Regimen } from "@/types/regimens";
 
 interface PatientData {
   weight: string;

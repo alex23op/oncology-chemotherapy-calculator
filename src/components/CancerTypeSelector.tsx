@@ -4,127 +4,29 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, Stethoscope } from "lucide-react";
-
-export interface CancerType {
-  id: string;
-  name: string;
-  category: string;
-  regimens: Regimen[];
-}
-
-export interface Regimen {
-  id: string;
-  name: string;
-  description: string;
-  drugs: Drug[];
-  schedule: string;
-  cycles: number;
-}
-
-export interface Drug {
-  name: string;
-  dosage: string;
-  unit: string;
-  route: string;
-  notes?: string;
-}
+import { Search, Stethoscope, Filter } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cancerTypes } from "@/data/cancerTypes";
+import { Regimen } from "@/types/regimens";
 
 interface CancerTypeSelectorProps {
   onRegimenSelect: (regimen: Regimen) => void;
 }
 
-// Sample cancer types and regimens
-const cancerTypes: CancerType[] = [
-  {
-    id: "breast",
-    name: "Breast Cancer",
-    category: "Solid Tumor",
-    regimens: [
-      {
-        id: "ac-t",
-        name: "AC-T (Doxorubicin/Cyclophosphamide → Paclitaxel)",
-        description: "Standard adjuvant therapy for breast cancer",
-        drugs: [
-          { name: "Doxorubicin", dosage: "60", unit: "mg/m²", route: "IV" },
-          { name: "Cyclophosphamide", dosage: "600", unit: "mg/m²", route: "IV" },
-          { name: "Paclitaxel", dosage: "175", unit: "mg/m²", route: "IV" }
-        ],
-        schedule: "Every 3 weeks",
-        cycles: 8
-      },
-      {
-        id: "tcap",
-        name: "TCAP (Paclitaxel/Carboplatin)",
-        description: "Weekly paclitaxel with carboplatin",
-        drugs: [
-          { name: "Paclitaxel", dosage: "80", unit: "mg/m²", route: "IV" },
-          { name: "Carboplatin", dosage: "AUC 6", unit: "", route: "IV" }
-        ],
-        schedule: "Weekly paclitaxel, carboplatin every 3 weeks",
-        cycles: 4
-      }
-    ]
-  },
-  {
-    id: "lung",
-    name: "Lung Cancer (NSCLC)",
-    category: "Solid Tumor",
-    regimens: [
-      {
-        id: "carboplatin-paclitaxel",
-        name: "Carboplatin/Paclitaxel",
-        description: "First-line therapy for advanced NSCLC",
-        drugs: [
-          { name: "Carboplatin", dosage: "AUC 6", unit: "", route: "IV" },
-          { name: "Paclitaxel", dosage: "200", unit: "mg/m²", route: "IV" }
-        ],
-        schedule: "Every 3 weeks",
-        cycles: 4
-      },
-      {
-        id: "cisplatin-pemetrexed",
-        name: "Cisplatin/Pemetrexed",
-        description: "For non-squamous NSCLC",
-        drugs: [
-          { name: "Cisplatin", dosage: "75", unit: "mg/m²", route: "IV" },
-          { name: "Pemetrexed", dosage: "500", unit: "mg/m²", route: "IV" }
-        ],
-        schedule: "Every 3 weeks",
-        cycles: 4
-      }
-    ]
-  },
-  {
-    id: "colorectal",
-    name: "Colorectal Cancer",
-    category: "Solid Tumor",
-    regimens: [
-      {
-        id: "folfox",
-        name: "FOLFOX (5-FU/Leucovorin/Oxaliplatin)",
-        description: "Standard adjuvant/metastatic therapy",
-        drugs: [
-          { name: "Oxaliplatin", dosage: "85", unit: "mg/m²", route: "IV" },
-          { name: "Leucovorin", dosage: "400", unit: "mg/m²", route: "IV" },
-          { name: "5-Fluorouracil", dosage: "400", unit: "mg/m²", route: "IV bolus" },
-          { name: "5-Fluorouracil", dosage: "2400", unit: "mg/m²", route: "IV continuous" }
-        ],
-        schedule: "Every 2 weeks",
-        cycles: 12
-      }
-    ]
-  }
-];
-
 export const CancerTypeSelector = ({ onRegimenSelect }: CancerTypeSelectorProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCancer, setSelectedCancer] = useState<CancerType | null>(null);
+  const [selectedCancer, setSelectedCancer] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
 
   const filteredCancers = cancerTypes.filter(cancer =>
     cancer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     cancer.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const getRegimensByCategory = (cancer: any, category: string) => {
+    if (category === "all") return cancer.regimens;
+    return cancer.regimens.filter((regimen: Regimen) => regimen.category === category);
+  };
 
   return (
     <Card className="w-full">
@@ -160,48 +62,84 @@ export const CancerTypeSelector = ({ onRegimenSelect }: CancerTypeSelectorProps)
                   </Badge>
                 </div>
                 <Button
-                  variant={selectedCancer?.id === cancer.id ? "default" : "outline"}
+                  variant={selectedCancer === cancer.id ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setSelectedCancer(selectedCancer?.id === cancer.id ? null : cancer)}
+                  onClick={() => setSelectedCancer(selectedCancer === cancer.id ? null : cancer.id)}
                 >
-                  {selectedCancer?.id === cancer.id ? "Selected" : "Select"}
+                  {selectedCancer === cancer.id ? "Selected" : "Select"}
                 </Button>
               </div>
 
-              {selectedCancer?.id === cancer.id && (
+              {selectedCancer === cancer.id && (
                 <div className="mt-4 space-y-3">
-                  <h4 className="font-medium text-sm text-foreground">Available Regimens:</h4>
-                  {cancer.regimens.map((regimen) => (
-                    <div key={regimen.id} className="bg-secondary/50 rounded-lg p-3">
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex-1">
-                          <h5 className="font-medium text-foreground">{regimen.name}</h5>
-                          <p className="text-sm text-muted-foreground mt-1">{regimen.description}</p>
-                          <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
-                            <span>Schedule: {regimen.schedule}</span>
-                            <span>Cycles: {regimen.cycles}</span>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Filter className="h-4 w-4 text-muted-foreground" />
+                    <h4 className="font-medium text-sm text-foreground">Filter by Treatment Setting:</h4>
+                  </div>
+                  
+                  <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
+                    <TabsList className="grid w-full grid-cols-5">
+                      <TabsTrigger value="all" className="text-xs">All</TabsTrigger>
+                      <TabsTrigger value="neoadjuvant" className="text-xs">Neoadjuvant</TabsTrigger>
+                      <TabsTrigger value="adjuvant" className="text-xs">Adjuvant</TabsTrigger>
+                      <TabsTrigger value="advanced" className="text-xs">Advanced</TabsTrigger>
+                      <TabsTrigger value="metastatic" className="text-xs">Metastatic</TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsContent value={selectedCategory} className="mt-4 space-y-3">
+                      {getRegimensByCategory(cancer, selectedCategory).map((regimen: Regimen) => (
+                        <div key={regimen.id} className="bg-secondary/50 rounded-lg p-3">
+                          <div className="flex justify-between items-start mb-2">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h5 className="font-medium text-foreground">{regimen.name}</h5>
+                                <Badge 
+                                  variant={
+                                    regimen.category === "neoadjuvant" ? "default" :
+                                    regimen.category === "adjuvant" ? "secondary" :
+                                    regimen.category === "advanced" ? "destructive" :
+                                    "outline"
+                                  }
+                                  className="text-xs"
+                                >
+                                  {regimen.category.charAt(0).toUpperCase() + regimen.category.slice(1)}
+                                </Badge>
+                              </div>
+                              <p className="text-sm text-muted-foreground mt-1">{regimen.description}</p>
+                              <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
+                                <span>Schedule: {regimen.schedule}</span>
+                                <span>Cycles: {regimen.cycles}</span>
+                              </div>
+                            </div>
+                            <Button
+                              size="sm"
+                              onClick={() => onRegimenSelect(regimen)}
+                              className="ml-2"
+                            >
+                              Calculate Doses
+                            </Button>
+                          </div>
+                          <div className="mt-2">
+                            <p className="text-xs font-medium text-muted-foreground mb-1">Drugs:</p>
+                            <div className="flex flex-wrap gap-1">
+                              {regimen.drugs.map((drug, index) => (
+                                <Badge key={index} variant="outline" className="text-xs">
+                                  {drug.name} {drug.dosage} {drug.unit}
+                                  {drug.day && ` (${drug.day})`}
+                                </Badge>
+                              ))}
+                            </div>
                           </div>
                         </div>
-                        <Button
-                          size="sm"
-                          onClick={() => onRegimenSelect(regimen)}
-                          className="ml-2"
-                        >
-                          Calculate Doses
-                        </Button>
-                      </div>
-                      <div className="mt-2">
-                        <p className="text-xs font-medium text-muted-foreground mb-1">Drugs:</p>
-                        <div className="flex flex-wrap gap-1">
-                          {regimen.drugs.map((drug, index) => (
-                            <Badge key={index} variant="outline" className="text-xs">
-                              {drug.name} {drug.dosage} {drug.unit}
-                            </Badge>
-                          ))}
+                      ))}
+                      
+                      {getRegimensByCategory(cancer, selectedCategory).length === 0 && (
+                        <div className="text-center py-4 text-muted-foreground text-sm">
+                          No {selectedCategory} regimens available for this cancer type.
                         </div>
-                      </div>
-                    </div>
-                  ))}
+                      )}
+                    </TabsContent>
+                  </Tabs>
                 </div>
               )}
             </div>

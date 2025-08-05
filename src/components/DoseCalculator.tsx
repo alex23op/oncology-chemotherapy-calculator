@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Calculator, Edit, Save, FileText } from "lucide-react";
-import { Regimen, Drug } from "./CancerTypeSelector";
+import { Regimen, Drug } from "@/types/regimens";
 
 interface DoseCalculatorProps {
   regimen: Regimen | null;
