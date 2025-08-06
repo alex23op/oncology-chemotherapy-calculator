@@ -7,8 +7,12 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Shield, AlertTriangle, Clock, Pill, ChevronDown, BookOpen, Edit, Heart, Activity, Zap, Droplet, Users, FileText, Download } from "lucide-react";
+import { Shield, AlertTriangle, Clock, Pill, ChevronDown, BookOpen, Edit, Heart, Activity, Zap, Droplet, Users, FileText, Download, Printer } from "lucide-react";
 import { Drug } from "@/types/regimens";
+import { PrintableProtocol } from "@/components/PrintableProtocol";
+import { usePrint } from "@/hooks/usePrint";
+import { generateProtocolPDF } from "@/utils/pdfExport";
+import { useToast } from "@/hooks/use-toast";
 
 interface UnifiedProtocolSelectorProps {
   drugNames: string[];
@@ -432,6 +436,8 @@ export const UnifiedProtocolSelector = ({
 }: UnifiedProtocolSelectorProps) => {
   const [selectedAgents, setSelectedAgents] = useState<PremedAgent[]>([]);
   const [expandedCategories, setExpandedCategories] = useState<string[]>(["cinv"]);
+  const { componentRef, printProtocol } = usePrint();
+  const { toast } = useToast();
 
   // Get recommendations based on drugs and emetogenic risk
   const recommendations = useMemo(() => {
@@ -486,29 +492,45 @@ export const UnifiedProtocolSelector = ({
     );
   };
 
-  const exportProtocol = () => {
-    const protocolData = {
-      regimen: drugNames.join(", "),
-      emetogenicRisk: emetogenicRiskLevel,
-      selectedAgents: selectedAgents.map(agent => ({
-        name: agent.name,
-        category: agent.category,
-        dosage: `${agent.dosage} ${agent.unit}`,
-        route: agent.route,
-        timing: agent.timing,
-        rationale: agent.rationale
-      })),
-      timestamp: new Date().toISOString()
-    };
+  const handleExportPDF = async () => {
+    try {
+      const protocolData = {
+        selectedAgents,
+        regimenName: drugNames.join(', '),
+        patientWeight: weight,
+        emetogenicRisk: emetogenicRiskLevel
+      };
+      
+      await generateProtocolPDF(protocolData, 'printable-protocol');
+      toast({
+        title: "PDF Export Successful",
+        description: "Your premedication protocol has been downloaded as PDF.",
+      });
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+      toast({
+        title: "PDF Export Failed",
+        description: "Unable to generate PDF. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
-    const dataStr = JSON.stringify(protocolData, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `premedication-protocol-${Date.now()}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
+  const handlePrint = () => {
+    try {
+      printProtocol();
+      toast({
+        title: "Print Initiated",
+        description: "Your browser's print dialog should open shortly.",
+      });
+    } catch (error) {
+      console.error('Print failed:', error);
+      toast({
+        title: "Print Failed",
+        description: "Unable to print protocol. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -520,9 +542,23 @@ export const UnifiedProtocolSelector = ({
             Premedication & Supportive Care Protocol
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={exportProtocol}>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handleExportPDF}
+              disabled={selectedAgents.length === 0}
+            >
               <Download className="h-4 w-4 mr-1" />
-              Export
+              Export PDF
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={handlePrint}
+              disabled={selectedAgents.length === 0}
+            >
+              <Printer className="h-4 w-4 mr-1" />
+              Print
             </Button>
             <Button variant="outline" size="sm" onClick={clearSelections}>
               Clear All
@@ -702,6 +738,20 @@ export const UnifiedProtocolSelector = ({
           </TabsContent>
 
           <TabsContent value="selected" className="space-y-4">
+            {/* Hidden printable version */}
+            <div className="hidden">
+              <div id="printable-protocol">
+                <PrintableProtocol
+                  ref={componentRef}
+                  selectedAgents={selectedAgents}
+                  regimenName={drugNames.join(', ')}
+                  patientWeight={weight}
+                  emetogenicRisk={emetogenicRiskLevel}
+                  className="w-full"
+                />
+              </div>
+            </div>
+            
             {selectedAgents.length === 0 ? (
               <Alert>
                 <AlertDescription>
@@ -710,12 +760,34 @@ export const UnifiedProtocolSelector = ({
               </Alert>
             ) : (
               <>
-                <Alert>
-                  <FileText className="h-4 w-4" />
-                  <AlertDescription>
-                    Selected protocol for {drugNames.join(", ")} - {selectedAgents.length} agents
-                  </AlertDescription>
-                </Alert>
+                <div className="flex justify-between items-center mb-4">
+                  <Alert className="flex-1 mr-4">
+                    <FileText className="h-4 w-4" />
+                    <AlertDescription>
+                      Selected protocol for {drugNames.join(", ")} - {selectedAgents.length} agents
+                    </AlertDescription>
+                  </Alert>
+                  <div className="flex gap-2">
+                    <Button 
+                      variant="secondary" 
+                      size="sm" 
+                      onClick={handleExportPDF}
+                      disabled={selectedAgents.length === 0}
+                    >
+                      <Download className="h-4 w-4 mr-1" />
+                      Export PDF
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={handlePrint}
+                      disabled={selectedAgents.length === 0}
+                    >
+                      <Printer className="h-4 w-4 mr-1" />
+                      Print
+                    </Button>
+                  </div>
+                </div>
 
                 <div className="space-y-4">
                   {premedCategories.map(category => {
