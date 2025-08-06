@@ -251,8 +251,13 @@ export const DoseCalculator = ({ regimen, bsa, weight, height, age, sex, creatin
 
   const handleExportTreatmentPDF = async () => {
     try {
+      console.log('Export PDF clicked', { patientId, calculations: calculations.length });
       if (!patientId.trim()) {
         toast.error('Please enter a Patient ID before exporting');
+        return;
+      }
+      if (calculations.length === 0) {
+        toast.error('No calculations available for export');
         return;
       }
 
@@ -277,11 +282,18 @@ export const DoseCalculator = ({ regimen, bsa, weight, height, age, sex, creatin
   };
 
   const handleGenerateTreatmentSheet = () => {
+    console.log('Generate sheet clicked', { patientId, calculations: calculations.length });
     if (!patientId.trim()) {
       toast.error('Please enter a Patient ID to generate treatment sheet');
       return;
     }
+    if (calculations.length === 0) {
+      toast.error('No dose calculations available. Please ensure regimen is selected and patient data is entered.');
+      return;
+    }
+    console.log('Setting showTreatmentSheet to true');
     setShowTreatmentSheet(true);
+    toast.success('Treatment sheet generated successfully');
   };
 
   console.log("DoseCalculator rendering - regimen:", regimen?.name, "calculations:", calculations.length);
@@ -325,7 +337,7 @@ export const DoseCalculator = ({ regimen, bsa, weight, height, age, sex, creatin
               variant="secondary"
               size="sm"
               onClick={handleGenerateTreatmentSheet}
-              disabled={!patientId.trim()}
+              disabled={!patientId.trim() || calculations.length === 0}
             >
               <FileCheck className="h-4 w-4" />
               Generate Sheet
@@ -333,7 +345,15 @@ export const DoseCalculator = ({ regimen, bsa, weight, height, age, sex, creatin
             <Button
               variant="outline"
               size="sm"
-              onClick={() => onExport?.(calculations)}
+              onClick={() => {
+                console.log('Export data clicked', { calculations: calculations.length });
+                if (calculations.length === 0) {
+                  toast.error('No calculations to export. Please select a regimen and enter patient data first.');
+                  return;
+                }
+                onExport?.(calculations);
+                toast.success('Data exported successfully');
+              }}
             >
               <FileText className="h-4 w-4" />
               Export Data
