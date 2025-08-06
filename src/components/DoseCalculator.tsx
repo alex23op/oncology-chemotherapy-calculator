@@ -173,6 +173,7 @@ export const DoseCalculator = ({
   };
 
   const handleDoseAdjustment = (index: number, newDose: string) => {
+    console.log("Dose adjustment:", index, newDose);
     const updatedCalculations = [...calculations];
     const dose = parseFloat(newDose) || 0;
     updatedCalculations[index].adjustedDose = dose;
@@ -187,6 +188,7 @@ export const DoseCalculator = ({
   };
 
   const handleDrugSelection = (index: number, selected: boolean) => {
+    console.log("Drug selection changed:", index, selected);
     const updatedCalculations = [...calculations];
     updatedCalculations[index].selected = selected;
     setCalculations(updatedCalculations);
@@ -619,11 +621,11 @@ export const DoseCalculator = ({
                }`}>
                  <div className="flex items-start gap-4">
                    <div className="flex-shrink-0 mt-1">
-                     <Checkbox
-                       checked={calc.selected}
-                       onCheckedChange={(checked) => handleDrugSelection(index, checked as boolean)}
-                       className="h-5 w-5"
-                     />
+                      <Checkbox
+                        checked={calc.selected}
+                        onCheckedChange={(checked) => handleDrugSelection(index, !!checked)}
+                        className="h-5 w-5"
+                      />
                    </div>
                    <div className="flex-1 space-y-4">
                      <div className="flex justify-between items-start">
@@ -696,7 +698,7 @@ export const DoseCalculator = ({
                         {isEditing ? (
                           <Input
                             type="number"
-                            value={calc.adjustedDose.toFixed(1)}
+                            value={calc.adjustedDose}
                             onChange={(e) => handleDoseAdjustment(index, e.target.value)}
                             className="mt-1"
                             step="0.1"
