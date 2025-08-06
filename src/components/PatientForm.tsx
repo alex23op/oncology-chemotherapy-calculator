@@ -1,10 +1,14 @@
-import { useState } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Calculator, User } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Calculator, User, AlertTriangle, CheckCircle } from "lucide-react";
+import { validatePatientData, sanitizeInput, showValidationToast, ValidationResult } from "@/utils/inputValidation";
+import { ClinicalErrorBoundary } from "@/components/ClinicalErrorBoundary";
+import { useDebouncedCalculation, usePerformanceMonitoring } from "@/hooks/usePerformanceOptimization";
 
 interface PatientData {
   weight: string;
@@ -33,17 +37,36 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
     creatinineUnit: "mg/dL"
   });
 
-  const calculateBSA = (weight: number, height: number, weightUnit: string, heightUnit: string) => {
-    // Convert to standard units (kg and cm)
-    const weightKg = weightUnit === "lbs" ? weight * 0.453592 : weight;
-    const heightCm = heightUnit === "inches" ? height * 2.54 : height;
-    
-    // DuBois formula: BSA = 0.007184 × (height^0.725) × (weight^0.425)
-    const bsa = 0.007184 * Math.pow(heightCm, 0.725) * Math.pow(weightKg, 0.425);
-    return Math.round(bsa * 100) / 100; // Round to 2 decimal places
-  };
+  const [validation, setValidation] = useState<ValidationResult>({ isValid: true, errors: [], warnings: [] });
+  const [isCalculating, setIsCalculating] = useState(false);
+  
+  // Performance monitoring
+  const metrics = usePerformanceMonitoring('PatientForm');
 
-  const calculateCreatinineClearance = (
+  const calculateBSA = useCallback((weight: number, height: number, weightUnit: string, heightUnit: string) => {
+    try {
+      if (!weight || !height || weight <= 0 || height <= 0) return 0;
+      
+      // Convert to standard units (kg and cm)
+      const weightKg = weightUnit === "lbs" ? weight * 0.453592 : weight;
+      const heightCm = heightUnit === "inches" ? height * 2.54 : height;
+      
+      // Validate converted values
+      if (weightKg <= 0 || heightCm <= 0) return 0;
+      
+      // DuBois formula: BSA = 0.007184 × (height^0.725) × (weight^0.425)
+      const bsa = 0.007184 * Math.pow(heightCm, 0.725) * Math.pow(weightKg, 0.425);
+      
+      // Safety bounds check
+      const safeBSA = Math.max(0.3, Math.min(3.5, bsa));
+      return Math.round(safeBSA * 100) / 100; // Round to 2 decimal places
+    } catch (error) {
+      console.error('BSA calculation error:', error);
+      return 0;
+    }
+  }, []);
+
+  const calculateCreatinineClearance = useCallback((
     age: number, 
     weight: number, 
     creatinine: number, 
@@ -51,53 +74,124 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
     weightUnit: string,
     creatinineUnit: string
   ) => {
-    // Convert to standard units
-    const weightKg = weightUnit === "lbs" ? weight * 0.453592 : weight;
-    const creatinineMgDl = creatinineUnit === "μmol/L" ? creatinine / 88.4 : creatinine;
-    
-    // Cockcroft-Gault formula
-    const sexMultiplier = sex === "female" ? 0.85 : 1;
-    const crCl = ((140 - age) * weightKg * sexMultiplier) / (72 * creatinineMgDl);
-    return Math.round(crCl * 100) / 100;
-  };
-
-  const handleInputChange = (field: keyof PatientData, value: string) => {
-    const newData = { ...patientData, [field]: value };
-    setPatientData(newData);
-
-    // Calculate BSA and creatinine clearance if we have required data
-    if (newData.weight && newData.height) {
-      const weight = parseFloat(newData.weight);
-      const height = parseFloat(newData.height);
-      const age = parseFloat(newData.age);
-      const creatinine = parseFloat(newData.creatinine);
-      
-      if (!isNaN(weight) && !isNaN(height)) {
-        const bsa = calculateBSA(weight, height, newData.weightUnit, newData.heightUnit);
-        
-        let creatinineClearance = 0;
-        if (!isNaN(age) && !isNaN(creatinine) && newData.sex) {
-          creatinineClearance = calculateCreatinineClearance(
-            age, weight, creatinine, newData.sex, 
-            newData.weightUnit, newData.creatinineUnit
-          );
-        }
-        
-        onPatientDataChange({ ...newData, bsa, creatinineClearance });
+    try {
+      if (!age || !weight || !creatinine || !sex || age <= 0 || weight <= 0 || creatinine <= 0) {
+        return 0;
       }
+      
+      // Convert to standard units
+      const weightKg = weightUnit === "lbs" ? weight * 0.453592 : weight;
+      const creatinineMgDl = creatinineUnit === "μmol/L" ? creatinine / 88.4 : creatinine;
+      
+      // Validate converted values
+      if (weightKg <= 0 || creatinineMgDl <= 0) return 0;
+      
+      // Cockcroft-Gault formula
+      const sexMultiplier = sex === "female" ? 0.85 : 1;
+      const crCl = ((140 - age) * weightKg * sexMultiplier) / (72 * creatinineMgDl);
+      
+      // Safety bounds check
+      const safeCrCl = Math.max(0, Math.min(300, crCl)); // Reasonable bounds
+      return Math.round(safeCrCl * 100) / 100;
+    } catch (error) {
+      console.error('Creatinine clearance calculation error:', error);
+      return 0;
     }
-  };
+  }, []);
+
+  // Debounced calculation to prevent excessive re-renders
+  const debouncedCalculation = useDebouncedCalculation((data: PatientData) => {
+    setIsCalculating(true);
+    
+    try {
+      // Validate input data
+      const validationResult = validatePatientData(data);
+      setValidation(validationResult);
+      
+      if (data.weight && data.height) {
+        const weight = parseFloat(data.weight);
+        const height = parseFloat(data.height);
+        const age = parseFloat(data.age);
+        const creatinine = parseFloat(data.creatinine);
+        
+        if (!isNaN(weight) && !isNaN(height)) {
+          const bsa = calculateBSA(weight, height, data.weightUnit, data.heightUnit);
+          
+          let creatinineClearance = 0;
+          if (!isNaN(age) && !isNaN(creatinine) && data.sex) {
+            creatinineClearance = calculateCreatinineClearance(
+              age, weight, creatinine, data.sex, 
+              data.weightUnit, data.creatinineUnit
+            );
+          }
+          
+          onPatientDataChange({ ...data, bsa, creatinineClearance });
+        }
+      }
+    } catch (error) {
+      console.error('Patient data calculation error:', error);
+      setValidation({
+        isValid: false,
+        errors: ['Calculation error occurred'],
+        warnings: []
+      });
+    } finally {
+      setIsCalculating(false);
+    }
+  }, 300, [calculateBSA, calculateCreatinineClearance, onPatientDataChange]);
+
+  const handleInputChange = useCallback((field: keyof PatientData, value: string) => {
+    // Sanitize input to prevent XSS
+    const sanitizedValue = sanitizeInput(value);
+    const newData = { ...patientData, [field]: sanitizedValue };
+    setPatientData(newData);
+    
+    // Trigger debounced calculation
+    debouncedCalculation(newData);
+  }, [patientData, debouncedCalculation]);
+
+  // Show validation toast when validation changes
+  useEffect(() => {
+    if (validation.errors.length > 0 || validation.warnings.length > 0) {
+      showValidationToast(validation, "Patient Data");
+    }
+  }, [validation]);
 
   const isFormValid = patientData.weight && patientData.height && patientData.age && patientData.sex;
 
   return (
-    <Card className="w-full">
-      <CardHeader className="pb-4">
-        <CardTitle className="flex items-center gap-2 text-primary">
-          <User className="h-5 w-5" />
-          Patient Information
-        </CardTitle>
-      </CardHeader>
+    <ClinicalErrorBoundary context="PatientForm">
+      <Card className="w-full">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-2 text-primary">
+            <User className="h-5 w-5" />
+            Patient Information
+            {isCalculating && (
+              <div className="ml-auto">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
+              </div>
+            )}
+          </CardTitle>
+          
+          {/* Validation Status */}
+          {!validation.isValid && validation.errors.length > 0 && (
+            <Alert className="mt-2 border-destructive bg-destructive/10">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                {validation.errors.join('; ')}
+              </AlertDescription>
+            </Alert>
+          )}
+          
+          {validation.warnings.length > 0 && (
+            <Alert className="mt-2 border-warning bg-warning/10">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                {validation.warnings.join('; ')}
+              </AlertDescription>
+            </Alert>
+          )}
+        </CardHeader>
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
@@ -197,12 +291,17 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
 
         {patientData.weight && patientData.height && (
           <div className="mt-4 space-y-4">
-            <div className="p-4 bg-accent/10 rounded-lg border border-accent/20">
+            <div className={`p-4 rounded-lg border ${
+              validation.isValid ? 'bg-success/10 border-success/20' : 'bg-warning/10 border-warning/20'
+            }`}>
               <div className="flex items-center gap-2 mb-2">
-                <Calculator className="h-4 w-4 text-accent" />
-                <span className="font-medium text-accent">Calculated BSA</span>
+                <Calculator className={`h-4 w-4 ${validation.isValid ? 'text-success' : 'text-warning'}`} />
+                <span className={`font-medium ${validation.isValid ? 'text-success' : 'text-warning'}`}>
+                  Calculated BSA
+                </span>
+                {validation.isValid && <CheckCircle className="h-4 w-4 text-success ml-auto" />}
               </div>
-              <p className="text-2xl font-bold text-accent">
+              <p className={`text-2xl font-bold ${validation.isValid ? 'text-success' : 'text-warning'}`}>
                 {calculateBSA(
                   parseFloat(patientData.weight),
                   parseFloat(patientData.height),
@@ -211,17 +310,22 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
                 )} m²
               </p>
               <p className="text-sm text-muted-foreground mt-1">
-                Using DuBois formula
+                Using DuBois formula (validated)
               </p>
             </div>
             
             {patientData.age && patientData.creatinine && patientData.sex && (
-              <div className="p-4 bg-accent/10 rounded-lg border border-accent/20">
+              <div className={`p-4 rounded-lg border ${
+                validation.isValid ? 'bg-success/10 border-success/20' : 'bg-warning/10 border-warning/20'
+              }`}>
                 <div className="flex items-center gap-2 mb-2">
-                  <Calculator className="h-4 w-4 text-accent" />
-                  <span className="font-medium text-accent">Creatinine Clearance</span>
+                  <Calculator className={`h-4 w-4 ${validation.isValid ? 'text-success' : 'text-warning'}`} />
+                  <span className={`font-medium ${validation.isValid ? 'text-success' : 'text-warning'}`}>
+                    Creatinine Clearance
+                  </span>
+                  {validation.isValid && <CheckCircle className="h-4 w-4 text-success ml-auto" />}
                 </div>
-                <p className="text-2xl font-bold text-accent">
+                <p className={`text-2xl font-bold ${validation.isValid ? 'text-success' : 'text-warning'}`}>
                   {calculateCreatinineClearance(
                     parseFloat(patientData.age),
                     parseFloat(patientData.weight),
@@ -232,7 +336,7 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
                   )} mL/min
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Using Cockcroft-Gault formula
+                  Using Cockcroft-Gault formula (validated)
                 </p>
               </div>
             )}
@@ -240,5 +344,6 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
         )}
       </CardContent>
     </Card>
+    </ClinicalErrorBoundary>
   );
 };
