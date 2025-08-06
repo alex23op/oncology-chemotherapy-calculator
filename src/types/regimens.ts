@@ -1,3 +1,19 @@
+export interface Biomarker {
+  name: string;
+  status: "positive" | "negative" | "wild-type" | "mutated" | "amplified" | "high" | "low" | "unknown";
+  testingMethod?: string;
+  threshold?: string;
+  required: boolean;
+  turnaroundTime?: string;
+}
+
+export interface DrugInteraction {
+  drug: string;
+  severity: "major" | "moderate" | "minor";
+  effect: string;
+  management: string;
+}
+
 export interface Drug {
   name: string;
   dosage: string;
@@ -7,6 +23,9 @@ export interface Drug {
   notes?: string;
   dilution?: string;
   administrationDuration?: string;
+  drugClass?: "chemotherapy" | "targeted" | "immunotherapy" | "hormone" | "supportive";
+  mechanismOfAction?: string;
+  monitoring?: string[];
 }
 
 export interface Premedication {
@@ -30,10 +49,24 @@ export interface Regimen {
   name: string;
   description: string;
   category: "neoadjuvant" | "adjuvant" | "advanced" | "metastatic";
+  lineOfTherapy?: "first-line" | "second-line" | "third-line" | "maintenance" | "salvage";
   drugs: Drug[];
   premedications?: Premedication[];
   schedule: string;
   cycles: number;
+  biomarkerRequirements?: Biomarker[];
+  eligibilityCriteria?: {
+    ecogStatus: number[];
+    biomarkers?: string[];
+    contraindications?: string[];
+  };
+  mechanismOfAction?: string;
+  responseRates?: {
+    overall: number;
+    progressionFreeSurvival: string;
+  };
+  drugInteractions?: DrugInteraction[];
+  clinicalTrials?: string[];
 }
 
 export interface CancerType {
