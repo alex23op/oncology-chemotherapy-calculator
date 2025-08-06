@@ -8,10 +8,10 @@ export const colorectalCancerRegimens: Regimen[] = [
     description: "Neoadjuvant therapy for locally advanced rectal cancer",
     category: "neoadjuvant",
     drugs: [
-      { name: "Oxaliplatin", dosage: "85", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "Leucovorin", dosage: "400", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "5-Fluorouracil", dosage: "400", unit: "mg/m²", route: "IV bolus", day: "Day 1" },
-      { name: "5-Fluorouracil", dosage: "2400", unit: "mg/m²", route: "IV continuous", day: "Days 1-2" }
+      { name: "Oxaliplatin", dosage: "85", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "5% Dextrose 250-500mL", administrationDuration: "2 hours" },
+      { name: "Leucovorin", dosage: "400", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 50-100mL", administrationDuration: "2 hours" },
+      { name: "5-Fluorouracil", dosage: "400", unit: "mg/m²", route: "IV bolus", day: "Day 1", dilution: "Normal saline 10-20mL", administrationDuration: "2-4 minutes" },
+      { name: "5-Fluorouracil", dosage: "2400", unit: "mg/m²", route: "IV continuous", day: "Days 1-2", dilution: "Normal saline 250-500mL", administrationDuration: "46 hours continuous" }
     ],
     schedule: "Every 2 weeks",
     cycles: 8
@@ -22,8 +22,8 @@ export const colorectalCancerRegimens: Regimen[] = [
     description: "Capecitabine/Oxaliplatin for neoadjuvant therapy",
     category: "neoadjuvant",
     drugs: [
-      { name: "Oxaliplatin", dosage: "130", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "Capecitabine", dosage: "1000", unit: "mg/m²", route: "PO", day: "BID days 1-14" }
+      { name: "Oxaliplatin", dosage: "130", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "5% Dextrose 250-500mL", administrationDuration: "2 hours" },
+      { name: "Capecitabine", dosage: "1000", unit: "mg/m²", route: "PO", day: "BID days 1-14", dilution: "Take with food and water", administrationDuration: "N/A - oral medication" }
     ],
     schedule: "Every 3 weeks",
     cycles: 6
@@ -36,10 +36,10 @@ export const colorectalCancerRegimens: Regimen[] = [
     description: "Standard adjuvant therapy for stage III colon cancer",
     category: "adjuvant",
     drugs: [
-      { name: "Oxaliplatin", dosage: "85", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "Leucovorin", dosage: "400", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "5-Fluorouracil", dosage: "400", unit: "mg/m²", route: "IV bolus", day: "Day 1" },
-      { name: "5-Fluorouracil", dosage: "2400", unit: "mg/m²", route: "IV continuous", day: "Days 1-2" }
+      { name: "Oxaliplatin", dosage: "85", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "5% Dextrose 250-500mL", administrationDuration: "2 hours" },
+      { name: "Leucovorin", dosage: "400", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 50-100mL", administrationDuration: "2 hours" },
+      { name: "5-Fluorouracil", dosage: "400", unit: "mg/m²", route: "IV bolus", day: "Day 1", dilution: "Normal saline 10-20mL", administrationDuration: "2-4 minutes" },
+      { name: "5-Fluorouracil", dosage: "2400", unit: "mg/m²", route: "IV continuous", day: "Days 1-2", dilution: "Normal saline 250-500mL", administrationDuration: "46 hours continuous" }
     ],
     schedule: "Every 2 weeks",
     cycles: 12
@@ -50,8 +50,8 @@ export const colorectalCancerRegimens: Regimen[] = [
     description: "Oral alternative to FOLFOX for adjuvant therapy",
     category: "adjuvant",
     drugs: [
-      { name: "Oxaliplatin", dosage: "130", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "Capecitabine", dosage: "1000", unit: "mg/m²", route: "PO", day: "BID days 1-14" }
+      { name: "Oxaliplatin", dosage: "130", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "5% Dextrose 250-500mL", administrationDuration: "2 hours" },
+      { name: "Capecitabine", dosage: "1000", unit: "mg/m²", route: "PO", day: "BID days 1-14", dilution: "Take with food and water", administrationDuration: "N/A - oral medication" }
     ],
     schedule: "Every 3 weeks",
     cycles: 8
@@ -62,8 +62,8 @@ export const colorectalCancerRegimens: Regimen[] = [
     description: "For patients unable to tolerate oxaliplatin",
     category: "adjuvant",
     drugs: [
-      { name: "Leucovorin", dosage: "500", unit: "mg/m²", route: "IV", day: "Days 1, 8, 15, 22, 29, 36" },
-      { name: "5-Fluorouracil", dosage: "500", unit: "mg/m²", route: "IV", day: "Days 1, 8, 15, 22, 29, 36" }
+      { name: "Leucovorin", dosage: "500", unit: "mg/m²", route: "IV", day: "Days 1, 8, 15, 22, 29, 36", dilution: "Normal saline 50-100mL", administrationDuration: "2 hours" },
+      { name: "5-Fluorouracil", dosage: "500", unit: "mg/m²", route: "IV", day: "Days 1, 8, 15, 22, 29, 36", dilution: "Normal saline 50-100mL", administrationDuration: "5-10 minutes" }
     ],
     schedule: "Weekly x 6 weeks, 2 weeks break",
     cycles: 4
@@ -76,11 +76,11 @@ export const colorectalCancerRegimens: Regimen[] = [
     description: "First-line therapy for metastatic colorectal cancer",
     category: "metastatic",
     drugs: [
-      { name: "Oxaliplatin", dosage: "85", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "Leucovorin", dosage: "400", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "5-Fluorouracil", dosage: "400", unit: "mg/m²", route: "IV bolus", day: "Day 1" },
-      { name: "5-Fluorouracil", dosage: "2400", unit: "mg/m²", route: "IV continuous", day: "Days 1-2" },
-      { name: "Bevacizumab", dosage: "5", unit: "mg/kg", route: "IV", day: "Day 1" }
+      { name: "Oxaliplatin", dosage: "85", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "5% Dextrose 250-500mL", administrationDuration: "2 hours" },
+      { name: "Leucovorin", dosage: "400", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 50-100mL", administrationDuration: "2 hours" },
+      { name: "5-Fluorouracil", dosage: "400", unit: "mg/m²", route: "IV bolus", day: "Day 1", dilution: "Normal saline 10-20mL", administrationDuration: "2-4 minutes" },
+      { name: "5-Fluorouracil", dosage: "2400", unit: "mg/m²", route: "IV continuous", day: "Days 1-2", dilution: "Normal saline 250-500mL", administrationDuration: "46 hours continuous" },
+      { name: "Bevacizumab", dosage: "5", unit: "mg/kg", route: "IV", day: "Day 1", dilution: "Normal saline 100mL", administrationDuration: "30-90 minutes" }
     ],
     schedule: "Every 2 weeks",
     cycles: 12
@@ -91,11 +91,11 @@ export const colorectalCancerRegimens: Regimen[] = [
     description: "Alternative first-line or second-line therapy",
     category: "metastatic",
     drugs: [
-      { name: "Irinotecan", dosage: "180", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "Leucovorin", dosage: "400", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "5-Fluorouracil", dosage: "400", unit: "mg/m²", route: "IV bolus", day: "Day 1" },
-      { name: "5-Fluorouracil", dosage: "2400", unit: "mg/m²", route: "IV continuous", day: "Days 1-2" },
-      { name: "Bevacizumab", dosage: "5", unit: "mg/kg", route: "IV", day: "Day 1" }
+      { name: "Irinotecan", dosage: "180", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "5% Dextrose 250-500mL", administrationDuration: "90 minutes" },
+      { name: "Leucovorin", dosage: "400", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 50-100mL", administrationDuration: "2 hours" },
+      { name: "5-Fluorouracil", dosage: "400", unit: "mg/m²", route: "IV bolus", day: "Day 1", dilution: "Normal saline 10-20mL", administrationDuration: "2-4 minutes" },
+      { name: "5-Fluorouracil", dosage: "2400", unit: "mg/m²", route: "IV continuous", day: "Days 1-2", dilution: "Normal saline 250-500mL", administrationDuration: "46 hours continuous" },
+      { name: "Bevacizumab", dosage: "5", unit: "mg/kg", route: "IV", day: "Day 1", dilution: "Normal saline 100mL", administrationDuration: "30-90 minutes" }
     ],
     schedule: "Every 2 weeks",
     cycles: 12
@@ -106,11 +106,11 @@ export const colorectalCancerRegimens: Regimen[] = [
     description: "Intensive triplet therapy for fit patients with metastatic disease",
     category: "metastatic",
     drugs: [
-      { name: "Irinotecan", dosage: "165", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "Oxaliplatin", dosage: "85", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "Leucovorin", dosage: "200", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "5-Fluorouracil", dosage: "3200", unit: "mg/m²", route: "IV continuous", day: "Days 1-2" },
-      { name: "Bevacizumab", dosage: "5", unit: "mg/kg", route: "IV", day: "Day 1" }
+      { name: "Irinotecan", dosage: "165", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "5% Dextrose 250-500mL", administrationDuration: "90 minutes" },
+      { name: "Oxaliplatin", dosage: "85", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "5% Dextrose 250-500mL", administrationDuration: "2 hours" },
+      { name: "Leucovorin", dosage: "200", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 50-100mL", administrationDuration: "2 hours" },
+      { name: "5-Fluorouracil", dosage: "3200", unit: "mg/m²", route: "IV continuous", day: "Days 1-2", dilution: "Normal saline 250-500mL", administrationDuration: "46 hours continuous" },
+      { name: "Bevacizumab", dosage: "5", unit: "mg/kg", route: "IV", day: "Day 1", dilution: "Normal saline 100mL", administrationDuration: "30-90 minutes" }
     ],
     schedule: "Every 2 weeks",
     cycles: 12
@@ -121,9 +121,9 @@ export const colorectalCancerRegimens: Regimen[] = [
     description: "Oral-based regimen for metastatic disease",
     category: "metastatic",
     drugs: [
-      { name: "Oxaliplatin", dosage: "130", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "Capecitabine", dosage: "1000", unit: "mg/m²", route: "PO", day: "BID days 1-14" },
-      { name: "Bevacizumab", dosage: "7.5", unit: "mg/kg", route: "IV", day: "Day 1" }
+      { name: "Oxaliplatin", dosage: "130", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "5% Dextrose 250-500mL", administrationDuration: "2 hours" },
+      { name: "Capecitabine", dosage: "1000", unit: "mg/m²", route: "PO", day: "BID days 1-14", dilution: "Take with food and water", administrationDuration: "N/A - oral medication" },
+      { name: "Bevacizumab", dosage: "7.5", unit: "mg/kg", route: "IV", day: "Day 1", dilution: "Normal saline 100mL", administrationDuration: "30-90 minutes" }
     ],
     schedule: "Every 3 weeks",
     cycles: 8
@@ -134,7 +134,7 @@ export const colorectalCancerRegimens: Regimen[] = [
     description: "Third-line oral therapy for refractory metastatic CRC",
     category: "metastatic",
     drugs: [
-      { name: "Regorafenib", dosage: "160", unit: "mg", route: "PO", day: "Daily days 1-21" }
+      { name: "Regorafenib", dosage: "160", unit: "mg", route: "PO", day: "Daily days 1-21", dilution: "Take with low-fat breakfast", administrationDuration: "N/A - oral medication" }
     ],
     schedule: "21 days on, 7 days off",
     cycles: 6

@@ -49,10 +49,10 @@ export const breastCancerRegimens: Regimen[] = [
     description: "Dose-dense doxorubicin/cyclophosphamide followed by paclitaxel",
     category: "neoadjuvant",
     drugs: [
-      { name: "Doxorubicin", dosage: "60", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "Cyclophosphamide", dosage: "600", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "Paclitaxel", dosage: "175", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "Pegfilgrastim", dosage: "6", unit: "mg", route: "SQ", day: "Day 2" }
+      { name: "Doxorubicin", dosage: "60", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 50-100mL", administrationDuration: "5-10 minutes" },
+      { name: "Cyclophosphamide", dosage: "600", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 250mL", administrationDuration: "30-60 minutes" },
+      { name: "Paclitaxel", dosage: "175", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 250-500mL", administrationDuration: "3 hours" },
+      { name: "Pegfilgrastim", dosage: "6", unit: "mg", route: "SQ", day: "Day 2", dilution: "Pre-filled syringe", administrationDuration: "Immediate injection" }
     ],
     schedule: "AC q2wk x 4 cycles → Paclitaxel q2wk x 4 cycles with G-CSF support",
     cycles: 8
@@ -63,8 +63,8 @@ export const breastCancerRegimens: Regimen[] = [
     description: "Paclitaxel/Carboplatin with optional bevacizumab",
     category: "neoadjuvant",
     drugs: [
-      { name: "Paclitaxel", dosage: "80", unit: "mg/m²", route: "IV", day: "Weekly" },
-      { name: "Carboplatin", dosage: "AUC 6", unit: "", route: "IV", day: "Day 1" }
+      { name: "Paclitaxel", dosage: "80", unit: "mg/m²", route: "IV", day: "Weekly", dilution: "Normal saline 250mL", administrationDuration: "1 hour" },
+      { name: "Carboplatin", dosage: "AUC 6", unit: "", route: "IV", day: "Day 1", dilution: "5% Dextrose or Normal saline 250-500mL", administrationDuration: "30-60 minutes" }
     ],
     schedule: "Weekly paclitaxel x 12 weeks, carboplatin q3wk x 4 cycles",
     cycles: 4
@@ -77,9 +77,9 @@ export const breastCancerRegimens: Regimen[] = [
     description: "Standard adjuvant doxorubicin/cyclophosphamide followed by paclitaxel",
     category: "adjuvant",
     drugs: [
-      { name: "Doxorubicin", dosage: "60", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "Cyclophosphamide", dosage: "600", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "Paclitaxel", dosage: "175", unit: "mg/m²", route: "IV", day: "Day 1" }
+      { name: "Doxorubicin", dosage: "60", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 50-100mL", administrationDuration: "5-10 minutes" },
+      { name: "Cyclophosphamide", dosage: "600", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 250mL", administrationDuration: "30-60 minutes" },
+      { name: "Paclitaxel", dosage: "175", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 250-500mL", administrationDuration: "3 hours" }
     ],
     schedule: "AC q3wk x 4 cycles → Paclitaxel q3wk x 4 cycles",
     cycles: 8
@@ -90,8 +90,8 @@ export const breastCancerRegimens: Regimen[] = [
     description: "Docetaxel/Cyclophosphamide",
     category: "adjuvant",
     drugs: [
-      { name: "Docetaxel", dosage: "75", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "Cyclophosphamide", dosage: "600", unit: "mg/m²", route: "IV", day: "Day 1" }
+      { name: "Docetaxel", dosage: "75", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 250mL", administrationDuration: "1 hour" },
+      { name: "Cyclophosphamide", dosage: "600", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 250mL", administrationDuration: "30-60 minutes" }
     ],
     schedule: "Every 3 weeks",
     cycles: 4
@@ -102,10 +102,10 @@ export const breastCancerRegimens: Regimen[] = [
     description: "Dose-dense adjuvant therapy with G-CSF support",
     category: "adjuvant", 
     drugs: [
-      { name: "Doxorubicin", dosage: "60", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "Cyclophosphamide", dosage: "600", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "Paclitaxel", dosage: "175", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "Pegfilgrastim", dosage: "6", unit: "mg", route: "SQ", day: "Day 2" }
+      { name: "Doxorubicin", dosage: "60", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 50-100mL", administrationDuration: "5-10 minutes" },
+      { name: "Cyclophosphamide", dosage: "600", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 250mL", administrationDuration: "30-60 minutes" },
+      { name: "Paclitaxel", dosage: "175", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 250-500mL", administrationDuration: "3 hours" },
+      { name: "Pegfilgrastim", dosage: "6", unit: "mg", route: "SQ", day: "Day 2", dilution: "Pre-filled syringe", administrationDuration: "Immediate injection" }
     ],
     schedule: "AC q2wk x 4 cycles → Paclitaxel q2wk x 4 cycles",
     cycles: 8
@@ -118,7 +118,7 @@ export const breastCancerRegimens: Regimen[] = [
     description: "Weekly paclitaxel for metastatic breast cancer",
     category: "metastatic",
     drugs: [
-      { name: "Paclitaxel", dosage: "80", unit: "mg/m²", route: "IV", day: "Days 1, 8, 15" }
+      { name: "Paclitaxel", dosage: "80", unit: "mg/m²", route: "IV", day: "Days 1, 8, 15", dilution: "Normal saline 250mL", administrationDuration: "1 hour" }
     ],
     schedule: "Weekly x 3 weeks, 1 week break",
     cycles: 6
@@ -129,7 +129,7 @@ export const breastCancerRegimens: Regimen[] = [
     description: "Single-agent docetaxel for metastatic disease",
     category: "metastatic",
     drugs: [
-      { name: "Docetaxel", dosage: "75-100", unit: "mg/m²", route: "IV", day: "Day 1" }
+      { name: "Docetaxel", dosage: "75-100", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 250mL", administrationDuration: "1 hour" }
     ],
     schedule: "Every 3 weeks",
     cycles: 6
@@ -140,8 +140,8 @@ export const breastCancerRegimens: Regimen[] = [
     description: "Combination therapy for metastatic breast cancer",
     category: "metastatic",
     drugs: [
-      { name: "Carboplatin", dosage: "AUC 6", unit: "", route: "IV", day: "Day 1" },
-      { name: "Paclitaxel", dosage: "175", unit: "mg/m²", route: "IV", day: "Day 1" }
+      { name: "Carboplatin", dosage: "AUC 6", unit: "", route: "IV", day: "Day 1", dilution: "5% Dextrose or Normal saline 250-500mL", administrationDuration: "30-60 minutes" },
+      { name: "Paclitaxel", dosage: "175", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 250-500mL", administrationDuration: "3 hours" }
     ],
     schedule: "Every 3 weeks",
     cycles: 6
@@ -152,8 +152,8 @@ export const breastCancerRegimens: Regimen[] = [
     description: "For TNBC or BRCA-mutated metastatic breast cancer",
     category: "metastatic",
     drugs: [
-      { name: "Gemcitabine", dosage: "1000", unit: "mg/m²", route: "IV", day: "Days 1, 8" },
-      { name: "Carboplatin", dosage: "AUC 2", unit: "", route: "IV", day: "Days 1, 8" }
+      { name: "Gemcitabine", dosage: "1000", unit: "mg/m²", route: "IV", day: "Days 1, 8", dilution: "Normal saline 100-250mL", administrationDuration: "30 minutes" },
+      { name: "Carboplatin", dosage: "AUC 2", unit: "", route: "IV", day: "Days 1, 8", dilution: "5% Dextrose or Normal saline 250-500mL", administrationDuration: "30-60 minutes" }
     ],
     schedule: "Days 1, 8 q3wk",
     cycles: 6
@@ -164,7 +164,7 @@ export const breastCancerRegimens: Regimen[] = [
     description: "Oral fluoropyrimidine for metastatic breast cancer",
     category: "metastatic",
     drugs: [
-      { name: "Capecitabine", dosage: "1250", unit: "mg/m²", route: "PO", day: "BID days 1-14" }
+      { name: "Capecitabine", dosage: "1250", unit: "mg/m²", route: "PO", day: "BID days 1-14", dilution: "Take with food and water", administrationDuration: "N/A - oral medication" }
     ],
     schedule: "14 days on, 7 days off",
     cycles: 6
