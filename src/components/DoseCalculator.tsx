@@ -182,36 +182,40 @@ export const DoseCalculator = ({ regimen, bsa, weight, creatinineClearance, onEx
             <div>
               <h3 className="font-semibold text-foreground mb-3">Premedications</h3>
               <div className="space-y-3">
-                {regimen.premedications.map((premedication, index) => (
-                  <div key={index} className={`border rounded-lg p-3 transition-all ${
-                    selectedPremedications[index] ? "bg-success/10 border-success/30" : "bg-muted/20"
-                  }`}>
-                    <div className="flex items-start gap-3">
-                      <Checkbox
-                        checked={selectedPremedications[index] || false}
-                        onCheckedChange={(checked) => handlePremedSelection(index, checked as boolean)}
-                        className="mt-1"
-                      />
-                      <div className="flex-1">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h4 className="font-medium">{premedication.name}</h4>
-                            <p className="text-sm text-muted-foreground">{premedication.timing}</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="font-medium">{premedication.dosage} {premedication.unit}</p>
-                            <Badge variant="outline" className="mt-1">{premedication.route}</Badge>
-                          </div>
-                        </div>
-                        {premedication.dilution && (
-                          <p className="text-sm text-muted-foreground mt-2">
-                            <strong>Dilution:</strong> {premedication.dilution}
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                 {regimen.premedications.map((premedication, index) => (
+                   <div key={index} className={`border-2 rounded-lg p-4 transition-all ${
+                     selectedPremedications[index] ? "bg-primary/5 border-primary" : "bg-muted/30 border-muted"
+                   }`}>
+                     <div className="flex items-start gap-4">
+                       <div className="flex-shrink-0 mt-1">
+                         <Checkbox
+                           checked={selectedPremedications[index] || false}
+                           onCheckedChange={(checked) => handlePremedSelection(index, checked as boolean)}
+                           className="h-5 w-5"
+                         />
+                       </div>
+                       <div className="flex-1">
+                         <div className="flex justify-between items-start mb-3">
+                           <div>
+                             <h4 className="font-semibold text-lg text-foreground">{premedication.name}</h4>
+                             <p className="text-sm text-muted-foreground font-medium">{premedication.timing}</p>
+                           </div>
+                           <div className="text-right">
+                             <p className="font-bold text-lg text-primary">{premedication.dosage} {premedication.unit}</p>
+                             <Badge variant="secondary" className="mt-1">{premedication.route}</Badge>
+                           </div>
+                         </div>
+                         {premedication.dilution && (
+                           <div className="bg-background/80 border rounded p-3">
+                             <p className="text-sm font-medium">
+                               <span className="text-muted-foreground">Dilution:</span> <span className="text-foreground">{premedication.dilution}</span>
+                             </p>
+                           </div>
+                         )}
+                       </div>
+                     </div>
+                   </div>
+                 ))}
               </div>
             </div>
           </>
@@ -222,44 +226,51 @@ export const DoseCalculator = ({ regimen, bsa, weight, creatinineClearance, onEx
         <div>
           <h3 className="font-semibold text-foreground mb-3">Chemotherapy Drugs</h3>
           <div className="space-y-4">
-            {calculations.map((calc, index) => (
-              <div key={index} className={`border rounded-lg p-4 space-y-3 transition-all ${
-                calc.selected ? "bg-success/10 border-success/30" : "bg-muted/20"
-              }`}>
-                <div className="flex items-start gap-3">
-                  <Checkbox
-                    checked={calc.selected}
-                    onCheckedChange={(checked) => handleDrugSelection(index, checked as boolean)}
-                    className="mt-1"
-                  />
-                  <div className="flex-1 space-y-3">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-semibold text-foreground">{calc.drug.name}</h4>
-                        <div className="flex gap-2 mt-1">
-                          <Badge variant="outline">{calc.drug.route}</Badge>
-                          {calc.drug.day && <Badge variant="secondary">{calc.drug.day}</Badge>}
-                        </div>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          Standard: {calc.drug.dosage} {calc.drug.unit}
-                        </p>
-                      </div>
-                    </div>
+             {calculations.map((calc, index) => (
+               <div key={index} className={`border-2 rounded-lg p-5 space-y-4 transition-all ${
+                 calc.selected ? "bg-primary/5 border-primary" : "bg-muted/30 border-muted"
+               }`}>
+                 <div className="flex items-start gap-4">
+                   <div className="flex-shrink-0 mt-1">
+                     <Checkbox
+                       checked={calc.selected}
+                       onCheckedChange={(checked) => handleDrugSelection(index, checked as boolean)}
+                       className="h-5 w-5"
+                     />
+                   </div>
+                   <div className="flex-1 space-y-4">
+                     <div className="flex justify-between items-start">
+                       <div>
+                         <h4 className="font-bold text-xl text-foreground">{calc.drug.name}</h4>
+                         <div className="flex gap-2 mt-2">
+                           <Badge variant="outline" className="font-medium">{calc.drug.route}</Badge>
+                           {calc.drug.day && <Badge variant="secondary" className="font-medium">{calc.drug.day}</Badge>}
+                         </div>
+                         <p className="text-sm text-muted-foreground mt-2 font-medium">
+                           Standard Dose: <span className="text-foreground">{calc.drug.dosage} {calc.drug.unit}</span>
+                         </p>
+                       </div>
+                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm bg-background/50 p-3 rounded">
-                      {calc.drug.dilution && (
-                        <div>
-                          <Label className="text-muted-foreground font-medium">Diluent</Label>
-                          <p className="text-foreground">{calc.drug.dilution}</p>
-                        </div>
-                      )}
-                      {calc.drug.administrationDuration && (
-                        <div>
-                          <Label className="text-muted-foreground font-medium">Administration</Label>
-                          <p className="text-foreground">{calc.drug.administrationDuration}</p>
-                        </div>
-                      )}
-                    </div>
+                     {(calc.drug.dilution || calc.drug.administrationDuration) && (
+                       <div className="border-2 border-accent/30 bg-accent/10 rounded-lg p-4">
+                         <h5 className="font-semibold text-accent mb-3">Preparation & Administration</h5>
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                           {calc.drug.dilution && (
+                             <div className="bg-background/70 p-3 rounded border">
+                               <Label className="text-muted-foreground font-semibold text-sm">Diluent</Label>
+                               <p className="text-foreground font-medium mt-1">{calc.drug.dilution}</p>
+                             </div>
+                           )}
+                           {calc.drug.administrationDuration && (
+                             <div className="bg-background/70 p-3 rounded border">
+                               <Label className="text-muted-foreground font-semibold text-sm">Administration Duration</Label>
+                               <p className="text-foreground font-medium mt-1">{calc.drug.administrationDuration}</p>
+                             </div>
+                           )}
+                         </div>
+                       </div>
+                     )}
 
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
                       <div>
