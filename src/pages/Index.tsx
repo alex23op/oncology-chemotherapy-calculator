@@ -3,9 +3,12 @@ import { AppHeader } from "@/components/AppHeader";
 import { PatientForm } from "@/components/PatientForm";
 import { CancerTypeSelector } from "@/components/CancerTypeSelector";
 import { DoseCalculator } from "@/components/DoseCalculator";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { toast } from "@/hooks/use-toast";
 import { Info } from "lucide-react";
 import { Regimen } from "@/types/regimens";
+
+console.log("Index component loading...");
 
 interface PatientData {
   weight: string;
@@ -25,10 +28,12 @@ const Index = () => {
   const [selectedRegimen, setSelectedRegimen] = useState<Regimen | null>(null);
 
   const handlePatientDataChange = (data: PatientData) => {
+    console.log("Patient data changed:", data);
     setPatientData(data);
   };
 
   const handleRegimenSelect = (regimen: Regimen) => {
+    console.log("Regimen selected:", regimen);
     if (!patientData) {
       toast({
         title: "Patient Data Required",
@@ -60,25 +65,35 @@ const Index = () => {
     });
   };
 
+  console.log("Rendering Index component...");
+  
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader />
+      <ErrorBoundary>
+        <AppHeader />
+      </ErrorBoundary>
       
       <main className="container mx-auto px-4 py-6 space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="space-y-6">
-            <PatientForm onPatientDataChange={handlePatientDataChange} />
-            <CancerTypeSelector onRegimenSelect={handleRegimenSelect} />
+            <ErrorBoundary>
+              <PatientForm onPatientDataChange={handlePatientDataChange} />
+            </ErrorBoundary>
+            <ErrorBoundary>
+              <CancerTypeSelector onRegimenSelect={handleRegimenSelect} />
+            </ErrorBoundary>
           </div>
           
           <div>
-            <DoseCalculator
-              regimen={selectedRegimen}
-              bsa={patientData?.bsa || 0}
-              weight={parseFloat(patientData?.weight || "0")}
-              creatinineClearance={patientData?.creatinineClearance || 0}
-              onExport={handleExport}
-            />
+            <ErrorBoundary>
+              <DoseCalculator
+                regimen={selectedRegimen}
+                bsa={patientData?.bsa || 0}
+                weight={parseFloat(patientData?.weight || "0")}
+                creatinineClearance={patientData?.creatinineClearance || 0}
+                onExport={handleExport}
+              />
+            </ErrorBoundary>
           </div>
         </div>
 
