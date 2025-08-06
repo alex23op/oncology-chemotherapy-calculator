@@ -439,6 +439,11 @@ export const UnifiedProtocolSelector = ({
   const { componentRef, printProtocol } = usePrint();
   const { toast } = useToast();
 
+  // Notify parent component when selected agents change
+  useEffect(() => {
+    onAntiemeticProtocolChange(selectedAgents);
+  }, [selectedAgents, onAntiemeticProtocolChange]);
+
   // Get recommendations based on drugs and emetogenic risk
   const recommendations = useMemo(() => {
     const recs: PremedAgent[] = [];
