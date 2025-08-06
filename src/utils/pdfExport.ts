@@ -17,18 +17,22 @@ export const generateClinicalTreatmentPDF = async (
   treatmentData: ClinicalTreatmentExportData
 ): Promise<void> => {
   try {
-    const element = document.getElementById(treatmentData.elementId);
-    if (!element) {
-      throw new Error('Treatment sheet element not found');
-    }
+    // Create a temporary compact view for PDF export
+    const compactElement = document.createElement('div');
+    compactElement.innerHTML = `
+      <div class="compact-treatment-sheet" style="font-family: Arial, sans-serif; font-size: 9px; line-height: 1.2; color: #000; background: #fff; padding: 0; margin: 0;">
+        ${document.querySelector('.compact-treatment-sheet')?.innerHTML || 'Treatment data not available'}
+      </div>
+    `;
+    document.body.appendChild(compactElement);
 
-    const canvas = await html2canvas(element, {
+    const canvas = await html2canvas(compactElement, {
       scale: 2,
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
-      width: element.scrollWidth,
-      height: element.scrollHeight,
+      width: 800,
+      height: compactElement.scrollHeight,
     });
 
     const imgData = canvas.toDataURL('image/png');
@@ -79,6 +83,9 @@ export const generateClinicalTreatmentPDF = async (
       pdf.text(`Page ${i} of ${pageCount}`, pdfWidth - 30, pdfHeight - 5);
       pdf.text('CONFIDENTIAL MEDICAL DOCUMENT', pdfWidth / 2, pdfHeight - 5, { align: 'center' });
     }
+
+    // Clean up temporary element
+    document.body.removeChild(compactElement);
 
     // Save the PDF with clinical naming convention
     const filename = `treatment-protocol-${treatmentData.patient.patientId}-${treatmentData.regimen.name.toLowerCase().replace(/\s+/g, '-')}-cycle${treatmentData.patient.cycleNumber}-${new Date().toISOString().split('T')[0]}.pdf`;

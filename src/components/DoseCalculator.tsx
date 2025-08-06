@@ -12,6 +12,7 @@ import { Regimen, Drug, Premedication } from "@/types/regimens";
 import { UnifiedProtocolSelector } from "./UnifiedProtocolSelector";
 import { EmetogenicRiskClassifier } from "./EmetogenicRiskClassifier";
 import { ClinicalTreatmentSheet } from "./ClinicalTreatmentSheet";
+import { CompactClinicalTreatmentSheet } from "./CompactClinicalTreatmentSheet";
 import { AntiemeticAgent } from "@/types/emetogenicRisk";
 import { TreatmentData, PatientInfo, CalculatedDrug } from "@/types/clinicalTreatment";
 import { generateClinicalTreatmentPDF } from "@/utils/pdfExport";
@@ -633,10 +634,18 @@ export const DoseCalculator = ({ regimen, bsa, weight, height, age, sex, creatin
               </div>
             </div>
             
-            <div id="clinical-treatment-sheet" ref={componentRef}>
+            {/* Digital view - full layout */}
+            <div className="print:hidden">
               <ClinicalTreatmentSheet 
                 treatmentData={prepareTreatmentData()}
-                className="bg-background"
+                className="bg-background border rounded-lg p-6"
+              />
+            </div>
+            {/* Print view - compact layout */}
+            <div className="hidden print:block" id="clinical-treatment-sheet" ref={componentRef}>
+              <CompactClinicalTreatmentSheet 
+                treatmentData={prepareTreatmentData()}
+                className=""
               />
             </div>
           </div>
