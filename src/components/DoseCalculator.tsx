@@ -82,7 +82,7 @@ export const DoseCalculator = ({
     if (regimen && bsa > 0) {
       const effectiveBsa = useBsaCap ? Math.min(bsa, bsaCap) : bsa;
       
-      const newCalculations = regimen.drugs.map(drug => {
+      const newCalculations = regimen.drugs.map((drug, drugIndex) => {
         let calculatedDose = 0;
         
         try {
@@ -115,6 +115,28 @@ export const DoseCalculator = ({
           calculatedDose = 0;
         }
 
+        // Preserve existing user modifications if this drug already exists
+        const existingCalc = calculations.find(calc => calc.drug.name === drug.name);
+        if (existingCalc) {
+          console.log("Preserving user modifications for:", drug.name, {
+            selected: existingCalc.selected,
+            adjustedDose: existingCalc.adjustedDose,
+            notes: existingCalc.notes,
+            reductionPercentage: existingCalc.reductionPercentage
+          });
+          
+          return {
+            drug,
+            calculatedDose,
+            adjustedDose: existingCalc.adjustedDose, // Preserve user's dose adjustment
+            finalDose: Math.round(existingCalc.adjustedDose * 10) / 10,
+            notes: existingCalc.notes, // Preserve user's notes
+            selected: existingCalc.selected, // Preserve user's selection
+            reductionPercentage: existingCalc.reductionPercentage // Preserve user's reduction
+          };
+        }
+
+        // Default for new drugs
         return {
           drug,
           calculatedDose,
@@ -126,11 +148,13 @@ export const DoseCalculator = ({
         };
       });
       
-      console.log("Calculated doses:", newCalculations);
+      console.log("Calculated doses with preserved user modifications:", newCalculations);
       setCalculations(newCalculations);
       
-      // Initialize with existing regimen premedications if any
-      setSelectedPremedications(regimen.premedications || []);
+      // Initialize with existing regimen premedications if any (only if not already set)
+      if (selectedPremedications.length === 0) {
+        setSelectedPremedications(regimen.premedications || []);
+      }
 
       // Perform safety checks
       if (newCalculations.length > 0) {
