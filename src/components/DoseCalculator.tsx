@@ -282,12 +282,22 @@ export const DoseCalculator = ({ regimen, bsa, weight, height, age, sex, creatin
   };
 
   const handleGenerateTreatmentSheet = () => {
-    console.log('Generate sheet clicked', { patientId, calculations: calculations.length });
+    console.log('=== Generate Sheet Button Clicked ===');
+    console.log('patientId:', patientId);
+    console.log('calculations length:', calculations.length);
+    console.log('calculations:', calculations);
+    console.log('regimen:', regimen);
+    console.log('bsa:', bsa);
+    console.log('weight:', weight);
+    console.log('creatinineClearance:', creatinineClearance);
+    
     if (!patientId.trim()) {
+      console.log('ERROR: No patient ID');
       toast.error('Please enter a Patient ID to generate treatment sheet');
       return;
     }
     if (calculations.length === 0) {
+      console.log('ERROR: No calculations available');
       toast.error('No dose calculations available. Please ensure regimen is selected and patient data is entered.');
       return;
     }
@@ -346,11 +356,17 @@ export const DoseCalculator = ({ regimen, bsa, weight, height, age, sex, creatin
               variant="outline"
               size="sm"
               onClick={() => {
-                console.log('Export data clicked', { calculations: calculations.length });
+                console.log('=== Export Data Button Clicked ===');
+                console.log('calculations length:', calculations.length);
+                console.log('calculations:', calculations);
+                console.log('onExport function exists:', !!onExport);
+                
                 if (calculations.length === 0) {
+                  console.log('ERROR: No calculations to export');
                   toast.error('No calculations to export. Please select a regimen and enter patient data first.');
                   return;
                 }
+                console.log('Calling onExport with calculations');
                 onExport?.(calculations);
                 toast.success('Data exported successfully');
               }}
