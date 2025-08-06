@@ -264,13 +264,15 @@ export const DoseCalculator = ({
       treatmentDate,
     };
 
-    const calculatedDrugs: CalculatedDrug[] = calculations.map((calc) => ({
-      ...calc.drug,
-      calculatedDose: `${calc.calculatedDose.toFixed(1)} mg`,
-      finalDose: `${calc.finalDose} mg`,
-      adjustmentNotes: calc.notes,
-      preparationInstructions: calc.drug.dilution,
-    }));
+    const calculatedDrugs: CalculatedDrug[] = calculations
+      .filter(calc => calc.selected)  // Only include selected drugs
+      .map((calc) => ({
+        ...calc.drug,
+        calculatedDose: `${calc.calculatedDose.toFixed(1)} mg`,
+        finalDose: `${calc.finalDose} mg`,
+        adjustmentNotes: calc.notes,
+        preparationInstructions: calc.drug.dilution,
+      }));
 
     const categorizeAgent = (agent: any) => {
       const category = agent.category?.toLowerCase() || '';
