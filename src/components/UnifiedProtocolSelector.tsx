@@ -7,34 +7,418 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Shield, AlertTriangle, Clock, Pill, ChevronDown, BookOpen, Edit } from "lucide-react";
-import { PremedProtocol, standardPremedProtocols, getRecommendedProtocols } from "@/utils/premedProtocols";
-import { getRecommendedAntiemeticProtocols, allAntiemeticProtocols, standardAntiemeticAgents } from "@/data/antiemeticProtocols";
-import { Premedication } from "@/types/regimens";
-import { AntiemeticAgent, AntiemeticProtocol } from "@/types/emetogenicRisk";
+import { Shield, AlertTriangle, Clock, Pill, ChevronDown, BookOpen, Edit, Heart, Activity, Zap, Droplet, Users, FileText, Download } from "lucide-react";
 import { Drug } from "@/types/regimens";
 
 interface UnifiedProtocolSelectorProps {
   drugNames: string[];
   drugs: Drug[];
   emetogenicRiskLevel: "high" | "moderate" | "low" | "minimal";
-  selectedPremedications: Premedication[];
-  selectedAntiemetics: AntiemeticAgent[];
-  onPremedSelectionsChange: (premedications: Premedication[]) => void;
-  onAntiemeticProtocolChange: (agents: AntiemeticAgent[]) => void;
+  selectedPremedications: any[];
+  selectedAntiemetics: any[];
+  onPremedSelectionsChange: (premedications: any[]) => void;
+  onAntiemeticProtocolChange: (agents: any[]) => void;
   weight: number;
 }
 
-interface ProtocolBundle {
+interface PremedAgent {
+  name: string;
+  category: string;
+  class: string;
+  dosage: string;
+  unit: string;
+  route: string;
+  timing: string;
+  indication: string;
+  rationale: string;
+  isRequired: boolean;
+  isStandard: boolean;
+  administrationDuration?: string;
+  weightBased?: boolean;
+  notes?: string;
+  evidenceLevel?: string;
+  drugSpecific?: string[];
+}
+
+interface CategoryData {
   id: string;
   name: string;
   description: string;
-  premedications: Premedication[];
-  antiemetics: AntiemeticAgent[];
-  indication: string[];
-  isRecommended: boolean;
-  rationale: string;
+  icon: any;
+  color: string;
+  agents: PremedAgent[];
 }
+
+const premedCategories: CategoryData[] = [
+  {
+    id: "cinv",
+    name: "Antiemetic Agents for CINV",
+    description: "5-HT3 RAs, NK1 RAs, corticosteroids, olanzapine for chemotherapy-induced nausea/vomiting",
+    icon: Pill,
+    color: "bg-blue-50 border-blue-200 text-blue-800",
+    agents: [
+      {
+        name: "Ondansetron",
+        category: "5-HT3 Receptor Antagonist",
+        class: "Serotonin Antagonist",
+        dosage: "8",
+        unit: "mg",
+        route: "IV",
+        timing: "30 minutes before chemotherapy",
+        indication: "Acute CINV prevention",
+        rationale: "First-line agent for acute emesis prevention in moderate to high emetogenic regimens",
+        isRequired: true,
+        isStandard: true,
+        evidenceLevel: "IA",
+        drugSpecific: ["cisplatin", "carboplatin", "doxorubicin", "cyclophosphamide"]
+      },
+      {
+        name: "Granisetron",
+        category: "5-HT3 Receptor Antagonist", 
+        class: "Serotonin Antagonist",
+        dosage: "1",
+        unit: "mg",
+        route: "IV",
+        timing: "30 minutes before chemotherapy",
+        indication: "Acute CINV prevention",
+        rationale: "Alternative 5-HT3 antagonist with longer half-life",
+        isRequired: false,
+        isStandard: true,
+        evidenceLevel: "IA"
+      },
+      {
+        name: "Aprepitant",
+        category: "NK1 Receptor Antagonist",
+        class: "Neurokinin-1 Antagonist",
+        dosage: "125",
+        unit: "mg",
+        route: "PO",
+        timing: "1 hour before chemotherapy (Day 1), then 80mg PO Days 2-3",
+        indication: "Delayed CINV prevention",
+        rationale: "Essential for delayed emesis prevention in highly emetogenic regimens",
+        isRequired: true,
+        isStandard: true,
+        evidenceLevel: "IA",
+        drugSpecific: ["cisplatin", "doxorubicin", "cyclophosphamide"]
+      },
+      {
+        name: "Dexamethasone",
+        category: "Corticosteroid",
+        class: "Anti-inflammatory",
+        dosage: "12",
+        unit: "mg",
+        route: "IV",
+        timing: "30 minutes before chemotherapy",
+        indication: "CINV prevention, antiemetic potentiation",
+        rationale: "Synergistic antiemetic effect, reduces delayed emesis",
+        isRequired: true,
+        isStandard: true,
+        evidenceLevel: "IA"
+      },
+      {
+        name: "Olanzapine",
+        category: "Atypical Antipsychotic",
+        class: "Dopamine/Serotonin Antagonist", 
+        dosage: "10",
+        unit: "mg",
+        route: "PO",
+        timing: "1 hour before chemotherapy, continue daily x 4 days",
+        indication: "Breakthrough CINV, highly emetogenic regimens",
+        rationale: "Highly effective for refractory CINV, multiple receptor antagonism",
+        isRequired: false,
+        isStandard: false,
+        evidenceLevel: "IIA",
+        drugSpecific: ["cisplatin"]
+      }
+    ]
+  },
+  {
+    id: "cholinergic",
+    name: "Cholinergic Syndrome Management",
+    description: "Agents for managing cholinergic symptoms from specific chemotherapy agents",
+    icon: AlertTriangle,
+    color: "bg-orange-50 border-orange-200 text-orange-800",
+    agents: [
+      {
+        name: "Atropine",
+        category: "Anticholinergic",
+        class: "Muscarinic Antagonist",
+        dosage: "0.25-1",
+        unit: "mg",
+        route: "IV",
+        timing: "30 minutes before irinotecan",
+        indication: "Cholinergic syndrome prevention",
+        rationale: "Prevents acute cholinergic symptoms (diarrhea, cramping, diaphoresis) from irinotecan",
+        isRequired: true,
+        isStandard: true,
+        evidenceLevel: "IA",
+        drugSpecific: ["irinotecan"]
+      }
+    ]
+  },
+  {
+    id: "diarrhea",
+    name: "Diarrhea Control Agents",
+    description: "Management of delayed diarrhea from specific chemotherapy regimens",
+    icon: Droplet,
+    color: "bg-yellow-50 border-yellow-200 text-yellow-800",
+    agents: [
+      {
+        name: "Loperamide",
+        category: "Antidiarrheal",
+        class: "Opioid Receptor Agonist",
+        dosage: "4",
+        unit: "mg",
+        route: "PO",
+        timing: "At first sign of loose stool, then 2mg after each loose stool (max 16mg/day)",
+        indication: "Delayed diarrhea management",
+        rationale: "Standard treatment for irinotecan-induced delayed diarrhea",
+        isRequired: false,
+        isStandard: true,
+        evidenceLevel: "IIA",
+        drugSpecific: ["irinotecan", "FOLFIRI"]
+      }
+    ]
+  },
+  {
+    id: "infusion_reaction",
+    name: "Infusion Reaction Prophylaxis", 
+    description: "Prevention of hypersensitivity and infusion reactions",
+    icon: Shield,
+    color: "bg-red-50 border-red-200 text-red-800",
+    agents: [
+      {
+        name: "Diphenhydramine",
+        category: "Antihistamine (H1)",
+        class: "Histamine Antagonist",
+        dosage: "25-50",
+        unit: "mg",
+        route: "IV",
+        timing: "30-60 minutes before chemotherapy",
+        indication: "Hypersensitivity reaction prevention",
+        rationale: "Prevents type I hypersensitivity reactions to taxanes and platinum agents",
+        isRequired: true,
+        isStandard: true,
+        evidenceLevel: "IA",
+        drugSpecific: ["paclitaxel", "docetaxel", "carboplatin", "oxaliplatin"]
+      },
+      {
+        name: "Famotidine",
+        category: "H2 Receptor Blocker",
+        class: "Histamine Antagonist",
+        dosage: "20",
+        unit: "mg",
+        route: "IV",
+        timing: "30-60 minutes before chemotherapy",
+        indication: "Hypersensitivity reaction prevention",
+        rationale: "H2 blockade reduces severity of hypersensitivity reactions",
+        isRequired: true,
+        isStandard: true,
+        evidenceLevel: "IA",
+        drugSpecific: ["paclitaxel", "docetaxel", "carboplatin", "oxaliplatin"]
+      },
+      {
+        name: "Dexamethasone",
+        category: "Corticosteroid",
+        class: "Anti-inflammatory",
+        dosage: "20",
+        unit: "mg",
+        route: "IV",
+        timing: "30-60 minutes before chemotherapy",
+        indication: "Hypersensitivity reaction prevention",
+        rationale: "Potent anti-inflammatory effect prevents severe hypersensitivity",
+        isRequired: true,
+        isStandard: true,
+        evidenceLevel: "IA",
+        drugSpecific: ["paclitaxel", "docetaxel"]
+      }
+    ]
+  },
+  {
+    id: "gastroprotection",
+    name: "Gastroprotection",
+    description: "Gastric protection when using steroids or gastric irritant chemotherapy",
+    icon: Heart,
+    color: "bg-green-50 border-green-200 text-green-800",
+    agents: [
+      {
+        name: "Omeprazole",
+        category: "Proton Pump Inhibitor",
+        class: "Gastric Acid Suppressor",
+        dosage: "20",
+        unit: "mg",
+        route: "PO",
+        timing: "Daily while receiving steroids",
+        indication: "Gastric ulcer prevention",
+        rationale: "Prevents steroid-induced gastric ulceration",
+        isRequired: false,
+        isStandard: true,
+        evidenceLevel: "IIA"
+      },
+      {
+        name: "Famotidine",
+        category: "H2 Receptor Blocker",
+        class: "Histamine Antagonist",
+        dosage: "20",
+        unit: "mg",
+        route: "PO",
+        timing: "Twice daily",
+        indication: "Gastric acid reduction",
+        rationale: "Alternative gastroprotection for patients intolerant to PPIs",
+        isRequired: false,
+        isStandard: true,
+        evidenceLevel: "IIB"
+      }
+    ]
+  },
+  {
+    id: "organ_protection",
+    name: "Organ-Protective Agents",
+    description: "Nephroprotection, cardioprotection, and uroprotection agents",
+    icon: Activity,
+    color: "bg-purple-50 border-purple-200 text-purple-800",
+    agents: [
+      {
+        name: "Furosemide",
+        category: "Diuretic",
+        class: "Loop Diuretic",
+        dosage: "20-40",
+        unit: "mg",
+        route: "IV",
+        timing: "After cisplatin infusion",
+        indication: "Nephroprotection",
+        rationale: "Promotes diuresis to reduce cisplatin nephrotoxicity",
+        isRequired: false,
+        isStandard: true,
+        evidenceLevel: "IIA",
+        drugSpecific: ["cisplatin"]
+      },
+      {
+        name: "Mannitol",
+        category: "Osmotic Diuretic",
+        class: "Diuretic",
+        dosage: "12.5",
+        unit: "g",
+        route: "IV",
+        timing: "Before and after cisplatin",
+        indication: "Nephroprotection",
+        rationale: "Osmotic diuresis reduces cisplatin concentration in renal tubules",
+        isRequired: false,
+        isStandard: true,
+        evidenceLevel: "IIA",
+        drugSpecific: ["cisplatin"]
+      },
+      {
+        name: "Mesna",
+        category: "Uroprotectant",
+        class: "Sulfhydryl Compound",
+        dosage: "60% of cyclophosphamide dose",
+        unit: "mg",
+        route: "IV",
+        timing: "Before, 4h, and 8h after cyclophosphamide",
+        indication: "Hemorrhagic cystitis prevention",
+        rationale: "Detoxifies acrolein metabolite preventing bladder toxicity",
+        isRequired: true,
+        isStandard: true,
+        evidenceLevel: "IA",
+        drugSpecific: ["cyclophosphamide", "ifosfamide"]
+      },
+      {
+        name: "Dexrazoxane",
+        category: "Cardioprotectant",
+        class: "Iron Chelator",
+        dosage: "10:1 ratio to doxorubicin",
+        unit: "mg",
+        route: "IV",
+        timing: "30 minutes before doxorubicin",
+        indication: "Cardiotoxicity prevention",
+        rationale: "Prevents doxorubicin-induced cardiomyopathy in high cumulative doses",
+        isRequired: false,
+        isStandard: false,
+        evidenceLevel: "IIA",
+        drugSpecific: ["doxorubicin"],
+        notes: "Consider after cumulative dose >300 mg/m²"
+      }
+    ]
+  },
+  {
+    id: "tumor_lysis",
+    name: "Tumor Lysis Syndrome Prophylaxis",
+    description: "Prevention of tumor lysis syndrome in high-risk patients",
+    icon: Zap,
+    color: "bg-indigo-50 border-indigo-200 text-indigo-800",
+    agents: [
+      {
+        name: "Allopurinol",
+        category: "Xanthine Oxidase Inhibitor",
+        class: "Uric Acid Reducer",
+        dosage: "300",
+        unit: "mg",
+        route: "PO",
+        timing: "Daily, start 24-48h before chemotherapy",
+        indication: "Hyperuricemia prevention",
+        rationale: "Prevents uric acid formation in high tumor burden patients",
+        isRequired: false,
+        isStandard: true,
+        evidenceLevel: "IA",
+        notes: "For intermediate TLS risk"
+      },
+      {
+        name: "Rasburicase",
+        category: "Urate Oxidase",
+        class: "Uric Acid Metabolizer", 
+        dosage: "0.2",
+        unit: "mg/kg",
+        route: "IV",
+        timing: "Once daily x 1-5 days",
+        indication: "Severe hyperuricemia treatment",
+        rationale: "Rapidly metabolizes existing uric acid in high-risk TLS patients",
+        isRequired: false,
+        isStandard: false,
+        evidenceLevel: "IA",
+        notes: "For high TLS risk, contraindicated in G6PD deficiency"
+      }
+    ]
+  },
+  {
+    id: "growth_factors",
+    name: "Hematologic Growth Factors",
+    description: "Support for bone marrow function and blood cell recovery",
+    icon: Users,
+    color: "bg-cyan-50 border-cyan-200 text-cyan-800",
+    agents: [
+      {
+        name: "Pegfilgrastim",
+        category: "G-CSF",
+        class: "Granulocyte Colony Stimulating Factor",
+        dosage: "6",
+        unit: "mg",
+        route: "SQ",
+        timing: "24-72 hours after chemotherapy completion",
+        indication: "Neutropenia prevention",
+        rationale: "Reduces incidence and duration of severe neutropenia",
+        isRequired: false,
+        isStandard: true,
+        evidenceLevel: "IA",
+        notes: "Use when neutropenia risk >20%"
+      },
+      {
+        name: "Filgrastim",
+        category: "G-CSF",
+        class: "Granulocyte Colony Stimulating Factor",
+        dosage: "5",
+        unit: "mcg/kg",
+        route: "SQ",
+        timing: "Daily starting 24-72h after chemotherapy until ANC recovery",
+        indication: "Neutropenia prevention/treatment",
+        rationale: "Stimulates neutrophil production and function",
+        isRequired: false,
+        isStandard: true,
+        evidenceLevel: "IA"
+      }
+    ]
+  }
+];
 
 export const UnifiedProtocolSelector = ({
   drugNames,
@@ -46,580 +430,343 @@ export const UnifiedProtocolSelector = ({
   onAntiemeticProtocolChange,
   weight
 }: UnifiedProtocolSelectorProps) => {
-  const [selectionMode, setSelectionMode] = useState<"bundles" | "individual">("bundles");
-  const [selectedBundleId, setSelectedBundleId] = useState<string | null>(null);
+  const [selectedAgents, setSelectedAgents] = useState<PremedAgent[]>([]);
+  const [expandedCategories, setExpandedCategories] = useState<string[]>(["cinv"]);
 
-  // Get recommended protocols
-  const recommendedPremedProtocols = useMemo(() => getRecommendedProtocols(drugNames), [drugNames]);
-  const recommendedAntiemeticProtocols = useMemo(() => getRecommendedAntiemeticProtocols(drugNames), [drugNames]);
-  
-  // Create unified protocol bundles
-  const protocolBundles = useMemo((): ProtocolBundle[] => {
-    const bundles: ProtocolBundle[] = [];
+  // Get recommendations based on drugs and emetogenic risk
+  const recommendations = useMemo(() => {
+    const recs: PremedAgent[] = [];
     
-    // Create bundles by combining premedication and antiemetic protocols
-    recommendedPremedProtocols.forEach(premedProtocol => {
-      recommendedAntiemeticProtocols.forEach(antiemeticProtocol => {
-        // Check if protocols are compatible
-        const isCompatible = premedProtocol.indication.some(indication => 
-          antiemeticProtocol.indication.some(antiInd => 
-            indication.toLowerCase().includes(antiInd.toLowerCase()) ||
-            antiInd.toLowerCase().includes(indication.toLowerCase())
-          )
-        );
-        
-        if (isCompatible) {
-          bundles.push({
-            id: `${premedProtocol.id}_${antiemeticProtocol.id}`,
-            name: `${premedProtocol.name} + ${antiemeticProtocol.name}`,
-            description: `Combined protocol: ${premedProtocol.description} with ${antiemeticProtocol.acuteManagement}`,
-            premedications: premedProtocol.premedications,
-            antiemetics: antiemeticProtocol.agents,
-            indication: [...premedProtocol.indication, ...antiemeticProtocol.indication],
-            isRecommended: true,
-            rationale: `${premedProtocol.description}. ${antiemeticProtocol.clinicalRationale}`
-          });
+    premedCategories.forEach(category => {
+      category.agents.forEach(agent => {
+        // Check if agent is recommended for current drugs
+        const isRecommendedForDrugs = !agent.drugSpecific || 
+          agent.drugSpecific.some(drug => 
+            drugNames.some(drugName => 
+              drugName.toLowerCase().includes(drug.toLowerCase()) ||
+              drug.toLowerCase().includes(drugName.toLowerCase())
+            )
+          );
+
+        // Check emetogenic risk requirements
+        const isRecommendedForRisk = 
+          (category.id === "cinv" && (emetogenicRiskLevel === "high" || emetogenicRiskLevel === "moderate")) ||
+          category.id !== "cinv";
+
+        if (isRecommendedForDrugs && isRecommendedForRisk) {
+          recs.push(agent);
         }
       });
     });
 
-    // Add standalone antiemetic protocols for high/moderate risk
-    if (emetogenicRiskLevel === "high" || emetogenicRiskLevel === "moderate") {
-      const protocolsByRisk = allAntiemeticProtocols.filter(p => p.riskLevel === emetogenicRiskLevel);
-      protocolsByRisk.forEach(protocol => {
-        bundles.push({
-          id: `antiemetic_only_${protocol.id}`,
-          name: `${protocol.name} (Antiemetic Only)`,
-          description: protocol.acuteManagement,
-          premedications: [],
-          antiemetics: protocol.agents,
-          indication: protocol.indication,
-          isRecommended: recommendedAntiemeticProtocols.some(rec => rec.id === protocol.id),
-          rationale: protocol.clinicalRationale
-        });
-      });
+    return recs;
+  }, [drugNames, emetogenicRiskLevel]);
+
+  const handleAgentToggle = (agent: PremedAgent, isSelected: boolean) => {
+    if (isSelected) {
+      setSelectedAgents(prev => [...prev, agent]);
+    } else {
+      setSelectedAgents(prev => prev.filter(a => a.name !== agent.name));
     }
+  };
 
-    // Add standalone premedication protocols
-    recommendedPremedProtocols.forEach(protocol => {
-      bundles.push({
-        id: `premed_only_${protocol.id}`,
-        name: `${protocol.name} (Premedication Only)`,
-        description: protocol.description,
-        premedications: protocol.premedications,
-        antiemetics: [],
-        indication: protocol.indication,
-        isRecommended: true,
-        rationale: protocol.description
-      });
-    });
+  const applyRecommendations = () => {
+    setSelectedAgents(recommendations);
+  };
 
-    return bundles.filter((bundle, index, arr) => 
-      arr.findIndex(b => b.id === bundle.id) === index
+  const clearSelections = () => {
+    setSelectedAgents([]);
+  };
+
+  const toggleCategory = (categoryId: string) => {
+    setExpandedCategories(prev => 
+      prev.includes(categoryId) 
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId]
     );
-  }, [recommendedPremedProtocols, recommendedAntiemeticProtocols, emetogenicRiskLevel]);
-
-  // Group individual agents by category
-  const groupedPremedications = useMemo(() => {
-    return standardPremedProtocols.reduce((acc, protocol) => {
-      protocol.premedications.forEach(premed => {
-        if (!acc[premed.category]) {
-          acc[premed.category] = [];
-        }
-        const exists = acc[premed.category].find(p => p.name === premed.name);
-        if (!exists) {
-          acc[premed.category].push(premed);
-        }
-      });
-      return acc;
-    }, {} as Record<string, Premedication[]>);
-  }, []);
-
-  const handleBundleSelect = (bundle: ProtocolBundle) => {
-    setSelectedBundleId(bundle.id);
-    setSelectionMode("bundles");
-    
-    // Apply the bundle selections
-    onPremedSelectionsChange(bundle.premedications);
-    onAntiemeticProtocolChange(bundle.antiemetics);
   };
 
-  const handleIndividualPremedToggle = (premedication: Premedication, isSelected: boolean) => {
-    setSelectionMode("individual");
-    setSelectedBundleId(null);
-    
-    let newSelections = [...selectedPremedications];
-    
-    if (isSelected) {
-      const exists = newSelections.find(selected => selected.name === premedication.name);
-      if (!exists) {
-        newSelections.push(premedication);
-      }
-    } else {
-      newSelections = newSelections.filter(selected => selected.name !== premedication.name);
-    }
-    
-    onPremedSelectionsChange(newSelections);
-  };
-
-  const handleIndividualAntiemeticToggle = (agentKey: string, agent: AntiemeticAgent, isSelected: boolean) => {
-    setSelectionMode("individual");
-    setSelectedBundleId(null);
-    
-    let newSelections = [...selectedAntiemetics];
-    
-    if (isSelected) {
-      const exists = newSelections.find(selected => selected.name === agent.name);
-      if (!exists) {
-        newSelections.push(agent);
-      }
-    } else {
-      newSelections = newSelections.filter(selected => selected.name !== agent.name);
-    }
-    
-    onAntiemeticProtocolChange(newSelections);
-  };
-
-  const clearAllSelections = () => {
-    onPremedSelectionsChange([]);
-    onAntiemeticProtocolChange([]);
-    setSelectedBundleId(null);
-  };
-
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case "antiemetic": return <Pill className="h-4 w-4" />;
-      case "corticosteroid": return <Shield className="h-4 w-4" />;
-      case "antihistamine": return <AlertTriangle className="h-4 w-4" />;
-      case "h2_blocker": return <Shield className="h-4 w-4" />;
-      default: return <Clock className="h-4 w-4" />;
-    }
-  };
-
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case "antiemetic": return "bg-info/10 text-info border-info/20";
-      case "corticosteroid": return "bg-warning/10 text-warning border-warning/20";
-      case "antihistamine": return "bg-destructive/10 text-destructive border-destructive/20";
-      case "h2_blocker": return "bg-success/10 text-success border-success/20";
-      default: return "bg-muted text-muted-foreground";
-    }
-  };
-
-  const getEvidenceBadge = (level: string) => {
-    const colors = {
-      "IA": "bg-green-100 text-green-800",
-      "IB": "bg-green-100 text-green-700", 
-      "IC": "bg-blue-100 text-blue-800",
-      "IIA": "bg-yellow-100 text-yellow-800",
-      "IIB": "bg-orange-100 text-orange-800",
-      "IIIA": "bg-red-100 text-red-700",
-      "IIIB": "bg-red-100 text-red-800"
+  const exportProtocol = () => {
+    const protocolData = {
+      regimen: drugNames.join(", "),
+      emetogenicRisk: emetogenicRiskLevel,
+      selectedAgents: selectedAgents.map(agent => ({
+        name: agent.name,
+        category: agent.category,
+        dosage: `${agent.dosage} ${agent.unit}`,
+        route: agent.route,
+        timing: agent.timing,
+        rationale: agent.rationale
+      })),
+      timestamp: new Date().toISOString()
     };
-    return `${colors[level as keyof typeof colors] || colors["IIB"]} text-xs px-2 py-1 rounded`;
-  };
 
-  const totalSelections = selectedPremedications.length + selectedAntiemetics.length;
+    const dataStr = JSON.stringify(protocolData, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `premedication-protocol-${Date.now()}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-primary">
-          <Shield className="h-5 w-5" />
-          Premedication & Antiemetic Protocols
-        </CardTitle>
-        <div className="flex justify-between items-center">
-          <div className="flex gap-2 flex-wrap">
-            {drugNames.map(drug => (
-              <Badge key={drug} variant="outline" className="text-xs">
-                {drug}
-              </Badge>
-            ))}
-            <Badge variant="secondary" className="text-xs">
-              {emetogenicRiskLevel.toUpperCase()} Risk
-            </Badge>
+        <CardTitle className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-primary">
+            <Shield className="h-5 w-5" />
+            Premedication & Supportive Care Protocol
           </div>
-          <Button variant="outline" size="sm" onClick={clearAllSelections}>
-            Clear All
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={exportProtocol}>
+              <Download className="h-4 w-4 mr-1" />
+              Export
+            </Button>
+            <Button variant="outline" size="sm" onClick={clearSelections}>
+              Clear All
+            </Button>
+          </div>
+        </CardTitle>
+        <div className="flex flex-wrap gap-2">
+          {drugNames.map(drug => (
+            <Badge key={drug} variant="outline" className="text-xs">
+              {drug}
+            </Badge>
+          ))}
+          <Badge variant="secondary" className="text-xs">
+            {emetogenicRiskLevel.toUpperCase()} Risk
+          </Badge>
+          <Badge variant="default" className="text-xs">
+            {selectedAgents.length} Selected
+          </Badge>
         </div>
       </CardHeader>
-      
+
       <CardContent>
-        <Tabs defaultValue="bundles" className="w-full">
+        <Tabs defaultValue="recommendations" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="bundles">Protocol Bundles</TabsTrigger>
-            <TabsTrigger value="individual">Individual Selection</TabsTrigger>
-            <TabsTrigger value="selected">Selected ({totalSelections})</TabsTrigger>
+            <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
+            <TabsTrigger value="categories">All Categories</TabsTrigger>
+            <TabsTrigger value="selected">Selected Protocol</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="bundles" className="space-y-4">
+          <TabsContent value="recommendations" className="space-y-4">
             <Alert>
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
-                Evidence-based protocol combinations tailored to your regimen and emetogenic risk level.
+                Evidence-based recommendations for {drugNames.join(", ")} with {emetogenicRiskLevel} emetogenic risk.
               </AlertDescription>
             </Alert>
-            
-            <div className="space-y-3">
-              {protocolBundles.map(bundle => (
-                <Card 
-                  key={bundle.id} 
-                  className={`cursor-pointer transition-all border-2 ${
-                    selectedBundleId === bundle.id 
-                      ? "border-primary bg-primary/5" 
-                      : bundle.isRecommended 
-                        ? "border-accent/20 bg-accent/5 hover:border-accent/40" 
-                        : "border-muted hover:border-muted-foreground/20"
-                  }`}
-                  onClick={() => handleBundleSelect(bundle)}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-lg text-foreground flex items-center gap-2">
-                          {bundle.isRecommended && <Shield className="h-4 w-4 text-primary" />}
-                          {bundle.name}
-                        </CardTitle>
-                        <p className="text-sm text-muted-foreground mt-1">{bundle.description}</p>
-                      </div>
-                      <Button
-                        size="sm"
-                        variant={selectedBundleId === bundle.id ? "default" : "outline"}
-                      >
-                        {selectedBundleId === bundle.id ? "Selected" : "Select Bundle"}
-                      </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-0 space-y-4">
-                    {bundle.premedications.length > 0 && (
-                      <div>
-                        <h5 className="font-medium text-sm mb-2 flex items-center gap-2">
-                          <Shield className="h-3 w-3" />
-                          Premedications ({bundle.premedications.length})
-                        </h5>
-                        <div className="grid gap-2">
-                          {bundle.premedications.map((premed, idx) => (
-                            <div key={idx} className="flex items-center justify-between p-2 bg-background/60 rounded border">
-                              <div className="flex items-center gap-2">
-                                <div className={`p-1 rounded ${getCategoryColor(premed.category)}`}>
-                                  {getCategoryIcon(premed.category)}
-                                </div>
-                                <div>
-                                  <span className="font-medium text-sm">{premed.name}</span>
-                                  <span className="text-muted-foreground text-xs ml-2">
-                                    {premed.dosage} {premed.unit} {premed.route}
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="flex gap-1">
-                                {premed.isRequired && (
-                                  <Badge variant="destructive" className="text-xs">Required</Badge>
-                                )}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
 
-                    {bundle.antiemetics.length > 0 && (
-                      <div>
-                        <h5 className="font-medium text-sm mb-2 flex items-center gap-2">
-                          <Pill className="h-3 w-3" />
-                          Antiemetics ({bundle.antiemetics.length})
-                        </h5>
-                        <div className="grid gap-2">
-                          {bundle.antiemetics.map((agent, idx) => (
-                            <div key={idx} className="flex items-center justify-between p-2 bg-background/60 rounded border">
-                              <div>
-                                <span className="font-medium text-sm">{agent.name}</span>
-                                <span className="text-muted-foreground text-xs ml-2">
-                                  {agent.dosage} {agent.unit} {agent.route} - {agent.timing}
-                                </span>
-                              </div>
-                              <Badge variant="outline" className="text-xs">
+            <div className="flex gap-2 mb-4">
+              <Button onClick={applyRecommendations} className="flex-1">
+                Apply All Recommendations ({recommendations.length})
+              </Button>
+            </div>
+
+            <div className="grid gap-3">
+              {recommendations.map((agent, idx) => {
+                const isSelected = selectedAgents.some(a => a.name === agent.name);
+                const category = premedCategories.find(cat => 
+                  cat.agents.some(a => a.name === agent.name)
+                );
+                
+                return (
+                  <Card key={idx} className={`border-2 transition-all ${
+                    isSelected ? "border-primary bg-primary/5" : "border-muted"
+                  }`}>
+                    <CardContent className="p-4">
+                      <div className="flex items-start gap-3">
+                        <Checkbox
+                          checked={isSelected}
+                          onCheckedChange={(checked) => handleAgentToggle(agent, checked as boolean)}
+                          className="mt-1"
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h4 className="font-semibold">{agent.name}</h4>
+                            <Badge variant="outline" className="text-xs">
+                              {agent.category}
+                            </Badge>
+                            {agent.evidenceLevel && (
+                              <Badge variant="secondary" className="text-xs">
                                 {agent.evidenceLevel}
                               </Badge>
-                            </div>
-                          ))}
+                            )}
+                            {agent.isRequired && (
+                              <Badge variant="destructive" className="text-xs">
+                                Required
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="text-sm space-y-1">
+                            <p><strong>Dose:</strong> {agent.dosage} {agent.unit} {agent.route}</p>
+                            <p><strong>Timing:</strong> {agent.timing}</p>
+                            <p><strong>Indication:</strong> {agent.indication}</p>
+                            <p className="text-muted-foreground">{agent.rationale}</p>
+                            {agent.notes && (
+                              <p className="text-xs text-orange-600 font-medium">{agent.notes}</p>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    )}
-
-                    <Collapsible>
-                      <CollapsibleTrigger asChild>
-                        <Button variant="ghost" size="sm" className="w-full justify-between p-0 h-auto font-normal">
-                          <span className="text-sm">View Clinical Rationale</span>
-                          <ChevronDown className="h-3 w-3" />
-                        </Button>
-                      </CollapsibleTrigger>
-                      <CollapsibleContent className="mt-3">
-                        <div className="bg-muted/50 p-3 rounded text-sm">
-                          <p>{bundle.rationale}</p>
-                        </div>
-                      </CollapsibleContent>
-                    </Collapsible>
-                  </CardContent>
-                </Card>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </TabsContent>
 
-          <TabsContent value="individual" className="space-y-6">
-            <Alert>
-              <AlertDescription>
-                Create a custom protocol by selecting individual premedications and antiemetic agents.
-              </AlertDescription>
-            </Alert>
-            
-            {/* Premedications Section */}
-            <div>
-              <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                Premedications
-              </h3>
-              {Object.entries(groupedPremedications).map(([category, premedications]) => (
-                <Card key={category} className="border border-muted mb-4">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base capitalize flex items-center gap-2">
-                      <div className={`p-2 rounded ${getCategoryColor(category)}`}>
-                        {getCategoryIcon(category)}
+          <TabsContent value="categories" className="space-y-4">
+            {premedCategories.map(category => {
+              const Icon = category.icon;
+              const isExpanded = expandedCategories.includes(category.id);
+              
+              return (
+                <Card key={category.id} className="border">
+                  <CardHeader 
+                    className="cursor-pointer"
+                    onClick={() => toggleCategory(category.id)}
+                  >
+                    <CardTitle className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded ${category.color}`}>
+                          <Icon className="h-4 w-4" />
+                        </div>
+                        <div>
+                          <h3 className="text-lg">{category.name}</h3>
+                          <p className="text-sm text-muted-foreground font-normal">
+                            {category.description}
+                          </p>
+                        </div>
                       </div>
-                      {category.replace('_', ' ')}
+                      <ChevronDown className={`h-5 w-5 transition-transform ${
+                        isExpanded ? "rotate-180" : ""
+                      }`} />
                     </CardTitle>
                   </CardHeader>
-                  <CardContent className="space-y-3">
-                    {premedications.map((premed, idx) => {
-                      const isSelected = selectedPremedications.some(selected => selected.name === premed.name);
-                      return (
-                        <div key={idx} className={`border rounded-lg p-3 transition-all ${
-                          isSelected ? "bg-primary/5 border-primary" : "bg-muted/30 border-muted"
-                        }`}>
-                          <div className="flex items-start gap-3">
-                            <Checkbox
-                              checked={isSelected}
-                              onCheckedChange={(checked) => handleIndividualPremedToggle(premed, checked as boolean)}
-                              className="mt-1"
-                            />
-                            <div className="flex-1">
-                              <div className="flex justify-between items-start mb-2">
-                                <div>
-                                  <h4 className="font-semibold">{premed.name}</h4>
-                                  <p className="text-sm text-muted-foreground">{premed.indication}</p>
-                                </div>
-                                <div className="text-right">
-                                  <p className="font-medium">{premed.dosage} {premed.unit}</p>
-                                  <Badge variant="outline" className="text-xs">{premed.route}</Badge>
+
+                  {isExpanded && (
+                    <CardContent className="space-y-3">
+                      {category.agents.map((agent, idx) => {
+                        const isSelected = selectedAgents.some(a => a.name === agent.name);
+                        
+                        return (
+                          <Card key={idx} className={`border ${
+                            isSelected ? "border-primary bg-primary/5" : "border-muted"
+                          }`}>
+                            <CardContent className="p-4">
+                              <div className="flex items-start gap-3">
+                                <Checkbox
+                                  checked={isSelected}
+                                  onCheckedChange={(checked) => handleAgentToggle(agent, checked as boolean)}
+                                  className="mt-1"
+                                />
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <h4 className="font-semibold">{agent.name}</h4>
+                                    <Badge variant="outline" className="text-xs">
+                                      {agent.class}
+                                    </Badge>
+                                    {agent.evidenceLevel && (
+                                      <Badge variant="secondary" className="text-xs">
+                                        {agent.evidenceLevel}
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  <div className="text-sm space-y-1">
+                                    <p><strong>Dose:</strong> {agent.dosage} {agent.unit} {agent.route}</p>
+                                    <p><strong>Timing:</strong> {agent.timing}</p>
+                                    <p><strong>Indication:</strong> {agent.indication}</p>
+                                    <p className="text-muted-foreground">{agent.rationale}</p>
+                                    {agent.drugSpecific && (
+                                      <p className="text-xs"><strong>Specific for:</strong> {agent.drugSpecific.join(", ")}</p>
+                                    )}
+                                    {agent.notes && (
+                                      <p className="text-xs text-orange-600 font-medium">{agent.notes}</p>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
-                              <div className="flex gap-1 mb-2">
-                                {premed.isRequired && (
-                                  <Badge variant="destructive" className="text-xs">Required</Badge>
-                                )}
-                                {premed.isStandard && (
-                                  <Badge variant="secondary" className="text-xs">Standard</Badge>
-                                )}
-                              </div>
-                              <p className="text-xs text-muted-foreground">
-                                <Clock className="h-3 w-3 inline mr-1" />
-                                {premed.timing}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </CardContent>
+                            </CardContent>
+                          </Card>
+                        );
+                      })}
+                    </CardContent>
+                  )}
                 </Card>
-              ))}
-            </div>
-
-            <Separator />
-
-            {/* Antiemetics Section */}
-            <div>
-              <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-                <Pill className="h-5 w-5" />
-                Antiemetic Agents
-              </h3>
-              <div className="grid gap-3">
-                {Object.entries(standardAntiemeticAgents).map(([agentKey, agent]) => {
-                  const isSelected = selectedAntiemetics.some(selected => selected.name === agent.name);
-                  return (
-                    <Card 
-                      key={agentKey}
-                      className={`cursor-pointer transition-all ${
-                        isSelected ? 'ring-2 ring-primary bg-primary/5' : 'hover:shadow-sm'
-                      }`}
-                      onClick={() => handleIndividualAntiemeticToggle(agentKey, agent, !isSelected)}
-                    >
-                      <CardContent className="p-4">
-                        <div className="flex items-start justify-between mb-3">
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                              <Checkbox 
-                                checked={isSelected}
-                                onChange={() => {}}
-                              />
-                              <h5 className="font-medium text-sm">{agent.name}</h5>
-                            </div>
-                            <p className="text-xs text-muted-foreground">{agent.class}</p>
-                          </div>
-                          <span className={getEvidenceBadge(agent.evidenceLevel)}>
-                            {agent.evidenceLevel}
-                          </span>
-                        </div>
-
-                        <div className="space-y-2 text-xs">
-                          <div className="grid grid-cols-2 gap-2">
-                            <div>
-                              <span className="font-medium">Dose:</span> {agent.dosage} {agent.unit}
-                            </div>
-                            <div>
-                              <span className="font-medium">Route:</span> {agent.route}
-                            </div>
-                            <div>
-                              <span className="font-medium">Timing:</span> {agent.timing}
-                            </div>
-                            <div>
-                              <span className="font-medium">Indication:</span> {agent.indication}
-                            </div>
-                          </div>
-                          
-                          {agent.duration && (
-                            <div>
-                              <span className="font-medium">Duration:</span> {agent.duration}
-                            </div>
-                          )}
-                          
-                          <div>
-                            <span className="font-medium">Mechanism:</span> {agent.mechanism}
-                          </div>
-                          
-                          {agent.notes && (
-                            <div className="mt-2 p-2 bg-muted rounded text-xs">
-                              <strong>Note:</strong> {agent.notes}
-                            </div>
-                          )}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            </div>
+              );
+            })}
           </TabsContent>
 
           <TabsContent value="selected" className="space-y-4">
-            {totalSelections === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                No protocols selected. Use the other tabs to select protocol bundles or individual agents.
-              </div>
+            {selectedAgents.length === 0 ? (
+              <Alert>
+                <AlertDescription>
+                  No agents selected. Choose from recommendations or browse categories to build your protocol.
+                </AlertDescription>
+              </Alert>
             ) : (
-              <div className="space-y-6">
-                {selectedPremedications.length > 0 && (
-                  <div>
-                    <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-                      <Shield className="h-5 w-5" />
-                      Selected Premedications ({selectedPremedications.length})
-                    </h3>
-                    <div className="space-y-3">
-                      {selectedPremedications.map((premed, idx) => (
-                        <Card key={idx} className="border-2 border-primary bg-primary/5">
-                          <CardContent className="p-4">
-                            <div className="flex items-start gap-3">
-                              <div className={`p-2 rounded ${getCategoryColor(premed.category)}`}>
-                                {getCategoryIcon(premed.category)}
-                              </div>
-                              <div className="flex-1">
-                                <div className="flex justify-between items-start mb-2">
-                                  <div>
-                                    <h4 className="font-semibold text-lg">{premed.name}</h4>
-                                    <p className="text-sm text-muted-foreground">{premed.indication}</p>
-                                  </div>
-                                  <div className="text-right">
-                                    <p className="font-bold text-lg text-primary">{premed.dosage} {premed.unit}</p>
-                                    <Badge variant="secondary">{premed.route}</Badge>
-                                  </div>
-                                </div>
-                                <p className="text-sm text-muted-foreground mb-2">
-                                  <Clock className="h-4 w-4 inline mr-1" />
-                                  {premed.timing}
-                                </p>
-                                {(premed.dilution || premed.administrationDuration) && (
-                                  <div className="bg-background/80 border rounded p-3 mt-2">
-                                    {premed.dilution && (
-                                      <p className="text-sm"><strong>Dilution:</strong> {premed.dilution}</p>
-                                    )}
-                                    {premed.administrationDuration && (
-                                      <p className="text-sm"><strong>Duration:</strong> {premed.administrationDuration}</p>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleIndividualPremedToggle(premed, false)}
-                                className="text-muted-foreground hover:text-destructive"
-                              >
-                                Remove
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
+              <>
+                <Alert>
+                  <FileText className="h-4 w-4" />
+                  <AlertDescription>
+                    Selected protocol for {drugNames.join(", ")} - {selectedAgents.length} agents
+                  </AlertDescription>
+                </Alert>
 
-                {selectedAntiemetics.length > 0 && (
-                  <div>
-                    <h3 className="font-semibold text-lg mb-3 flex items-center gap-2">
-                      <Pill className="h-5 w-5" />
-                      Selected Antiemetics ({selectedAntiemetics.length})
-                    </h3>
-                    <div className="space-y-3">
-                      {selectedAntiemetics.map((agent, index) => (
-                        <Card key={index} className="border-2 border-primary bg-primary/5">
-                          <CardContent className="p-4">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <div className="font-semibold text-lg">{agent.name}</div>
-                                <div className="text-sm text-muted-foreground mb-1">{agent.class}</div>
-                                <div className="text-sm">
-                                  <strong>Dose:</strong> {agent.dosage} {agent.unit} {agent.route} - {agent.timing}
-                                  {agent.duration && ` (${agent.duration})`}
-                                </div>
-                                <div className="text-xs text-muted-foreground mt-1">
-                                  <strong>Mechanism:</strong> {agent.mechanism}
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Badge variant="outline" className="text-xs">
-                                  {agent.indication}
-                                </Badge>
-                                <span className={getEvidenceBadge(agent.evidenceLevel)}>
-                                  {agent.evidenceLevel}
-                                </span>
-                                <Button
-                                  variant="ghost"
+                <div className="space-y-4">
+                  {premedCategories.map(category => {
+                    const categoryAgents = selectedAgents.filter(agent => 
+                      category.agents.some(catAgent => catAgent.name === agent.name)
+                    );
+
+                    if (categoryAgents.length === 0) return null;
+
+                    const Icon = category.icon;
+
+                    return (
+                      <Card key={category.id} className="border">
+                        <CardHeader className="pb-3">
+                          <CardTitle className="flex items-center gap-2 text-base">
+                            <div className={`p-2 rounded ${category.color}`}>
+                              <Icon className="h-4 w-4" />
+                            </div>
+                            {category.name} ({categoryAgents.length})
+                          </CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-3">
+                          {categoryAgents.map((agent, idx) => (
+                            <div key={idx} className="border rounded p-3 bg-muted/30">
+                              <div className="flex justify-between items-start mb-2">
+                                <h4 className="font-semibold">{agent.name}</h4>
+                                <Button 
+                                  variant="ghost" 
                                   size="sm"
-                                  onClick={() => handleIndividualAntiemeticToggle('', agent, false)}
-                                  className="text-muted-foreground hover:text-destructive"
+                                  onClick={() => handleAgentToggle(agent, false)}
+                                  className="h-6 w-6 p-0"
                                 >
-                                  Remove
+                                  ×
                                 </Button>
                               </div>
+                              <div className="text-sm space-y-1">
+                                <p><strong>Dose:</strong> {agent.dosage} {agent.unit} {agent.route}</p>
+                                <p><strong>Timing:</strong> {agent.timing}</p>
+                                <p><strong>Indication:</strong> {agent.indication}</p>
+                                {agent.notes && (
+                                  <p className="text-xs text-orange-600 font-medium">{agent.notes}</p>
+                                )}
+                              </div>
                             </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
+                          ))}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </>
             )}
           </TabsContent>
         </Tabs>
