@@ -17,10 +17,11 @@ export const EmetogenicRiskClassifier: React.FC<EmetogenicRiskClassifierProps> =
   onRiskLevelChange 
 }) => {
   const riskAssessment = useMemo(() => {
-    let highestRisk: "minimal" | "low" | "moderate" | "high" = "minimal";
+    type RiskLevel = "minimal" | "low" | "moderate" | "high";
+    let highestRisk: RiskLevel = "minimal";
     const drugRisks: Array<{
       drug: Drug;
-      riskLevel: "high" | "moderate" | "low" | "minimal";
+      riskLevel: RiskLevel;
       notes?: string;
     }> = [];
 
@@ -30,7 +31,7 @@ export const EmetogenicRiskClassifier: React.FC<EmetogenicRiskClassifierProps> =
       );
       
       if (classification) {
-        let drugRisk = classification.riskLevel;
+        let drugRisk: RiskLevel = classification.riskLevel;
         let notes = classification.notes;
         
         // Check dose dependency
@@ -45,15 +46,27 @@ export const EmetogenicRiskClassifier: React.FC<EmetogenicRiskClassifierProps> =
         drugRisks.push({ drug, riskLevel: drugRisk, notes });
         
         // Update highest risk
-        const riskHierarchy = { minimal: 0, low: 1, moderate: 2, high: 3 };
+        const riskHierarchy: Record<RiskLevel, number> = { 
+          minimal: 0, 
+          low: 1, 
+          moderate: 2, 
+          high: 3 
+        };
         if (riskHierarchy[drugRisk] > riskHierarchy[highestRisk]) {
           highestRisk = drugRisk;
         }
       } else {
         // Unknown drug - default to low risk
-        drugRisks.push({ drug, riskLevel: "low", notes: "Risk level not classified" });
-        if (highestRisk === "minimal") {
-          highestRisk = "low";
+        const lowRisk: RiskLevel = "low";
+        drugRisks.push({ drug, riskLevel: lowRisk, notes: "Risk level not classified" });
+        const riskHierarchy: Record<RiskLevel, number> = { 
+          minimal: 0, 
+          low: 1, 
+          moderate: 2, 
+          high: 3 
+        };
+        if (riskHierarchy[lowRisk] > riskHierarchy[highestRisk]) {
+          highestRisk = lowRisk;
         }
       }
     });
@@ -64,10 +77,10 @@ export const EmetogenicRiskClassifier: React.FC<EmetogenicRiskClassifierProps> =
                   drugNames.some(d => d.includes('cyclophosphamide'));
     
     if (hasAC) {
-      highestRisk = "high";
+      highestRisk = "high" as RiskLevel;
     }
 
-    return { overallRisk: highestRisk, drugRisks };
+    return { overallRisk: highestRisk as RiskLevel, drugRisks };
   }, [drugs]);
 
   React.useEffect(() => {
@@ -108,10 +121,15 @@ export const EmetogenicRiskClassifier: React.FC<EmetogenicRiskClassifierProps> =
       <CardContent className="space-y-6">
         {/* Overall Risk Summary */}
         <Alert className={`border-l-4 ${
-          riskAssessment.overallRisk === 'high' ? 'border-l-red-500 bg-red-50' :
-          riskAssessment.overallRisk === 'moderate' ? 'border-l-orange-500 bg-orange-50' :
-          riskAssessment.overallRisk === 'low' ? 'border-l-blue-500 bg-blue-50' :
-          'border-l-green-500 bg-green-50'
+          (() => {
+            switch (riskAssessment.overallRisk) {
+              case 'high': return 'border-l-red-500 bg-red-50';
+              case 'moderate': return 'border-l-orange-500 bg-orange-50';
+              case 'low': return 'border-l-blue-500 bg-blue-50';
+              case 'minimal': return 'border-l-green-500 bg-green-50';
+              default: return 'border-l-green-500 bg-green-50';
+            }
+          })()
         }`}>
           <AlertDescription>
             <div className="flex items-center justify-between mb-2">
