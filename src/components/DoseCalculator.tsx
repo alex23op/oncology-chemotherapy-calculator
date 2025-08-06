@@ -9,6 +9,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Calculator, Edit, Save, FileText } from "lucide-react";
 import { Regimen, Drug, Premedication } from "@/types/regimens";
 import { PremedProtocolSelector } from "./PremedProtocolSelector";
+import { EmetogenicRiskClassifier } from "./EmetogenicRiskClassifier";
+import { AntiemeticProtocolSelector } from "./AntiemeticProtocolSelector";
+import { AntiemeticAgent } from "@/types/emetogenicRisk";
 
 interface DoseCalculatorProps {
   regimen: Regimen | null;
@@ -31,6 +34,8 @@ interface DoseCalculation {
 export const DoseCalculator = ({ regimen, bsa, weight, creatinineClearance, onExport }: DoseCalculatorProps) => {
   const [calculations, setCalculations] = useState<DoseCalculation[]>([]);
   const [selectedPremedications, setSelectedPremedications] = useState<Premedication[]>([]);
+  const [emetogenicRiskLevel, setEmetogenicRiskLevel] = useState<"high" | "moderate" | "low" | "minimal">("minimal");
+  const [selectedAntiemetics, setSelectedAntiemetics] = useState<AntiemeticAgent[]>([]);
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
