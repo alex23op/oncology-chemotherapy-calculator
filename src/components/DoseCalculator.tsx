@@ -9,10 +9,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Calculator, Edit, Save, FileText } from "lucide-react";
 import { Regimen, Drug, Premedication } from "@/types/regimens";
 import { PremedProtocolSelector } from "./PremedProtocolSelector";
-// Temporarily disabled for debugging
-// import { EmetogenicRiskClassifier } from "./EmetogenicRiskClassifier";
-// import { AntiemeticProtocolSelector } from "./AntiemeticProtocolSelector";
-// import { AntiemeticAgent } from "@/types/emetogenicRisk";
+import { EmetogenicRiskClassifier } from "./EmetogenicRiskClassifier";
+import { AntiemeticProtocolSelector } from "./AntiemeticProtocolSelector";
+import { AntiemeticAgent } from "@/types/emetogenicRisk";
 
 interface DoseCalculatorProps {
   regimen: Regimen | null;
@@ -35,26 +34,32 @@ interface DoseCalculation {
 export const DoseCalculator = ({ regimen, bsa, weight, creatinineClearance, onExport }: DoseCalculatorProps) => {
   const [calculations, setCalculations] = useState<DoseCalculation[]>([]);
   const [selectedPremedications, setSelectedPremedications] = useState<Premedication[]>([]);
-  // Temporarily disabled for debugging
-  // const [emetogenicRiskLevel, setEmetogenicRiskLevel] = useState<"high" | "moderate" | "low" | "minimal">("minimal");
-  // const [selectedAntiemetics, setSelectedAntiemetics] = useState<AntiemeticAgent[]>([]);
+  const [emetogenicRiskLevel, setEmetogenicRiskLevel] = useState<"high" | "moderate" | "low" | "minimal">("minimal");
+  const [selectedAntiemetics, setSelectedAntiemetics] = useState<AntiemeticAgent[]>([]);
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
+    console.log("DoseCalculator useEffect triggered - regimen:", regimen?.name, "bsa:", bsa);
+    
     if (regimen && bsa > 0) {
       const newCalculations = regimen.drugs.map(drug => {
         let calculatedDose = 0;
         
-        if (drug.unit === "mg/m²") {
-          calculatedDose = parseFloat(drug.dosage) * bsa;
-        } else if (drug.unit === "mg/kg") {
-          calculatedDose = parseFloat(drug.dosage) * weight;
-        } else if (drug.dosage.includes("AUC")) {
-          // Calvert formula for carboplatin: Dose = AUC × (GFR + 25)
-          const aucValue = parseFloat(drug.dosage.replace("AUC ", ""));
-          calculatedDose = aucValue * (creatinineClearance + 25);
-        } else {
-          calculatedDose = parseFloat(drug.dosage) || 0;
+        try {
+          if (drug.unit === "mg/m²") {
+            calculatedDose = parseFloat(drug.dosage) * bsa;
+          } else if (drug.unit === "mg/kg") {
+            calculatedDose = parseFloat(drug.dosage) * weight;
+          } else if (drug.dosage.includes("AUC")) {
+            // Calvert formula for carboplatin: Dose = AUC × (GFR + 25)
+            const aucValue = parseFloat(drug.dosage.replace("AUC ", ""));
+            calculatedDose = aucValue * (creatinineClearance + 25);
+          } else {
+            calculatedDose = parseFloat(drug.dosage) || 0;
+          }
+        } catch (error) {
+          console.error("Error calculating dose for drug:", drug.name, error);
+          calculatedDose = 0;
         }
 
         return {
@@ -68,9 +73,14 @@ export const DoseCalculator = ({ regimen, bsa, weight, creatinineClearance, onEx
         };
       });
       
+      console.log("Calculated doses:", newCalculations);
       setCalculations(newCalculations);
+      
       // Initialize with existing regimen premedications if any
       setSelectedPremedications(regimen.premedications || []);
+    } else {
+      console.log("Clearing calculations - no regimen or invalid BSA");
+      setCalculations([]);
     }
   }, [regimen, bsa, weight, creatinineClearance]);
 
@@ -95,7 +105,18 @@ export const DoseCalculator = ({ regimen, bsa, weight, creatinineClearance, onEx
   };
 
   const handlePremedSelectionsChange = (premedications: Premedication[]) => {
+    console.log("Premedications changed:", premedications);
     setSelectedPremedications(premedications);
+  };
+
+  const handleEmetogenicRiskChange = (riskLevel: "high" | "moderate" | "low" | "minimal") => {
+    console.log("Emetogenic risk level changed:", riskLevel);
+    setEmetogenicRiskLevel(riskLevel);
+  };
+
+  const handleAntiemeticProtocolChange = (agents: AntiemeticAgent[]) => {
+    console.log("Antiemetic agents selected:", agents);
+    setSelectedAntiemetics(agents);
   };
 
   const handlePercentageReduction = (index: number, percentage: string) => {
@@ -114,7 +135,10 @@ export const DoseCalculator = ({ regimen, bsa, weight, creatinineClearance, onEx
     return Math.round(((calculated - adjusted) / calculated) * 100);
   };
 
+  console.log("DoseCalculator rendering - regimen:", regimen?.name, "calculations:", calculations.length);
+
   if (!regimen) {
+    console.log("No regimen selected, showing placeholder");
     return (
       <Card className="w-full">
         <CardContent className="pt-6">
@@ -188,6 +212,23 @@ export const DoseCalculator = ({ regimen, bsa, weight, creatinineClearance, onEx
           selectedPremedications={selectedPremedications}
           onPremedSelectionsChange={handlePremedSelectionsChange}
           weight={weight}
+        />
+
+        <Separator />
+
+        {/* Emetogenic Risk Assessment */}
+        <EmetogenicRiskClassifier
+          drugs={regimen.drugs}
+          onRiskLevelChange={handleEmetogenicRiskChange}
+        />
+
+        <Separator />
+
+        {/* Antiemetic Protocol Selection */}
+        <AntiemeticProtocolSelector
+          drugs={regimen.drugs}
+          riskLevel={emetogenicRiskLevel}
+          onProtocolChange={handleAntiemeticProtocolChange}
         />
 
         <Separator />
