@@ -7,7 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calculator, Edit, Save, FileText } from "lucide-react";
-import { Regimen, Drug } from "@/types/regimens";
+import { Regimen, Drug, Premedication } from "@/types/regimens";
+import { PremedProtocolSelector } from "./PremedProtocolSelector";
 
 interface DoseCalculatorProps {
   regimen: Regimen | null;
@@ -29,7 +30,7 @@ interface DoseCalculation {
 
 export const DoseCalculator = ({ regimen, bsa, weight, creatinineClearance, onExport }: DoseCalculatorProps) => {
   const [calculations, setCalculations] = useState<DoseCalculation[]>([]);
-  const [selectedPremedications, setSelectedPremedications] = useState<boolean[]>([]);
+  const [selectedPremedications, setSelectedPremedications] = useState<Premedication[]>([]);
   const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
@@ -61,7 +62,8 @@ export const DoseCalculator = ({ regimen, bsa, weight, creatinineClearance, onEx
       });
       
       setCalculations(newCalculations);
-      setSelectedPremedications(regimen.premedications?.map(() => true) || []);
+      // Initialize with existing regimen premedications if any
+      setSelectedPremedications(regimen.premedications || []);
     }
   }, [regimen, bsa, weight, creatinineClearance]);
 
@@ -85,10 +87,8 @@ export const DoseCalculator = ({ regimen, bsa, weight, creatinineClearance, onEx
     setCalculations(updatedCalculations);
   };
 
-  const handlePremedSelection = (index: number, selected: boolean) => {
-    const updatedSelection = [...selectedPremedications];
-    updatedSelection[index] = selected;
-    setSelectedPremedications(updatedSelection);
+  const handlePremedSelectionsChange = (premedications: Premedication[]) => {
+    setSelectedPremedications(premedications);
   };
 
   const handlePercentageReduction = (index: number, percentage: string) => {
@@ -176,50 +176,12 @@ export const DoseCalculator = ({ regimen, bsa, weight, creatinineClearance, onEx
           </div>
         </div>
 
-        {regimen.premedications && regimen.premedications.length > 0 && (
-          <>
-            <Separator />
-            <div>
-              <h3 className="font-semibold text-foreground mb-3">Premedications</h3>
-              <div className="space-y-3">
-                 {regimen.premedications.map((premedication, index) => (
-                   <div key={index} className={`border-2 rounded-lg p-4 transition-all ${
-                     selectedPremedications[index] ? "bg-primary/5 border-primary" : "bg-muted/30 border-muted"
-                   }`}>
-                     <div className="flex items-start gap-4">
-                       <div className="flex-shrink-0 mt-1">
-                         <Checkbox
-                           checked={selectedPremedications[index] || false}
-                           onCheckedChange={(checked) => handlePremedSelection(index, checked as boolean)}
-                           className="h-5 w-5"
-                         />
-                       </div>
-                       <div className="flex-1">
-                         <div className="flex justify-between items-start mb-3">
-                           <div>
-                             <h4 className="font-semibold text-lg text-foreground">{premedication.name}</h4>
-                             <p className="text-sm text-muted-foreground font-medium">{premedication.timing}</p>
-                           </div>
-                           <div className="text-right">
-                             <p className="font-bold text-lg text-primary">{premedication.dosage} {premedication.unit}</p>
-                             <Badge variant="secondary" className="mt-1">{premedication.route}</Badge>
-                           </div>
-                         </div>
-                         {premedication.dilution && (
-                           <div className="bg-background/80 border rounded p-3">
-                             <p className="text-sm font-medium">
-                               <span className="text-muted-foreground">Dilution:</span> <span className="text-foreground">{premedication.dilution}</span>
-                             </p>
-                           </div>
-                         )}
-                       </div>
-                     </div>
-                   </div>
-                 ))}
-              </div>
-            </div>
-          </>
-        )}
+        <PremedProtocolSelector
+          drugNames={regimen.drugs.map(drug => drug.name)}
+          selectedPremedications={selectedPremedications}
+          onPremedSelectionsChange={handlePremedSelectionsChange}
+          weight={weight}
+        />
 
         <Separator />
 

@@ -8,8 +8,32 @@ export const breastCancerRegimens: Regimen[] = [
     description: "Doxorubicin/Cyclophosphamide followed by Paclitaxel",
     category: "neoadjuvant",
     premedications: [
-      { name: "Ondansetron", dosage: "8", unit: "mg", route: "IV", timing: "30 min prior", dilution: "Normal saline 50mL" },
-      { name: "Dexamethasone", dosage: "12", unit: "mg", route: "IV", timing: "30 min prior", dilution: "Normal saline 50mL" }
+      { 
+        name: "Ondansetron", 
+        dosage: "8", 
+        unit: "mg", 
+        route: "IV", 
+        timing: "30 min prior", 
+        dilution: "Normal saline 50mL",
+        category: "antiemetic" as const,
+        indication: "Prevention of acute CINV",
+        isRequired: true,
+        isStandard: true,
+        administrationDuration: "IV push over 2-5 minutes"
+      },
+      { 
+        name: "Dexamethasone", 
+        dosage: "12", 
+        unit: "mg", 
+        route: "IV", 
+        timing: "30 min prior", 
+        dilution: "Normal saline 50mL",
+        category: "corticosteroid" as const,
+        indication: "Prevention of delayed CINV",
+        isRequired: true,
+        isStandard: true,
+        administrationDuration: "IV push over 2-3 minutes"
+      }
     ],
     drugs: [
       { 

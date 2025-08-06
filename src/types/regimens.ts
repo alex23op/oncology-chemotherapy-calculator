@@ -16,6 +16,13 @@ export interface Premedication {
   route: string;
   timing: string;
   dilution?: string;
+  category: "antiemetic" | "corticosteroid" | "antihistamine" | "h2_blocker" | "bronchodilator" | "other";
+  indication: string;
+  isRequired: boolean;
+  isStandard: boolean;
+  administrationDuration?: string;
+  weightBased?: boolean;
+  notes?: string;
 }
 
 export interface Regimen {
