@@ -2,6 +2,188 @@ import { Regimen } from "@/types/regimens";
 
 export const lungCancerTargetedRegimens: Regimen[] = [
   {
+    id: "lung-adagrasib-kras-g12c",
+    name: "Adagrasib (KRAS G12C)",
+    description: "KRAS G12C inhibitor for KRAS G12C-mutated NSCLC",
+    category: "advanced",
+    lineOfTherapy: "second-line",
+    biomarkerRequirements: [
+      {
+        name: "KRAS G12C",
+        status: "mutated",
+        testingMethod: "NGS",
+        threshold: "G12C mutation detected",
+        required: true,
+        turnaroundTime: "7-14 days"
+      }
+    ],
+    eligibilityCriteria: {
+      ecogStatus: [0, 1, 2],
+      biomarkers: ["KRAS G12C mutation", "Prior platinum-based chemotherapy"],
+      contraindications: ["Severe hepatic impairment", "QTc >470ms"]
+    },
+    drugs: [
+      {
+        name: "Adagrasib",
+        dosage: "600",
+        unit: "mg",
+        route: "PO",
+        day: "1-28",
+        drugClass: "targeted",
+        mechanismOfAction: "KRAS G12C inhibitor",
+        monitoring: ["LFTs", "ECG", "CBC", "Electrolytes", "Drug interactions"],
+        notes: "Twice daily with food, strong CYP3A inhibitor"
+      }
+    ],
+    schedule: "Continuous 28-day cycles",
+    cycles: 999,
+    mechanismOfAction: "Covalent KRAS G12C inhibition",
+    responseRates: {
+      overall: 43,
+      progressionFreeSurvival: "8.5 months"
+    },
+    drugInteractions: [
+      {
+        drug: "Strong CYP3A inhibitors",
+        severity: "major",
+        effect: "Increased adagrasib exposure",
+        management: "Avoid or reduce dose to 300mg BID"
+      },
+      {
+        drug: "Strong CYP3A inducers",
+        severity: "major", 
+        effect: "Decreased adagrasib exposure",
+        management: "Avoid concurrent use"
+      }
+    ]
+  },
+  {
+    id: "lung-sotorasib-kras-g12c",
+    name: "Sotorasib (KRAS G12C)",
+    description: "KRAS G12C inhibitor for KRAS G12C-mutated NSCLC",
+    category: "advanced",
+    lineOfTherapy: "second-line",
+    biomarkerRequirements: [
+      {
+        name: "KRAS G12C",
+        status: "mutated",
+        testingMethod: "NGS",
+        threshold: "G12C mutation detected",
+        required: true,
+        turnaroundTime: "7-14 days"
+      }
+    ],
+    eligibilityCriteria: {
+      ecogStatus: [0, 1, 2],
+      biomarkers: ["KRAS G12C mutation", "Prior platinum-based chemotherapy"],
+      contraindications: ["Severe hepatic impairment"]
+    },
+    drugs: [
+      {
+        name: "Sotorasib",
+        dosage: "960",
+        unit: "mg",
+        route: "PO",
+        day: "1-28",
+        drugClass: "targeted",
+        mechanismOfAction: "KRAS G12C inhibitor",
+        monitoring: ["LFTs", "CBC", "Electrolytes", "Drug interactions"],
+        notes: "Once daily without food (1 hour before or 2 hours after meals)"
+      }
+    ],
+    schedule: "Continuous 28-day cycles",
+    cycles: 999,
+    mechanismOfAction: "Covalent KRAS G12C inhibition",
+    responseRates: {
+      overall: 37,
+      progressionFreeSurvival: "6.8 months"
+    }
+  },
+  {
+    id: "lung-tepotinib-met-ex14",
+    name: "Tepotinib (MET exon 14)",
+    description: "MET inhibitor for MET exon 14 skipping NSCLC",
+    category: "advanced",
+    lineOfTherapy: "first-line",
+    biomarkerRequirements: [
+      {
+        name: "MET exon 14 skipping",
+        status: "positive",
+        testingMethod: "NGS/RT-PCR",
+        threshold: "Exon 14 skipping mutation detected",
+        required: true,
+        turnaroundTime: "7-14 days"
+      }
+    ],
+    eligibilityCriteria: {
+      ecogStatus: [0, 1, 2],
+      biomarkers: ["MET exon 14 skipping mutation"],
+      contraindications: ["Severe hepatic impairment", "QTc >470ms"]
+    },
+    drugs: [
+      {
+        name: "Tepotinib",
+        dosage: "500",
+        unit: "mg",
+        route: "PO",
+        day: "1-28",
+        drugClass: "targeted",
+        mechanismOfAction: "Selective MET inhibitor",
+        monitoring: ["LFTs", "ECG", "CBC", "Pulmonary symptoms", "Renal function"],
+        notes: "Once daily with food"
+      }
+    ],
+    schedule: "Continuous 28-day cycles", 
+    cycles: 999,
+    mechanismOfAction: "Selective MET kinase inhibition",
+    responseRates: {
+      overall: 46,
+      progressionFreeSurvival: "11.5 months"
+    }
+  },
+  {
+    id: "lung-capmatinib-met-ex14",
+    name: "Capmatinib (MET exon 14)",
+    description: "MET inhibitor for MET exon 14 skipping NSCLC",
+    category: "advanced",
+    lineOfTherapy: "first-line",
+    biomarkerRequirements: [
+      {
+        name: "MET exon 14 skipping",
+        status: "positive",
+        testingMethod: "NGS/RT-PCR",
+        threshold: "Exon 14 skipping mutation detected",
+        required: true,
+        turnaroundTime: "7-14 days"
+      }
+    ],
+    eligibilityCriteria: {
+      ecogStatus: [0, 1, 2],
+      biomarkers: ["MET exon 14 skipping mutation"],
+      contraindications: ["Severe hepatic impairment"]
+    },
+    drugs: [
+      {
+        name: "Capmatinib",
+        dosage: "400",
+        unit: "mg",
+        route: "PO", 
+        day: "1-28",
+        drugClass: "targeted",
+        mechanismOfAction: "Selective MET inhibitor",
+        monitoring: ["LFTs", "CBC", "Pulmonary symptoms", "Renal function"],
+        notes: "Twice daily with food"
+      }
+    ],
+    schedule: "Continuous 28-day cycles",
+    cycles: 999,
+    mechanismOfAction: "Selective MET kinase inhibition",
+    responseRates: {
+      overall: 68,
+      progressionFreeSurvival: "12.4 months"
+    }
+  },
+  {
     id: "lung-osimertinib-egfr",
     name: "Osimertinib (EGFR-mutated)",
     description: "Third-generation EGFR TKI for EGFR-mutated NSCLC",

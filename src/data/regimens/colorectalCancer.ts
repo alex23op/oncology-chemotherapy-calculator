@@ -1,6 +1,106 @@
 import { Regimen, Premedication } from "@/types/regimens";
 
 export const colorectalCancerRegimens: Regimen[] = [
+  {
+    id: "crc-folfoxiri-bevacizumab",
+    name: "FOLFOXIRI + Bevacizumab",
+    description: "Intensified chemotherapy with bevacizumab for fit patients with metastatic colorectal cancer",
+    category: "metastatic",
+    lineOfTherapy: "first-line",
+    eligibilityCriteria: {
+      ecogStatus: [0, 1],
+      biomarkers: ["Age ≤70 years preferred", "Good organ function"],
+      contraindications: ["Age >75", "ECOG 2+", "Significant comorbidities", "Recent surgery", "Bleeding risk"]
+    },
+    premedications: [
+      {
+        name: "Dexamethasone",
+        dosage: "8",
+        unit: "mg",
+        route: "IV",
+        timing: "30 minutes before oxaliplatin",
+        category: "corticosteroid",
+        indication: "Hypersensitivity prophylaxis",
+        isRequired: true,
+        isStandard: true
+      },
+      {
+        name: "Ondansetron",
+        dosage: "8",
+        unit: "mg",
+        route: "IV",
+        timing: "30 minutes before chemotherapy",
+        category: "antiemetic",
+        indication: "Nausea/vomiting prophylaxis",
+        isRequired: true,
+        isStandard: true
+      }
+    ],
+    drugs: [
+      {
+        name: "Irinotecan",
+        dosage: "165",
+        unit: "mg/m²",
+        route: "IV",
+        day: "1",
+        drugClass: "chemotherapy",
+        mechanismOfAction: "Topoisomerase I inhibitor",
+        administrationDuration: "60 minutes",
+        dilution: "250-500 mL D5W"
+      },
+      {
+        name: "Oxaliplatin",
+        dosage: "85",
+        unit: "mg/m²",
+        route: "IV", 
+        day: "1",
+        drugClass: "chemotherapy",
+        mechanismOfAction: "Platinum analog",
+        administrationDuration: "120 minutes",
+        dilution: "250-500 mL D5W"
+      },
+      {
+        name: "Leucovorin",
+        dosage: "200",
+        unit: "mg/m²",
+        route: "IV",
+        day: "1",
+        drugClass: "chemotherapy",
+        mechanismOfAction: "Folate analog",
+        administrationDuration: "120 minutes",
+        dilution: "250 mL NS"
+      },
+      {
+        name: "5-Fluorouracil",
+        dosage: "3200",
+        unit: "mg/m²",
+        route: "IV",
+        day: "1-2",
+        drugClass: "chemotherapy",
+        mechanismOfAction: "Antimetabolite",
+        administrationDuration: "48 hours continuous infusion",
+        dilution: "Ambulatory pump"
+      },
+      {
+        name: "Bevacizumab",
+        dosage: "5",
+        unit: "mg/kg",
+        route: "IV",
+        day: "1",
+        drugClass: "targeted",
+        mechanismOfAction: "VEGF inhibitor",
+        administrationDuration: "First: 90 min, then 60 min, then 30 min",
+        dilution: "100 mL NS"
+      }
+    ],
+    schedule: "Every 14 days",
+    cycles: 12,
+    mechanismOfAction: "Triple cytotoxic therapy with angiogenesis inhibition",
+    responseRates: {
+      overall: 65,
+      progressionFreeSurvival: "12.3 months"
+    }
+  },
   // Neoadjuvant Regimens
   {
     id: "folfox-neoadj-crc",

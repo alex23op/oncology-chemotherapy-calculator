@@ -2,6 +2,217 @@ import { Regimen } from "@/types/regimens";
 
 export const breastCancerTargetedRegimens: Regimen[] = [
   {
+    id: "breast-ribociclib-ai-adj",
+    name: "Ribociclib + AI (Adjuvant)",
+    description: "Ribociclib with aromatase inhibitor for high-risk HR+/HER2- early breast cancer",
+    category: "adjuvant",
+    lineOfTherapy: "first-line",
+    biomarkerRequirements: [
+      {
+        name: "ER",
+        status: "positive",
+        testingMethod: "IHC",
+        threshold: "≥1%",
+        required: true,
+        turnaroundTime: "24-48 hours"
+      },
+      {
+        name: "HER2",
+        status: "negative",
+        testingMethod: "IHC/FISH",
+        threshold: "IHC 0-1+ or FISH not amplified",
+        required: true,
+        turnaroundTime: "48-72 hours"
+      },
+      {
+        name: "Ki-67",
+        status: "high",
+        testingMethod: "IHC",
+        threshold: "≥20%",
+        required: false,
+        turnaroundTime: "24-48 hours"
+      }
+    ],
+    eligibilityCriteria: {
+      ecogStatus: [0, 1],
+      biomarkers: ["ER+", "HER2-", "High-risk features (≥4 nodes or 1-3 nodes with high-risk features)"],
+      contraindications: ["QTc >450ms", "Severe hepatic impairment", "Pregnancy"]
+    },
+    drugs: [
+      {
+        name: "Ribociclib",
+        dosage: "400",
+        unit: "mg",
+        route: "PO",
+        day: "1-21",
+        drugClass: "targeted",
+        mechanismOfAction: "CDK4/6 inhibitor",
+        monitoring: ["CBC with differential", "LFTs", "ECG for QTc", "Pregnancy test"],
+        notes: "Take with food, 21 days on/7 days off"
+      },
+      {
+        name: "Anastrozole",
+        dosage: "1",
+        unit: "mg",
+        route: "PO",
+        day: "1-28",
+        drugClass: "hormone",
+        mechanismOfAction: "Aromatase inhibitor",
+        monitoring: ["Bone density", "Lipid profile"],
+        notes: "Daily, can be taken with or without food"
+      }
+    ],
+    schedule: "28-day cycles",
+    cycles: 36,
+    mechanismOfAction: "CDK4/6 inhibition combined with estrogen suppression",
+    responseRates: {
+      overall: 85,
+      progressionFreeSurvival: "Not reached (3-year iDFS: 90.4%)"
+    }
+  },
+  {
+    id: "breast-sacituzumab-govitecan-tnbc",
+    name: "Sacituzumab Govitecan (TNBC)",
+    description: "Anti-Trop-2 antibody-drug conjugate for metastatic TNBC",
+    category: "metastatic",
+    lineOfTherapy: "second-line",
+    biomarkerRequirements: [
+      {
+        name: "ER",
+        status: "negative",
+        testingMethod: "IHC",
+        threshold: "<1%",
+        required: true,
+        turnaroundTime: "24-48 hours"
+      },
+      {
+        name: "PR",
+        status: "negative",
+        testingMethod: "IHC",
+        threshold: "<1%",
+        required: true,
+        turnaroundTime: "24-48 hours"
+      },
+      {
+        name: "HER2",
+        status: "negative",
+        testingMethod: "IHC/FISH",
+        threshold: "IHC 0-1+ or FISH not amplified",
+        required: true,
+        turnaroundTime: "48-72 hours"
+      },
+      {
+        name: "Trop-2",
+        status: "positive",
+        testingMethod: "IHC",
+        threshold: "Any expression",
+        required: false,
+        turnaroundTime: "48-72 hours"
+      }
+    ],
+    eligibilityCriteria: {
+      ecogStatus: [0, 1],
+      biomarkers: ["Triple-negative", "Prior chemotherapy in metastatic setting"],
+      contraindications: ["Severe pulmonary disease", "Active infection"]
+    },
+    premedications: [
+      {
+        name: "Diphenhydramine",
+        dosage: "25-50",
+        unit: "mg",
+        route: "IV",
+        timing: "30 minutes before infusion",
+        category: "antihistamine",
+        indication: "Infusion reaction prophylaxis",
+        isRequired: true,
+        isStandard: true
+      },
+      {
+        name: "Acetaminophen",
+        dosage: "650-1000",
+        unit: "mg",
+        route: "PO",
+        timing: "30 minutes before infusion",
+        category: "other",
+        indication: "Infusion reaction prophylaxis",
+        isRequired: true,
+        isStandard: true
+      }
+    ],
+    drugs: [
+      {
+        name: "Sacituzumab Govitecan",
+        dosage: "10",
+        unit: "mg/kg",
+        route: "IV",
+        day: "1, 8",
+        drugClass: "targeted",
+        mechanismOfAction: "Anti-Trop-2 antibody-drug conjugate",
+        administrationDuration: "First infusion: 3 hours, subsequent: 1-2 hours",
+        dilution: "250-500 mL NS",
+        monitoring: ["CBC with differential", "Comprehensive metabolic panel", "UGT1A1 genotype if severe neutropenia"]
+      }
+    ],
+    schedule: "21-day cycles",
+    cycles: 999,
+    mechanismOfAction: "Trop-2 targeting with SN-38 payload delivery",
+    responseRates: {
+      overall: 35,
+      progressionFreeSurvival: "5.6 months"
+    }
+  },
+  {
+    id: "breast-trastuzumab-deruxtecan-her2low",
+    name: "Trastuzumab Deruxtecan (HER2-low)",
+    description: "Anti-HER2 antibody-drug conjugate for HER2-low metastatic breast cancer",
+    category: "metastatic",
+    lineOfTherapy: "second-line",
+    biomarkerRequirements: [
+      {
+        name: "HER2",
+        status: "low",
+        testingMethod: "IHC/FISH",
+        threshold: "IHC 1+ or 2+/FISH not amplified",
+        required: true,
+        turnaroundTime: "48-72 hours"
+      },
+      {
+        name: "Hormone Receptor",
+        status: "positive",
+        testingMethod: "IHC",
+        threshold: "ER and/or PR ≥1%",
+        required: false,
+        turnaroundTime: "24-48 hours"
+      }
+    ],
+    eligibilityCriteria: {
+      ecogStatus: [0, 1],
+      biomarkers: ["HER2-low (IHC 1+ or 2+/FISH-)", "Prior chemotherapy in metastatic setting"],
+      contraindications: ["History of ILD/pneumonitis", "Severe pulmonary disease"]
+    },
+    drugs: [
+      {
+        name: "Trastuzumab Deruxtecan",
+        dosage: "5.4",
+        unit: "mg/kg",
+        route: "IV",
+        day: "1",
+        drugClass: "targeted",
+        mechanismOfAction: "Anti-HER2 antibody-drug conjugate",
+        administrationDuration: "90 minutes first infusion, then 30 minutes",
+        dilution: "250 mL D5W",
+        monitoring: ["Pulmonary function", "CBC", "LFTs", "LVEF", "Symptoms of ILD"]
+      }
+    ],
+    schedule: "21-day cycles",
+    cycles: 999,
+    mechanismOfAction: "HER2 targeting with deruxtecan topoisomerase I inhibitor payload",
+    responseRates: {
+      overall: 52,
+      progressionFreeSurvival: "10.1 months"
+    }
+  },
+  {
     id: "breast-tcph-adj",
     name: "TCPH (Adjuvant HER2+)",
     description: "Docetaxel, Carboplatin, Trastuzumab, Pertuzumab for adjuvant HER2+ breast cancer",
