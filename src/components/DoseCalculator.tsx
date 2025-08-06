@@ -6,16 +6,25 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Calculator, Edit, Save, FileText } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Calculator, Edit, Save, FileText, Download, Printer, FileCheck } from "lucide-react";
 import { Regimen, Drug, Premedication } from "@/types/regimens";
 import { UnifiedProtocolSelector } from "./UnifiedProtocolSelector";
 import { EmetogenicRiskClassifier } from "./EmetogenicRiskClassifier";
+import { ClinicalTreatmentSheet } from "./ClinicalTreatmentSheet";
 import { AntiemeticAgent } from "@/types/emetogenicRisk";
+import { TreatmentData, PatientInfo, CalculatedDrug } from "@/types/clinicalTreatment";
+import { generateClinicalTreatmentPDF } from "@/utils/pdfExport";
+import { usePrint } from "@/hooks/usePrint";
+import { toast } from "sonner";
 
 interface DoseCalculatorProps {
   regimen: Regimen | null;
   bsa: number;
   weight: number;
+  height: number;
+  age: number;
+  sex: string;
   creatinineClearance: number;
   onExport?: (calculations: DoseCalculation[]) => void;
 }
@@ -30,12 +39,19 @@ interface DoseCalculation {
   reductionPercentage: number;
 }
 
-export const DoseCalculator = ({ regimen, bsa, weight, creatinineClearance, onExport }: DoseCalculatorProps) => {
+export const DoseCalculator = ({ regimen, bsa, weight, height, age, sex, creatinineClearance, onExport }: DoseCalculatorProps) => {
   const [calculations, setCalculations] = useState<DoseCalculation[]>([]);
   const [selectedPremedications, setSelectedPremedications] = useState<Premedication[]>([]);
   const [emetogenicRiskLevel, setEmetogenicRiskLevel] = useState<"high" | "moderate" | "low" | "minimal">("minimal");
   const [selectedAntiemetics, setSelectedAntiemetics] = useState<AntiemeticAgent[]>([]);
   const [isEditing, setIsEditing] = useState(false);
+  const [patientId, setPatientId] = useState<string>('');
+  const [cycleNumber, setCycleNumber] = useState<number>(1);
+  const [treatmentDate, setTreatmentDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [clinicalNotes, setClinicalNotes] = useState<string>('');
+  const [showTreatmentSheet, setShowTreatmentSheet] = useState<boolean>(false);
+
+  const { componentRef, printTreatmentSheet } = usePrint();
 
   useEffect(() => {
     console.log("DoseCalculator useEffect triggered - regimen:", regimen?.name, "bsa:", bsa);
@@ -134,6 +150,140 @@ export const DoseCalculator = ({ regimen, bsa, weight, creatinineClearance, onEx
     return Math.round(((calculated - adjusted) / calculated) * 100);
   };
 
+  const prepareTreatmentData = (): TreatmentData => {
+    if (!regimen) throw new Error('No regimen selected');
+
+    const patient: PatientInfo = {
+      patientId,
+      weight,
+      height,
+      age,
+      sex,
+      bsa,
+      creatinineClearance,
+      cycleNumber,
+      treatmentDate,
+    };
+
+    const calculatedDrugs: CalculatedDrug[] = calculations.map((calc) => ({
+      ...calc.drug,
+      calculatedDose: `${calc.calculatedDose.toFixed(1)} mg`,
+      finalDose: `${calc.finalDose} mg`,
+      adjustmentNotes: calc.notes,
+      preparationInstructions: calc.drug.dilution,
+    }));
+
+    const categorizeAgent = (agent: any) => {
+      const category = agent.category?.toLowerCase() || '';
+      const indication = agent.indication?.toLowerCase() || '';
+      
+      if (category.includes('antiemetic') || indication.includes('nausea') || indication.includes('vomiting')) {
+        return 'antiemetics';
+      }
+      if (category.includes('infusion') || indication.includes('reaction') || indication.includes('allergy')) {
+        return 'infusionReactionProphylaxis';
+      }
+      if (category.includes('gastro') || indication.includes('gastro') || indication.includes('stomach')) {
+        return 'gastroprotection';
+      }
+      if (category.includes('organ') || indication.includes('nephro') || indication.includes('kidney') || indication.includes('liver')) {
+        return 'organProtection';
+      }
+      return 'other';
+    };
+
+    const premedications = {
+      antiemetics: selectedAntiemetics.filter(agent => categorizeAgent(agent) === 'antiemetics').map(agent => ({
+        ...agent,
+        category: agent.category || 'antiemetic',
+        dosage: agent.dosage || '',
+        route: agent.route || '',
+        timing: agent.timing || '',
+      })),
+      infusionReactionProphylaxis: selectedAntiemetics.filter(agent => categorizeAgent(agent) === 'infusionReactionProphylaxis').map(agent => ({
+        ...agent,
+        category: agent.category || 'infusion',
+        dosage: agent.dosage || '',
+        route: agent.route || '',
+        timing: agent.timing || '',
+      })),
+      gastroprotection: selectedAntiemetics.filter(agent => categorizeAgent(agent) === 'gastroprotection').map(agent => ({
+        ...agent,
+        category: agent.category || 'gastro',
+        dosage: agent.dosage || '',
+        route: agent.route || '',
+        timing: agent.timing || '',
+      })),
+      organProtection: selectedAntiemetics.filter(agent => categorizeAgent(agent) === 'organProtection').map(agent => ({
+        ...agent,
+        category: agent.category || 'organ',
+        dosage: agent.dosage || '',
+        route: agent.route || '',
+        timing: agent.timing || '',
+      })),
+      other: selectedAntiemetics.filter(agent => categorizeAgent(agent) === 'other').map(agent => ({
+        ...agent,
+        category: agent.category || 'other',
+        dosage: agent.dosage || '',
+        route: agent.route || '',
+        timing: agent.timing || '',
+      })),
+    };
+
+    return {
+      patient,
+      regimen,
+      calculatedDrugs,
+      emetogenicRisk: {
+        level: emetogenicRiskLevel,
+        justification: `Based on ${regimen.name} regimen classification`,
+        acuteRisk: emetogenicRiskLevel === 'high' ? '>90% risk of emesis' : 
+                   emetogenicRiskLevel === 'moderate' ? '30-90% risk of emesis' : 
+                   emetogenicRiskLevel === 'low' ? '10-30% risk of emesis' : '<10% risk of emesis',
+        delayedRisk: emetogenicRiskLevel === 'high' ? '>90% risk of delayed emesis' : 
+                     emetogenicRiskLevel === 'moderate' ? '30-90% risk of delayed emesis' : 
+                     emetogenicRiskLevel === 'low' ? '10-30% risk of delayed emesis' : '<10% risk of delayed emesis',
+      },
+      premedications,
+      clinicalNotes,
+    };
+  };
+
+  const handleExportTreatmentPDF = async () => {
+    try {
+      if (!patientId.trim()) {
+        toast.error('Please enter a Patient ID before exporting');
+        return;
+      }
+
+      const treatmentData = prepareTreatmentData();
+      await generateClinicalTreatmentPDF({
+        ...treatmentData,
+        elementId: 'clinical-treatment-sheet'
+      });
+      toast.success('Treatment protocol PDF generated successfully');
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error('Failed to export treatment protocol');
+    }
+  };
+
+  const handlePrintTreatmentSheet = () => {
+    if (!patientId.trim()) {
+      toast.error('Please enter a Patient ID before printing');
+      return;
+    }
+    printTreatmentSheet();
+  };
+
+  const handleGenerateTreatmentSheet = () => {
+    if (!patientId.trim()) {
+      toast.error('Please enter a Patient ID to generate treatment sheet');
+      return;
+    }
+    setShowTreatmentSheet(true);
+  };
+
   console.log("DoseCalculator rendering - regimen:", regimen?.name, "calculations:", calculations.length);
 
   if (!regimen) {
@@ -172,17 +322,61 @@ export const DoseCalculator = ({ regimen, bsa, weight, creatinineClearance, onEx
               {isEditing ? "Save" : "Edit"}
             </Button>
             <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleGenerateTreatmentSheet}
+              disabled={!patientId.trim()}
+            >
+              <FileCheck className="h-4 w-4" />
+              Generate Sheet
+            </Button>
+            <Button
               variant="outline"
               size="sm"
               onClick={() => onExport?.(calculations)}
             >
               <FileText className="h-4 w-4" />
-              Export
+              Export Data
             </Button>
           </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Patient Information for Treatment Sheet */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-muted/30 rounded-lg">
+          <div>
+            <Label htmlFor="patientId">Patient ID *</Label>
+            <Input
+              id="patientId"
+              value={patientId}
+              onChange={(e) => setPatientId(e.target.value)}
+              placeholder="Enter Patient ID"
+              className="mt-1"
+            />
+          </div>
+          <div>
+            <Label htmlFor="cycleNumber">Cycle Number</Label>
+            <Input
+              id="cycleNumber"
+              type="number"
+              value={cycleNumber}
+              onChange={(e) => setCycleNumber(parseInt(e.target.value) || 1)}
+              min="1"
+              className="mt-1"
+            />
+          </div>
+          <div>
+            <Label htmlFor="treatmentDate">Treatment Date</Label>
+            <Input
+              id="treatmentDate"
+              type="date"
+              value={treatmentDate}
+              onChange={(e) => setTreatmentDate(e.target.value)}
+              className="mt-1"
+            />
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">BSA:</span>
@@ -362,6 +556,56 @@ export const DoseCalculator = ({ regimen, bsa, weight, creatinineClearance, onEx
           </div>
         </div>
 
+        {/* Clinical Notes */}
+        <div>
+          <Label htmlFor="clinicalNotes">Clinical Notes (Optional)</Label>
+          <Textarea
+            id="clinicalNotes"
+            value={clinicalNotes}
+            onChange={(e) => setClinicalNotes(e.target.value)}
+            placeholder="Add any clinical notes or special instructions..."
+            className="mt-1"
+            rows={3}
+          />
+        </div>
+
+        {/* Treatment Sheet Section */}
+        {showTreatmentSheet && patientId.trim() && (
+          <div className="space-y-4">
+            <Separator />
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold">Clinical Treatment Sheet</h3>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportTreatmentPDF}
+                  disabled={!patientId.trim()}
+                >
+                  <Download className="h-4 w-4" />
+                  Export PDF
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePrintTreatmentSheet}
+                  disabled={!patientId.trim()}
+                >
+                  <Printer className="h-4 w-4" />
+                  Print
+                </Button>
+              </div>
+            </div>
+            
+            <div id="clinical-treatment-sheet" ref={componentRef}>
+              <ClinicalTreatmentSheet 
+                treatmentData={prepareTreatmentData()}
+                className="bg-background"
+              />
+            </div>
+          </div>
+        )}
+
         {calculations.length > 0 && (
           <div className="bg-accent/10 rounded-lg p-4 border border-accent/20">
             <h4 className="font-medium text-accent mb-2">Important Reminders</h4>
@@ -370,6 +614,7 @@ export const DoseCalculator = ({ regimen, bsa, weight, creatinineClearance, onEx
               <li>• Check for any contraindications or drug interactions</li>
               <li>• Consider dose modifications for organ dysfunction</li>
               <li>• Ensure appropriate premedications are given</li>
+              <li>• Generate and review the clinical treatment sheet before proceeding</li>
             </ul>
           </div>
         )}

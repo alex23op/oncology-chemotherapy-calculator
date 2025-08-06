@@ -1,5 +1,6 @@
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
+import { TreatmentData } from '@/types/clinicalTreatment';
 
 interface ProtocolData {
   selectedAgents: any[];
@@ -7,6 +8,86 @@ interface ProtocolData {
   patientWeight?: number;
   emetogenicRisk?: string;
 }
+
+interface ClinicalTreatmentExportData extends TreatmentData {
+  elementId: string;
+}
+
+export const generateClinicalTreatmentPDF = async (
+  treatmentData: ClinicalTreatmentExportData
+): Promise<void> => {
+  try {
+    const element = document.getElementById(treatmentData.elementId);
+    if (!element) {
+      throw new Error('Treatment sheet element not found');
+    }
+
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#ffffff',
+      width: element.scrollWidth,
+      height: element.scrollHeight,
+    });
+
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = pdfWidth - 20;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = 15;
+
+    // Add header
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('CHEMOTHERAPY TREATMENT PROTOCOL', pdfWidth / 2, 10, { align: 'center' });
+    
+    // Add patient info
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`Patient ID: ${treatmentData.patient.patientId}`, 10, 20);
+    pdf.text(`Regimen: ${treatmentData.regimen.name}`, 60, 20);
+    pdf.text(`Cycle: ${treatmentData.patient.cycleNumber}`, 120, 20);
+    pdf.text(`Date: ${treatmentData.patient.treatmentDate}`, 150, 20);
+
+    position = 30;
+
+    // Add the main content
+    pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+    heightLeft -= pdfHeight - position - 15;
+
+    // Add new pages if content is longer than one page
+    while (heightLeft >= 0) {
+      position = heightLeft - imgHeight + 15;
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+      heightLeft -= pdfHeight - 20;
+    }
+
+    // Add footer with timestamp and page numbers
+    const pageCount = pdf.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      pdf.setPage(i);
+      pdf.setFontSize(8);
+      pdf.setFont('helvetica', 'normal');
+      const timestamp = new Date().toLocaleString();
+      pdf.text(`Generated: ${timestamp}`, 10, pdfHeight - 5);
+      pdf.text(`Page ${i} of ${pageCount}`, pdfWidth - 30, pdfHeight - 5);
+      pdf.text('CONFIDENTIAL MEDICAL DOCUMENT', pdfWidth / 2, pdfHeight - 5, { align: 'center' });
+    }
+
+    // Save the PDF with clinical naming convention
+    const filename = `treatment-protocol-${treatmentData.patient.patientId}-${treatmentData.regimen.name.toLowerCase().replace(/\s+/g, '-')}-cycle${treatmentData.patient.cycleNumber}-${new Date().toISOString().split('T')[0]}.pdf`;
+    pdf.save(filename);
+  } catch (error) {
+    console.error('Error generating treatment protocol PDF:', error);
+    throw new Error('Failed to generate treatment protocol PDF. Please try again.');
+  }
+};
 
 export const generateProtocolPDF = async (
   protocolData: ProtocolData,
