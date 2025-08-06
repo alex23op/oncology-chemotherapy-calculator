@@ -85,6 +85,9 @@ const Index = () => {
                 regimen={selectedRegimen}
                 bsa={patientData?.bsa || 0}
                 weight={parseFloat(patientData?.weight || "0")}
+                height={parseFloat(patientData?.height || "0")}
+                age={parseFloat(patientData?.age || "0")}
+                sex={patientData?.sex || ""}
                 creatinineClearance={patientData?.creatinineClearance || 0}
                 onExport={handleExport}
               />

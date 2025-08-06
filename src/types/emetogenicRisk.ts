@@ -20,6 +20,9 @@ export interface AntiemeticAgent {
   indication: "acute" | "delayed" | "both";
   evidenceLevel: "IA" | "IB" | "IC" | "IIA" | "IIB" | "IIIA" | "IIIB";
   notes?: string;
+  category?: string;
+  rationale?: string;
+  administrationDuration?: string;
 }
 
 export interface AntiemeticProtocol {
