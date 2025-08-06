@@ -5,6 +5,17 @@ export interface Drug {
   route: string;
   day?: string;
   notes?: string;
+  dilution?: string;
+  administrationDuration?: string;
+}
+
+export interface Premedication {
+  name: string;
+  dosage: string;
+  unit: string;
+  route: string;
+  timing: string;
+  dilution?: string;
 }
 
 export interface Regimen {
@@ -13,6 +24,7 @@ export interface Regimen {
   description: string;
   category: "neoadjuvant" | "adjuvant" | "advanced" | "metastatic";
   drugs: Drug[];
+  premedications?: Premedication[];
   schedule: string;
   cycles: number;
 }

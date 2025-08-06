@@ -12,6 +12,7 @@ interface DoseCalculatorProps {
   regimen: Regimen | null;
   bsa: number;
   weight: number;
+  creatinineClearance: number;
   onExport?: (calculations: DoseCalculation[]) => void;
 }
 
@@ -23,7 +24,7 @@ interface DoseCalculation {
   notes: string;
 }
 
-export const DoseCalculator = ({ regimen, bsa, weight, onExport }: DoseCalculatorProps) => {
+export const DoseCalculator = ({ regimen, bsa, weight, creatinineClearance, onExport }: DoseCalculatorProps) => {
   const [calculations, setCalculations] = useState<DoseCalculation[]>([]);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -37,10 +38,9 @@ export const DoseCalculator = ({ regimen, bsa, weight, onExport }: DoseCalculato
         } else if (drug.unit === "mg/kg") {
           calculatedDose = parseFloat(drug.dosage) * weight;
         } else if (drug.dosage.includes("AUC")) {
-          // For AUC-based dosing (like carboplatin), we'll use a simplified calculation
-          // In real practice, this would use Calvert formula with creatinine clearance
+          // Calvert formula for carboplatin: Dose = AUC × (GFR + 25)
           const aucValue = parseFloat(drug.dosage.replace("AUC ", ""));
-          calculatedDose = aucValue * (bsa * 25); // Simplified estimation
+          calculatedDose = aucValue * (creatinineClearance + 25);
         } else {
           calculatedDose = parseFloat(drug.dosage) || 0;
         }
@@ -56,7 +56,7 @@ export const DoseCalculator = ({ regimen, bsa, weight, onExport }: DoseCalculato
       
       setCalculations(newCalculations);
     }
-  }, [regimen, bsa, weight]);
+  }, [regimen, bsa, weight, creatinineClearance]);
 
   const handleDoseAdjustment = (index: number, newDose: string) => {
     const updatedCalculations = [...calculations];
@@ -123,7 +123,7 @@ export const DoseCalculator = ({ regimen, bsa, weight, onExport }: DoseCalculato
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">BSA:</span>
             <span className="font-medium">{bsa} m²</span>
@@ -131,6 +131,10 @@ export const DoseCalculator = ({ regimen, bsa, weight, onExport }: DoseCalculato
           <div className="flex justify-between">
             <span className="text-muted-foreground">Weight:</span>
             <span className="font-medium">{weight} kg</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-muted-foreground">CrCl:</span>
+            <span className="font-medium">{creatinineClearance} mL/min</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground">Schedule:</span>
@@ -141,6 +145,36 @@ export const DoseCalculator = ({ regimen, bsa, weight, onExport }: DoseCalculato
             <span className="font-medium">{regimen.cycles}</span>
           </div>
         </div>
+
+        {regimen.premedications && regimen.premedications.length > 0 && (
+          <>
+            <Separator />
+            <div>
+              <h3 className="font-semibold text-foreground mb-3">Premedications</h3>
+              <div className="space-y-3">
+                {regimen.premedications.map((premedication, index) => (
+                  <div key={index} className="border rounded-lg p-3 bg-muted/20">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h4 className="font-medium">{premedication.name}</h4>
+                        <p className="text-sm text-muted-foreground">{premedication.timing}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-medium">{premedication.dosage} {premedication.unit}</p>
+                        <Badge variant="outline" className="mt-1">{premedication.route}</Badge>
+                      </div>
+                    </div>
+                    {premedication.dilution && (
+                      <p className="text-sm text-muted-foreground mt-2">
+                        <strong>Dilution:</strong> {premedication.dilution}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
 
         <Separator />
 
@@ -217,6 +251,19 @@ export const DoseCalculator = ({ regimen, bsa, weight, onExport }: DoseCalculato
                   <strong>Notes:</strong> {calc.notes}
                 </div>
               )}
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-muted-foreground">
+                {calc.drug.dilution && (
+                  <div>
+                    <strong>Dilution:</strong> {calc.drug.dilution}
+                  </div>
+                )}
+                {calc.drug.administrationDuration && (
+                  <div>
+                    <strong>Administration:</strong> {calc.drug.administrationDuration}
+                  </div>
+                )}
+              </div>
             </div>
           ))}
         </div>

@@ -12,9 +12,12 @@ interface PatientData {
   height: string;
   age: string;
   sex: string;
+  creatinine: string;
   weightUnit: string;
   heightUnit: string;
+  creatinineUnit: string;
   bsa: number;
+  creatinineClearance: number;
 }
 
 const Index = () => {
@@ -73,6 +76,7 @@ const Index = () => {
               regimen={selectedRegimen}
               bsa={patientData?.bsa || 0}
               weight={parseFloat(patientData?.weight || "0")}
+              creatinineClearance={patientData?.creatinineClearance || 0}
               onExport={handleExport}
             />
           </div>

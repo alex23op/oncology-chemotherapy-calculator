@@ -1,4 +1,4 @@
-import { Regimen } from "@/types/regimens";
+import { Regimen, Premedication } from "@/types/regimens";
 
 export const lungCancerRegimens: Regimen[] = [
   // Neoadjuvant Regimens

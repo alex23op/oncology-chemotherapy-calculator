@@ -11,12 +11,14 @@ interface PatientData {
   height: string;
   age: string;
   sex: string;
+  creatinine: string;
   weightUnit: string;
   heightUnit: string;
+  creatinineUnit: string;
 }
 
 interface PatientFormProps {
-  onPatientDataChange: (data: PatientData & { bsa: number }) => void;
+  onPatientDataChange: (data: PatientData & { bsa: number; creatinineClearance: number }) => void;
 }
 
 export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
@@ -25,8 +27,10 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
     height: "",
     age: "",
     sex: "",
+    creatinine: "",
     weightUnit: "kg",
-    heightUnit: "cm"
+    heightUnit: "cm",
+    creatinineUnit: "mg/dL"
   });
 
   const calculateBSA = (weight: number, height: number, weightUnit: string, heightUnit: string) => {
@@ -39,17 +43,47 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
     return Math.round(bsa * 100) / 100; // Round to 2 decimal places
   };
 
+  const calculateCreatinineClearance = (
+    age: number, 
+    weight: number, 
+    creatinine: number, 
+    sex: string,
+    weightUnit: string,
+    creatinineUnit: string
+  ) => {
+    // Convert to standard units
+    const weightKg = weightUnit === "lbs" ? weight * 0.453592 : weight;
+    const creatinineMgDl = creatinineUnit === "μmol/L" ? creatinine / 88.4 : creatinine;
+    
+    // Cockcroft-Gault formula
+    const sexMultiplier = sex === "female" ? 0.85 : 1;
+    const crCl = ((140 - age) * weightKg * sexMultiplier) / (72 * creatinineMgDl);
+    return Math.round(crCl * 100) / 100;
+  };
+
   const handleInputChange = (field: keyof PatientData, value: string) => {
     const newData = { ...patientData, [field]: value };
     setPatientData(newData);
 
-    // Calculate BSA if we have weight and height
+    // Calculate BSA and creatinine clearance if we have required data
     if (newData.weight && newData.height) {
       const weight = parseFloat(newData.weight);
       const height = parseFloat(newData.height);
+      const age = parseFloat(newData.age);
+      const creatinine = parseFloat(newData.creatinine);
+      
       if (!isNaN(weight) && !isNaN(height)) {
         const bsa = calculateBSA(weight, height, newData.weightUnit, newData.heightUnit);
-        onPatientDataChange({ ...newData, bsa });
+        
+        let creatinineClearance = 0;
+        if (!isNaN(age) && !isNaN(creatinine) && newData.sex) {
+          creatinineClearance = calculateCreatinineClearance(
+            age, weight, creatinine, newData.sex, 
+            newData.weightUnit, newData.creatinineUnit
+          );
+        }
+        
+        onPatientDataChange({ ...newData, bsa, creatinineClearance });
       }
     }
   };
@@ -135,25 +169,73 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
               </SelectContent>
             </Select>
           </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="creatinine">Serum Creatinine</Label>
+            <div className="flex gap-2">
+              <Input
+                id="creatinine"
+                type="number"
+                step="0.1"
+                placeholder="Enter creatinine"
+                value={patientData.creatinine}
+                onChange={(e) => handleInputChange("creatinine", e.target.value)}
+                className="flex-1"
+              />
+              <Select value={patientData.creatinineUnit} onValueChange={(value) => handleInputChange("creatinineUnit", value)}>
+                <SelectTrigger className="w-24">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="mg/dL">mg/dL</SelectItem>
+                  <SelectItem value="μmol/L">μmol/L</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
 
         {patientData.weight && patientData.height && (
-          <div className="mt-4 p-4 bg-accent/10 rounded-lg border border-accent/20">
-            <div className="flex items-center gap-2 mb-2">
-              <Calculator className="h-4 w-4 text-accent" />
-              <span className="font-medium text-accent">Calculated BSA</span>
+          <div className="mt-4 space-y-4">
+            <div className="p-4 bg-accent/10 rounded-lg border border-accent/20">
+              <div className="flex items-center gap-2 mb-2">
+                <Calculator className="h-4 w-4 text-accent" />
+                <span className="font-medium text-accent">Calculated BSA</span>
+              </div>
+              <p className="text-2xl font-bold text-accent">
+                {calculateBSA(
+                  parseFloat(patientData.weight),
+                  parseFloat(patientData.height),
+                  patientData.weightUnit,
+                  patientData.heightUnit
+                )} m²
+              </p>
+              <p className="text-sm text-muted-foreground mt-1">
+                Using DuBois formula
+              </p>
             </div>
-            <p className="text-2xl font-bold text-accent">
-              {calculateBSA(
-                parseFloat(patientData.weight),
-                parseFloat(patientData.height),
-                patientData.weightUnit,
-                patientData.heightUnit
-              )} m²
-            </p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Using DuBois formula
-            </p>
+            
+            {patientData.age && patientData.creatinine && patientData.sex && (
+              <div className="p-4 bg-accent/10 rounded-lg border border-accent/20">
+                <div className="flex items-center gap-2 mb-2">
+                  <Calculator className="h-4 w-4 text-accent" />
+                  <span className="font-medium text-accent">Creatinine Clearance</span>
+                </div>
+                <p className="text-2xl font-bold text-accent">
+                  {calculateCreatinineClearance(
+                    parseFloat(patientData.age),
+                    parseFloat(patientData.weight),
+                    parseFloat(patientData.creatinine),
+                    patientData.sex,
+                    patientData.weightUnit,
+                    patientData.creatinineUnit
+                  )} mL/min
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Using Cockcroft-Gault formula
+                </p>
+              </div>
+            )}
           </div>
         )}
       </CardContent>

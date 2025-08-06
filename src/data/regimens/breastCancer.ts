@@ -1,4 +1,4 @@
-import { Regimen } from "@/types/regimens";
+import { Regimen, Premedication } from "@/types/regimens";
 
 export const breastCancerRegimens: Regimen[] = [
   // Neoadjuvant Regimens
@@ -7,10 +7,38 @@ export const breastCancerRegimens: Regimen[] = [
     name: "AC-T (Neoadjuvant)",
     description: "Doxorubicin/Cyclophosphamide followed by Paclitaxel",
     category: "neoadjuvant",
+    premedications: [
+      { name: "Ondansetron", dosage: "8", unit: "mg", route: "IV", timing: "30 min prior", dilution: "Normal saline 50mL" },
+      { name: "Dexamethasone", dosage: "12", unit: "mg", route: "IV", timing: "30 min prior", dilution: "Normal saline 50mL" }
+    ],
     drugs: [
-      { name: "Doxorubicin", dosage: "60", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "Cyclophosphamide", dosage: "600", unit: "mg/m²", route: "IV", day: "Day 1" },
-      { name: "Paclitaxel", dosage: "175", unit: "mg/m²", route: "IV", day: "Day 1" }
+      { 
+        name: "Doxorubicin", 
+        dosage: "60", 
+        unit: "mg/m²", 
+        route: "IV", 
+        day: "Day 1",
+        dilution: "Normal saline 50-100mL",
+        administrationDuration: "5-10 minutes"
+      },
+      { 
+        name: "Cyclophosphamide", 
+        dosage: "600", 
+        unit: "mg/m²", 
+        route: "IV", 
+        day: "Day 1",
+        dilution: "Normal saline 250mL",
+        administrationDuration: "30-60 minutes"
+      },
+      { 
+        name: "Paclitaxel", 
+        dosage: "175", 
+        unit: "mg/m²", 
+        route: "IV", 
+        day: "Day 1",
+        dilution: "Normal saline 250-500mL",
+        administrationDuration: "3 hours"
+      }
     ],
     schedule: "AC q3wk x 4 cycles → Paclitaxel q3wk x 4 cycles",
     cycles: 8
