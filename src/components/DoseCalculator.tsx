@@ -8,9 +8,8 @@ import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calculator, Edit, Save, FileText } from "lucide-react";
 import { Regimen, Drug, Premedication } from "@/types/regimens";
-import { PremedProtocolSelector } from "./PremedProtocolSelector";
+import { UnifiedProtocolSelector } from "./UnifiedProtocolSelector";
 import { EmetogenicRiskClassifier } from "./EmetogenicRiskClassifier";
-import { AntiemeticProtocolSelector } from "./AntiemeticProtocolSelector";
 import { AntiemeticAgent } from "@/types/emetogenicRisk";
 
 interface DoseCalculatorProps {
@@ -207,15 +206,6 @@ export const DoseCalculator = ({ regimen, bsa, weight, creatinineClearance, onEx
           </div>
         </div>
 
-        <PremedProtocolSelector
-          drugNames={regimen.drugs.map(drug => drug.name)}
-          selectedPremedications={selectedPremedications}
-          onPremedSelectionsChange={handlePremedSelectionsChange}
-          weight={weight}
-        />
-
-        <Separator />
-
         {/* Emetogenic Risk Assessment */}
         <EmetogenicRiskClassifier
           drugs={regimen.drugs}
@@ -224,11 +214,16 @@ export const DoseCalculator = ({ regimen, bsa, weight, creatinineClearance, onEx
 
         <Separator />
 
-        {/* Antiemetic Protocol Selection */}
-        <AntiemeticProtocolSelector
+        {/* Unified Protocol Selection */}
+        <UnifiedProtocolSelector
+          drugNames={regimen.drugs.map(drug => drug.name)}
           drugs={regimen.drugs}
-          riskLevel={emetogenicRiskLevel}
-          onProtocolChange={handleAntiemeticProtocolChange}
+          emetogenicRiskLevel={emetogenicRiskLevel}
+          selectedPremedications={selectedPremedications}
+          selectedAntiemetics={selectedAntiemetics}
+          onPremedSelectionsChange={handlePremedSelectionsChange}
+          onAntiemeticProtocolChange={handleAntiemeticProtocolChange}
+          weight={weight}
         />
 
         <Separator />
