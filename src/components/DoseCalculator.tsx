@@ -7,16 +7,20 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
-import { Calculator, Edit, Save, FileText, Download, Printer, FileCheck } from "lucide-react";
+import { Calculator, Edit, Save, FileText, Download, Printer, FileCheck, Shield, AlertTriangle, Calendar } from "lucide-react";
 import { Regimen, Drug, Premedication } from "@/types/regimens";
 import { UnifiedProtocolSelector } from "./UnifiedProtocolSelector";
 import { EmetogenicRiskClassifier } from "./EmetogenicRiskClassifier";
 import { ClinicalTreatmentSheet } from "./ClinicalTreatmentSheet";
 import { CompactClinicalTreatmentSheet } from "./CompactClinicalTreatmentSheet";
+import { SafetyAlertsPanel } from "./SafetyAlertsPanel";
+import { TreatmentCalendar } from "./TreatmentCalendar";
 import { AntiemeticAgent } from "@/types/emetogenicRisk";
 import { TreatmentData, PatientInfo, CalculatedDrug } from "@/types/clinicalTreatment";
 import { generateClinicalTreatmentPDF } from "@/utils/pdfExport";
 import { usePrint } from "@/hooks/usePrint";
+import { ClinicalSafetyEngine, SafetyAlert } from "@/utils/clinicalSafetyEngine";
+import { getMonitoringParametersForRegimen } from "@/data/monitoringProtocols";
 import { toast } from "sonner";
 
 interface DoseCalculatorProps {
@@ -27,6 +31,8 @@ interface DoseCalculatorProps {
   age: number;
   sex: string;
   creatinineClearance: number;
+  biomarkerStatus?: Record<string, string>;
+  currentMedications?: string[];
   onExport?: (calculations: DoseCalculation[]) => void;
 }
 
@@ -40,7 +46,18 @@ interface DoseCalculation {
   reductionPercentage: number;
 }
 
-export const DoseCalculator = ({ regimen, bsa, weight, height, age, sex, creatinineClearance, onExport }: DoseCalculatorProps) => {
+export const DoseCalculator = ({ 
+  regimen, 
+  bsa, 
+  weight, 
+  height, 
+  age, 
+  sex, 
+  creatinineClearance, 
+  biomarkerStatus = {},
+  currentMedications = [],
+  onExport 
+}: DoseCalculatorProps) => {
   const [calculations, setCalculations] = useState<DoseCalculation[]>([]);
   const [selectedPremedications, setSelectedPremedications] = useState<Premedication[]>([]);
   const [emetogenicRiskLevel, setEmetogenicRiskLevel] = useState<"high" | "moderate" | "low" | "minimal">("minimal");
@@ -51,6 +68,11 @@ export const DoseCalculator = ({ regimen, bsa, weight, height, age, sex, creatin
   const [treatmentDate, setTreatmentDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [clinicalNotes, setClinicalNotes] = useState<string>('');
   const [showTreatmentSheet, setShowTreatmentSheet] = useState<boolean>(false);
+  const [safetyAlerts, setSafetyAlerts] = useState<SafetyAlert[]>([]);
+  const [showSafetyPanel, setShowSafetyPanel] = useState<boolean>(true);
+  const [showCalendar, setShowCalendar] = useState<boolean>(false);
+  const [bsaCap, setBsaCap] = useState<number>(2.0);
+  const [useBsaCap, setUseBsaCap] = useState<boolean>(false);
 
   const { componentRef, printTreatmentSheet } = usePrint();
 
@@ -58,12 +80,14 @@ export const DoseCalculator = ({ regimen, bsa, weight, height, age, sex, creatin
     console.log("DoseCalculator useEffect triggered - regimen:", regimen?.name, "bsa:", bsa);
     
     if (regimen && bsa > 0) {
+      const effectiveBsa = useBsaCap ? Math.min(bsa, bsaCap) : bsa;
+      
       const newCalculations = regimen.drugs.map(drug => {
         let calculatedDose = 0;
         
         try {
           if (drug.unit === "mg/m²") {
-            calculatedDose = parseFloat(drug.dosage) * bsa;
+            calculatedDose = parseFloat(drug.dosage) * effectiveBsa;
           } else if (drug.unit === "mg/kg") {
             calculatedDose = parseFloat(drug.dosage) * weight;
           } else if (drug.dosage.includes("AUC")) {
@@ -73,6 +97,19 @@ export const DoseCalculator = ({ regimen, bsa, weight, height, age, sex, creatin
           } else {
             calculatedDose = parseFloat(drug.dosage) || 0;
           }
+
+          // Apply renal dose adjustments
+          if (drug.name === 'Cisplatin' && creatinineClearance < 60) {
+            calculatedDose *= 0.75; // 25% reduction
+          } else if (drug.name === 'Carboplatin' && creatinineClearance < 60) {
+            // AUC already accounts for renal function in Calvert formula
+          }
+
+          // Apply age-based adjustments for elderly patients
+          if (age >= 75 && drug.drugClass === 'chemotherapy') {
+            calculatedDose *= 0.9; // 10% reduction for elderly
+          }
+
         } catch (error) {
           console.error("Error calculating dose for drug:", drug.name, error);
           calculatedDose = 0;
@@ -94,11 +131,46 @@ export const DoseCalculator = ({ regimen, bsa, weight, height, age, sex, creatin
       
       // Initialize with existing regimen premedications if any
       setSelectedPremedications(regimen.premedications || []);
+
+      // Perform safety checks
+      if (newCalculations.length > 0) {
+        performSafetyChecks(regimen, newCalculations);
+      }
     } else {
       console.log("Clearing calculations - no regimen or invalid BSA");
       setCalculations([]);
+      setSafetyAlerts([]);
     }
-  }, [regimen, bsa, weight, creatinineClearance]);
+  }, [regimen, bsa, weight, creatinineClearance, age, useBsaCap, bsaCap, biomarkerStatus]);
+
+  const performSafetyChecks = (regimen: Regimen, calculations: DoseCalculation[]) => {
+    const patient: PatientInfo = {
+      patientId: patientId || 'temp-id',
+      weight,
+      height,
+      age,
+      sex,
+      bsa,
+      creatinineClearance,
+      cycleNumber,
+      treatmentDate,
+    };
+
+    const calculatedDoses = calculations.reduce((acc, calc) => {
+      acc[calc.drug.name] = calc.calculatedDose;
+      return acc;
+    }, {} as Record<string, number>);
+
+    const alerts = ClinicalSafetyEngine.performComprehensiveSafetyCheck(
+      regimen,
+      patient,
+      calculatedDoses,
+      biomarkerStatus,
+      currentMedications
+    );
+
+    setSafetyAlerts(alerts);
+  };
 
   const handleDoseAdjustment = (index: number, newDose: string) => {
     const updatedCalculations = [...calculations];
@@ -414,6 +486,59 @@ export const DoseCalculator = ({ regimen, bsa, weight, height, age, sex, creatin
           </div>
         </div>
 
+        {/* Enhanced Dosing Controls */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-accent/10 rounded-lg">
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <Checkbox
+                id="useBsaCap"
+                checked={useBsaCap}
+                onCheckedChange={(checked) => setUseBsaCap(checked as boolean)}
+              />
+              <Label htmlFor="useBsaCap" className="text-sm font-medium">
+                Apply BSA Cap
+              </Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="bsaCap" className="text-xs text-muted-foreground">
+                Max BSA:
+              </Label>
+              <Input
+                id="bsaCap"
+                type="number"
+                value={bsaCap}
+                onChange={(e) => setBsaCap(parseFloat(e.target.value) || 2.0)}
+                min="1.5"
+                max="3.0"
+                step="0.1"
+                className="w-20 h-8 text-sm"
+                disabled={!useBsaCap}
+              />
+              <span className="text-xs text-muted-foreground">m²</span>
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowSafetyPanel(!showSafetyPanel)}
+              className={safetyAlerts.filter(a => a.severity === 'critical').length > 0 ? 
+                "border-destructive text-destructive" : ""}
+            >
+              <Shield className="h-4 w-4 mr-2" />
+              Safety ({safetyAlerts.length})
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowCalendar(!showCalendar)}
+            >
+              <Calendar className="h-4 w-4 mr-2" />
+              Calendar
+            </Button>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
           <div className="flex justify-between">
             <span className="text-muted-foreground">BSA:</span>
@@ -442,6 +567,32 @@ export const DoseCalculator = ({ regimen, bsa, weight, height, age, sex, creatin
           drugs={regimen.drugs}
           onRiskLevelChange={handleEmetogenicRiskChange}
         />
+
+        <Separator />
+
+        {/* Safety Alerts Panel */}
+        {showSafetyPanel && safetyAlerts.length > 0 && (
+          <SafetyAlertsPanel
+            alerts={safetyAlerts}
+            onAlertDismiss={(alertId, justification) => {
+              setSafetyAlerts(prev => prev.filter(alert => alert.id !== alertId));
+              console.log(`Alert ${alertId} dismissed with justification: ${justification}`);
+            }}
+            onAlertAcknowledge={(alertId) => {
+              setSafetyAlerts(prev => prev.filter(alert => alert.id !== alertId));
+              console.log(`Alert ${alertId} acknowledged`);
+            }}
+          />
+        )}
+
+        {/* Treatment Calendar */}
+        {showCalendar && (
+          <TreatmentCalendar
+            regimen={regimen}
+            startDate={new Date(treatmentDate)}
+            cycleNumber={cycleNumber}
+          />
+        )}
 
         <Separator />
 
