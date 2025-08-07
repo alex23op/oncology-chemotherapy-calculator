@@ -1,0 +1,15 @@
+Regimen_ID,Biomarker_Name,Status_Required,Testing_Method,Threshold,Is_Required,Turnaround_Time,Notes
+FOLFOX-mCRC-1L,UGT1A1,wild-type,PCR,*1/*1 or *1/*28,FALSE,3-5 days,Optional for 5-FU toxicity prediction
+FOLFOX-mCRC-1L,DPD,normal,Enzyme assay,>0.1 nmol/min/mg,FALSE,5-7 days,Consider if 5-FU toxicity history
+FOLFIRI-mCRC-2L,UGT1A1,wild-type,PCR,*1/*1 or *1/*28,TRUE,3-5 days,Required due to irinotecan toxicity risk
+FOLFIRI-mCRC-2L,DPD,normal,Enzyme assay,>0.1 nmol/min/mg,FALSE,5-7 days,Consider if 5-FU toxicity history
+FOLFIRI-mCRC-2L,KRAS,any,NGS,N/A,FALSE,7-10 days,Prognostic marker only
+CAPOX-adj,DPD,normal,Enzyme assay,>0.1 nmol/min/mg,FALSE,5-7 days,Optional for capecitabine safety
+CAPOX-adj,KRAS,any,NGS,N/A,FALSE,7-10 days,Prognostic marker
+CAPOX-adj,MSI,any,IHC/PCR,N/A,FALSE,5-7 days,Prognostic in adjuvant setting
+FOLFOXIRI-mCRC-1L,RAS,wild-type,NGS,No mutations,FALSE,7-10 days,Predictive for bevacizumab benefit
+FOLFOXIRI-mCRC-1L,BRAF,wild-type,NGS,No V600E mutation,FALSE,7-10 days,Prognostic marker
+FOLFOXIRI-mCRC-1L,UGT1A1,wild-type,PCR,*1/*1 or *1/*28,TRUE,3-5 days,Required for irinotecan safety
+FOLFOXIRI-mCRC-1L,DPD,normal,Enzyme assay,>0.1 nmol/min/mg,FALSE,5-7 days,Consider for 5-FU safety
+REGORAFENIB-mCRC-3L,KRAS,any,NGS,N/A,FALSE,7-10 days,No predictive value
+REGORAFENIB-mCRC-3L,BRAF,any,NGS,N/A,FALSE,7-10 days,No predictive value

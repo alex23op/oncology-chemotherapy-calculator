@@ -1,0 +1,17 @@
+Regimen_ID,Interacting_Drug,Severity,Effect,Management
+FOLFOX-mCRC-1L,Warfarin,major,Increased bleeding risk,Monitor INR closely; consider dose adjustment
+FOLFOX-mCRC-1L,Phenytoin,moderate,Altered phenytoin levels,Monitor levels; adjust dose as needed
+FOLFOX-mCRC-1L,Live vaccines,major,Reduced vaccine efficacy,Avoid live vaccines during treatment
+FOLFIRI-mCRC-2L,St John's Wort,major,Reduced irinotecan efficacy,Avoid concurrent use
+FOLFIRI-mCRC-2L,CYP3A4 inhibitors,moderate,Increased toxicity,Monitor for increased side effects
+FOLFIRI-mCRC-2L,Warfarin,major,Enhanced anticoagulation,Monitor INR; reduce anticoagulant dose
+FOLFIRI-mCRC-2L,Atazanavir,major,Increased irinotecan levels,Consider alternative antiretroviral
+CAPOX-adj,Coumadin,major,Enhanced anticoagulation,Monitor INR; reduce anticoagulant dose
+CAPOX-adj,Allopurinol,moderate,Increased capecitabine toxicity,Monitor for hand-foot syndrome
+CAPOX-adj,Phenytoin,moderate,Increased phenytoin levels,Monitor anticonvulsant levels
+FOLFOXIRI-mCRC-1L,Warfarin,major,Increased bleeding risk,Frequent INR monitoring required
+FOLFOXIRI-mCRC-1L,CYP3A4 inhibitors,moderate,Increased irinotecan toxicity,Monitor closely for toxicity
+FOLFOXIRI-mCRC-1L,ACE inhibitors,moderate,Enhanced bevacizumab effects,Monitor BP and renal function
+REGORAFENIB-mCRC-3L,CYP3A4 inducers,major,Reduced regorafenib efficacy,Avoid rifampin; monitor closely
+REGORAFENIB-mCRC-3L,Warfarin,moderate,Altered anticoagulation,Monitor INR more frequently
+REGORAFENIB-mCRC-3L,Strong CYP3A4 inhibitors,major,Increased regorafenib toxicity,Avoid ketoconazole; reduce dose if necessary

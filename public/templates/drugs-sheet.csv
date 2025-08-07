@@ -1,0 +1,17 @@
+Regimen_ID,Drug_Name,Dosage,Unit,Route,Day,Drug_Class,Administration_Duration,Dilution,Monitoring,Notes
+FOLFOX-mCRC-1L,Oxaliplatin,85,mg/m2,IV,1,chemotherapy,2 hours,250-500ml D5W,"CBC, CMP, neuropathy assessment",Pre-filter required
+FOLFOX-mCRC-1L,Leucovorin,400,mg/m2,IV,1,chemotherapy,2 hours,250ml NS or D5W,None,Give before 5-FU
+FOLFOX-mCRC-1L,5-Fluorouracil,400,mg/m2,IV bolus,1,chemotherapy,Push,NS flush,None,Give after leucovorin
+FOLFOX-mCRC-1L,5-Fluorouracil,2400,mg/m2,IV continuous,1-2,chemotherapy,46 hours,Ambulatory pump,Monitor pump function,Requires central access
+FOLFIRI-mCRC-2L,Irinotecan,180,mg/m2,IV,1,chemotherapy,90 minutes,250-500ml D5W,"CBC, bilirubin, diarrhea",UGT1A1 testing recommended
+FOLFIRI-mCRC-2L,Leucovorin,400,mg/m2,IV,1,chemotherapy,2 hours,250ml NS or D5W,None,Give before 5-FU
+FOLFIRI-mCRC-2L,5-Fluorouracil,400,mg/m2,IV bolus,1,chemotherapy,Push,NS flush,None,Give after leucovorin
+FOLFIRI-mCRC-2L,5-Fluorouracil,2400,mg/m2,IV continuous,1-2,chemotherapy,46 hours,Ambulatory pump,Monitor pump function,Requires central access
+CAPOX-adj,Capecitabine,1000,mg/m2,PO,1-14,chemotherapy,N/A,N/A,"CBC, hand-foot syndrome, diarrhea",Take with food twice daily
+CAPOX-adj,Oxaliplatin,130,mg/m2,IV,1,chemotherapy,2 hours,250-500ml D5W,"CBC, CMP, neuropathy assessment",Pre-filter required
+FOLFOXIRI-mCRC-1L,5-Fluorouracil,3200,mg/m2,IV continuous,1-2,chemotherapy,46 hours,Ambulatory pump,Monitor pump function,Higher dose in triplet
+FOLFOXIRI-mCRC-1L,Leucovorin,200,mg/m2,IV,1,chemotherapy,2 hours,250ml NS or D5W,None,Reduced dose in triplet
+FOLFOXIRI-mCRC-1L,Irinotecan,165,mg/m2,IV,1,chemotherapy,60 minutes,250ml D5W,"CBC, bilirubin, diarrhea",Reduced dose in triplet
+FOLFOXIRI-mCRC-1L,Oxaliplatin,85,mg/m2,IV,1,chemotherapy,2 hours,250-500ml D5W,"CBC, CMP, neuropathy assessment",Standard dose
+FOLFOXIRI-mCRC-1L,Bevacizumab,5,mg/kg,IV,1,targeted,30-90 minutes,100ml NS,"BP, proteinuria, bleeding",First infusion 90 min
+REGORAFENIB-mCRC-3L,Regorafenib,160,mg,PO,1-21,targeted,N/A,N/A,"LFTs, BP, hand-foot syndrome",Take with low-fat breakfast

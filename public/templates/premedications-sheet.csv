@@ -1,0 +1,18 @@
+Regimen_ID,Medication_Name,Dosage,Unit,Route,Category,Timing,Indication,Is_Required,Is_Standard,Administration_Duration,Weight_Based,Notes
+FOLFOX-mCRC-1L,Ondansetron,8,mg,IV,antiemetic,30 min before,Nausea/vomiting prophylaxis,TRUE,TRUE,Push,FALSE,Standard antiemetic
+FOLFOX-mCRC-1L,Dexamethasone,12,mg,IV,corticosteroid,30 min before,Nausea/vomiting prophylaxis,TRUE,TRUE,Push,FALSE,Enhances antiemetic effect
+FOLFOX-mCRC-1L,Diphenhydramine,25,mg,IV,antihistamine,30 min before,Hypersensitivity prophylaxis,FALSE,TRUE,Push,FALSE,For oxaliplatin reactions
+FOLFOX-mCRC-1L,Ranitidine,50,mg,IV,h2_blocker,30 min before,Gastric protection,FALSE,TRUE,Push,FALSE,Optional gastric protection
+FOLFIRI-mCRC-2L,Ondansetron,8,mg,IV,antiemetic,30 min before,Nausea/vomiting prophylaxis,TRUE,TRUE,Push,FALSE,Standard antiemetic
+FOLFIRI-mCRC-2L,Dexamethasone,12,mg,IV,corticosteroid,30 min before,Nausea/vomiting prophylaxis,TRUE,TRUE,Push,FALSE,Enhances antiemetic effect
+FOLFIRI-mCRC-2L,Atropine,0.25,mg,IV,other,Before irinotecan,Cholinergic syndrome prevention,TRUE,TRUE,Push,FALSE,For early diarrhea
+FOLFIRI-mCRC-2L,Loperamide,4,mg,PO,other,As needed,Delayed diarrhea management,FALSE,TRUE,N/A,FALSE,Patient education required
+CAPOX-adj,Ondansetron,8,mg,PO,antiemetic,30 min before,Nausea/vomiting prophylaxis,TRUE,TRUE,N/A,FALSE,Oral form acceptable
+CAPOX-adj,Dexamethasone,8,mg,PO,corticosteroid,30 min before,Nausea/vomiting prophylaxis,TRUE,TRUE,N/A,FALSE,Lower dose for oral route
+CAPOX-adj,Diphenhydramine,25,mg,PO,antihistamine,30 min before,Hypersensitivity prophylaxis,FALSE,TRUE,N/A,FALSE,Oral alternative
+FOLFOXIRI-mCRC-1L,Ondansetron,8,mg,IV,antiemetic,30 min before,Nausea/vomiting prophylaxis,TRUE,TRUE,Push,FALSE,Standard for high emetogenic risk
+FOLFOXIRI-mCRC-1L,Dexamethasone,12,mg,IV,corticosteroid,30 min before,Nausea/vomiting prophylaxis,TRUE,TRUE,Push,FALSE,Required for triplet therapy
+FOLFOXIRI-mCRC-1L,Aprepitant,125,mg,PO,antiemetic,60 min before,NK1 antagonist,TRUE,TRUE,N/A,FALSE,Day 1 dose
+FOLFOXIRI-mCRC-1L,Diphenhydramine,25,mg,IV,antihistamine,30 min before,Hypersensitivity prophylaxis,TRUE,TRUE,Push,FALSE,For bevacizumab reactions
+REGORAFENIB-mCRC-3L,Loperamide,2,mg,PO,other,As needed,Diarrhea management,FALSE,TRUE,N/A,FALSE,Patient counseling required
+REGORAFENIB-mCRC-3L,Urea cream,N/A,topical,topical,other,Twice daily,Hand-foot syndrome prevention,FALSE,TRUE,N/A,FALSE,Prophylactic skin care

@@ -1,0 +1,125 @@
+# REFERENCE DATA FOR DROPDOWNS AND VALIDATION
+# Use these standardized values throughout the template
+
+# CATEGORIES
+Categories:
+neoadjuvant
+adjuvant
+advanced
+metastatic
+
+# LINES OF THERAPY
+Lines_of_Therapy:
+first-line
+second-line
+third-line
+maintenance
+salvage
+
+# DRUG CLASSES
+Drug_Classes:
+chemotherapy
+targeted
+immunotherapy
+hormone
+supportive
+
+# ADMINISTRATION ROUTES
+Routes:
+IV
+PO
+SC
+IM
+IT
+Topical
+Inhalation
+
+# PREMEDICATION CATEGORIES
+Premedication_Categories:
+antiemetic
+corticosteroid
+antihistamine
+h2_blocker
+bronchodilator
+other
+
+# BIOMARKER STATUS OPTIONS
+Biomarker_Status:
+positive
+negative
+wild-type
+mutated
+amplified
+high
+low
+unknown
+
+# DRUG INTERACTION SEVERITY
+Interaction_Severity:
+major
+moderate
+minor
+
+# ECOG PERFORMANCE STATUS
+ECOG_Status:
+0
+1
+2
+3
+4
+
+# UNITS
+Dosage_Units:
+mg
+mg/m2
+mg/kg
+g
+g/m2
+units
+mcg
+mcg/m2
+mL
+tablets
+capsules
+
+# ADMINISTRATION TIMINGS
+Timing_Options:
+30 min before
+60 min before
+2 hours before
+Just before
+During infusion
+After infusion
+As needed
+Daily
+Twice daily
+Three times daily
+Every 8 hours
+Every 12 hours
+
+# TESTING METHODS
+Testing_Methods:
+IHC
+PCR
+NGS
+FISH
+Enzyme assay
+Mass spectrometry
+Sequencing
+
+# COMMON CONTRAINDICATIONS
+Common_Contraindications:
+Severe renal impairment
+Severe liver dysfunction
+Pregnancy
+Breastfeeding
+Active infection
+Severe neuropathy
+Uncontrolled hypertension
+Recent surgery
+Severe bleeding risk
+DPD deficiency
+UGT1A1*28 homozygous
+Age >75 years
+ECOG >2
+Significant comorbidities

@@ -1,0 +1,138 @@
+# CHEMOTHERAPY REGIMENS EXCEL TEMPLATE
+# This file shows the structure for each sheet in the Excel template
+# Save as separate sheets in Excel workbook
+
+# ==========================================
+# SHEET 1: REGIMENS (Main Data)
+# ==========================================
+Regimen_ID,Name,Description,Category,Line_of_Therapy,Schedule,Cycles,Mechanism_of_Action,Overall_Response_Rate,Progression_Free_Survival,ECOG_Status_Required,Contraindications,Clinical_Trials
+FOLFOX-mCRC-1L,FOLFOX,Oxaliplatin + 5-FU + Leucovorin for metastatic colorectal cancer,metastatic,first-line,Every 2 weeks,12,DNA crosslinking + antimetabolite,45-50%,9.4 months,"0,1,2","Severe neuropathy, severe renal impairment",NCT12345678
+FOLFIRI-mCRC-2L,FOLFIRI,Irinotecan + 5-FU + Leucovorin for second-line metastatic colorectal cancer,metastatic,second-line,Every 2 weeks,12,Topoisomerase I inhibition + antimetabolite,35-40%,6.2 months,"0,1,2","Severe diarrhea history, UGT1A1*28 homozygous",NCT23456789
+CAPOX-adj,CAPOX,Capecitabine + Oxaliplatin adjuvant therapy,adjuvant,first-line,Every 3 weeks,8,Oral fluoropyrimidine + platinum agent,N/A,N/A,"0,1","DPD deficiency, severe renal impairment",NCT34567890
+
+# ==========================================
+# SHEET 2: DRUGS
+# ==========================================
+Regimen_ID,Drug_Name,Dosage,Unit,Route,Day,Drug_Class,Administration_Duration,Dilution,Monitoring,Notes
+FOLFOX-mCRC-1L,Oxaliplatin,85,mg/m2,IV,1,chemotherapy,2 hours,250-500ml D5W,"CBC, CMP, neuropathy assessment",Pre-filter required
+FOLFOX-mCRC-1L,Leucovorin,400,mg/m2,IV,1,chemotherapy,2 hours,250ml NS or D5W,None,Give before 5-FU
+FOLFOX-mCRC-1L,5-Fluorouracil,400,mg/m2,IV bolus,1,chemotherapy,Push,NS flush,None,Give after leucovorin
+FOLFOX-mCRC-1L,5-Fluorouracil,2400,mg/m2,IV continuous,1-2,chemotherapy,46 hours,Ambulatory pump,Monitor pump function,Requires central access
+FOLFIRI-mCRC-2L,Irinotecan,180,mg/m2,IV,1,chemotherapy,90 minutes,250-500ml D5W,"CBC, bilirubin, diarrhea",UGT1A1 testing recommended
+FOLFIRI-mCRC-2L,Leucovorin,400,mg/m2,IV,1,chemotherapy,2 hours,250ml NS or D5W,None,Give before 5-FU
+FOLFIRI-mCRC-2L,5-Fluorouracil,400,mg/m2,IV bolus,1,chemotherapy,Push,NS flush,None,Give after leucovorin
+FOLFIRI-mCRC-2L,5-Fluorouracil,2400,mg/m2,IV continuous,1-2,chemotherapy,46 hours,Ambulatory pump,Monitor pump function,Requires central access
+CAPOX-adj,Capecitabine,1000,mg/m2,PO,1-14,chemotherapy,N/A,N/A,"CBC, hand-foot syndrome, diarrhea",Take with food
+CAPOX-adj,Oxaliplatin,130,mg/m2,IV,1,chemotherapy,2 hours,250-500ml D5W,"CBC, CMP, neuropathy assessment",Pre-filter required
+
+# ==========================================
+# SHEET 3: PREMEDICATIONS
+# ==========================================
+Regimen_ID,Medication_Name,Dosage,Unit,Route,Category,Timing,Indication,Is_Required,Is_Standard,Administration_Duration,Weight_Based,Notes
+FOLFOX-mCRC-1L,Ondansetron,8,mg,IV,antiemetic,30 min before,Nausea/vomiting prophylaxis,TRUE,TRUE,Push,FALSE,Standard antiemetic
+FOLFOX-mCRC-1L,Dexamethasone,12,mg,IV,corticosteroid,30 min before,Nausea/vomiting prophylaxis,TRUE,TRUE,Push,FALSE,Enhances antiemetic effect
+FOLFOX-mCRC-1L,Diphenhydramine,25,mg,IV,antihistamine,30 min before,Hypersensitivity prophylaxis,FALSE,TRUE,Push,FALSE,For oxaliplatin reactions
+FOLFIRI-mCRC-2L,Ondansetron,8,mg,IV,antiemetic,30 min before,Nausea/vomiting prophylaxis,TRUE,TRUE,Push,FALSE,Standard antiemetic
+FOLFIRI-mCRC-2L,Dexamethasone,12,mg,IV,corticosteroid,30 min before,Nausea/vomiting prophylaxis,TRUE,TRUE,Push,FALSE,Enhances antiemetic effect
+FOLFIRI-mCRC-2L,Atropine,0.25,mg,IV,other,Before irinotecan,Cholinergic syndrome prevention,TRUE,TRUE,Push,FALSE,For early diarrhea
+CAPOX-adj,Ondansetron,8,mg,PO,antiemetic,30 min before,Nausea/vomiting prophylaxis,TRUE,TRUE,N/A,FALSE,Oral form acceptable
+CAPOX-adj,Dexamethasone,8,mg,PO,corticosteroid,30 min before,Nausea/vomiting prophylaxis,TRUE,TRUE,N/A,FALSE,Lower dose for oral route
+
+# ==========================================
+# SHEET 4: BIOMARKERS
+# ==========================================
+Regimen_ID,Biomarker_Name,Status_Required,Testing_Method,Threshold,Is_Required,Turnaround_Time,Notes
+FOLFOX-mCRC-1L,UGT1A1,wild-type,PCR,*1/*1 or *1/*28,FALSE,3-5 days,Optional for 5-FU toxicity prediction
+FOLFIRI-mCRC-2L,UGT1A1,wild-type,PCR,*1/*1 or *1/*28,TRUE,3-5 days,Required due to irinotecan toxicity risk
+FOLFIRI-mCRC-2L,DPD,normal,Enzyme assay,>0.1 nmol/min/mg,FALSE,5-7 days,Consider if 5-FU toxicity history
+CAPOX-adj,DPD,normal,Enzyme assay,>0.1 nmol/min/mg,FALSE,5-7 days,Optional for capecitabine safety
+CAPOX-adj,KRAS,any,NGS,N/A,FALSE,7-10 days,Prognostic marker only
+
+# ==========================================
+# SHEET 5: DRUG_INTERACTIONS
+# ==========================================
+Regimen_ID,Interacting_Drug,Severity,Effect,Management
+FOLFOX-mCRC-1L,Warfarin,major,Increased bleeding risk,Monitor INR closely; consider dose adjustment
+FOLFOX-mCRC-1L,Phenytoin,moderate,Altered phenytoin levels,Monitor levels; adjust dose as needed
+FOLFIRI-mCRC-2L,St John's Wort,major,Reduced irinotecan efficacy,Avoid concurrent use
+FOLFIRI-mCRC-2L,CYP3A4 inhibitors,moderate,Increased toxicity,Monitor for increased side effects
+CAPOX-adj,Coumadin,major,Enhanced anticoagulation,Monitor INR; reduce anticoagulant dose
+
+# ==========================================
+# SHEET 6: REFERENCE_DATA (Dropdown Lists)
+# ==========================================
+# Use these standardized values for data validation
+
+Categories:
+neoadjuvant,adjuvant,advanced,metastatic
+
+Lines_of_Therapy:
+first-line,second-line,third-line,maintenance,salvage
+
+Drug_Classes:
+chemotherapy,targeted,immunotherapy,hormone,supportive
+
+Routes:
+IV,PO,SC,IM,IT
+
+Premedication_Categories:
+antiemetic,corticosteroid,antihistamine,h2_blocker,bronchodilator,other
+
+Biomarker_Status:
+positive,negative,wild-type,mutated,amplified,high,low,unknown
+
+Interaction_Severity:
+major,moderate,minor
+
+ECOG_Status:
+0,1,2,3,4
+
+# ==========================================
+# SHEET 7: INSTRUCTIONS
+# ==========================================
+# INSTRUCTIONS FOR COMPLETING THE TEMPLATE
+
+GENERAL GUIDELINES:
+1. Each regimen must have a unique Regimen_ID
+2. Use the Reference_Data sheet for standardized dropdown values
+3. All required fields must be completed
+4. Dosages should include appropriate units
+5. Use semicolons to separate multiple values in single cells
+
+REGIMENS SHEET:
+- Regimen_ID: Unique identifier (use format: REGIMEN-CATEGORY-LINE)
+- Name: Standard regimen name
+- Category: neoadjuvant, adjuvant, advanced, or metastatic
+- Line_of_Therapy: first-line, second-line, third-line, maintenance, or salvage
+- ECOG_Status_Required: Comma-separated list (e.g., "0,1,2")
+- Contraindications: Semicolon-separated list
+
+DRUGS SHEET:
+- Link drugs to regimens using Regimen_ID
+- Include all drugs in the regimen
+- Specify day of administration for multi-day cycles
+- Include monitoring requirements
+
+PREMEDICATIONS SHEET:
+- Link to regimens using Regimen_ID
+- Specify timing relative to chemotherapy
+- Mark required vs. optional medications
+- Include rationale for each premedication
+
+BIOMARKERS SHEET:
+- Link to regimens using Regimen_ID
+- Specify required vs. optional testing
+- Include testing methodology and thresholds
+
+VALIDATION RULES:
+- All Regimen_IDs must be unique
+- Required fields cannot be empty
+- Numeric fields must contain valid numbers
+- Use only approved values from Reference_Data
+
+IMPORT PROCESS:
+1. Complete all sheets with your regimen data
+2. Validate data against reference lists
+3. Save as Excel workbook (.xlsx)
+4. Upload file to the application
+5. Review imported data before final approval
