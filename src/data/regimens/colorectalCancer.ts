@@ -1436,5 +1436,338 @@ export const colorectalCancerRegimens: Regimen[] = [
       overall: 18,
       progressionFreeSurvival: "4.2 months"
     }
+  },
+  // ============= PANITUMUMAB-BASED REGIMENS =============
+  {
+    id: "crc-folfox-panitumumab",
+    name: "FOLFOX + Panitumumab",
+    description: "First-line combination for RAS wild-type metastatic colorectal cancer",
+    category: "metastatic",
+    lineOfTherapy: "first-line",
+    biomarkerRequirements: [
+      {
+        name: "RAS status",
+        status: "wild-type",
+        testingMethod: "NGS or PCR",
+        required: true,
+        turnaroundTime: "5-7 days"
+      },
+      {
+        name: "BRAF status",
+        status: "wild-type",
+        testingMethod: "NGS or PCR",
+        required: true,
+        turnaroundTime: "5-7 days"
+      }
+    ],
+    eligibilityCriteria: {
+      ecogStatus: [0, 1],
+      biomarkers: ["RAS wild-type", "BRAF wild-type", "Left-sided primary preferred"],
+      contraindications: ["RAS mutation", "BRAF mutation", "Severe pulmonary fibrosis"]
+    },
+    drugs: [
+      {
+        name: "Oxaliplatin",
+        dosage: "85",
+        unit: "mg/m²",
+        route: "IV",
+        day: "1",
+        drugClass: "chemotherapy",
+        mechanismOfAction: "Platinum alkylating agent",
+        administrationDuration: "2 hours",
+        dilution: "250-500 mL D5W or NS"
+      },
+      {
+        name: "Leucovorin",
+        dosage: "400",
+        unit: "mg/m²",
+        route: "IV",
+        day: "1",
+        drugClass: "supportive",
+        mechanismOfAction: "Folate rescue",
+        administrationDuration: "2 hours",
+        dilution: "100-250 mL NS"
+      },
+      {
+        name: "5-Fluorouracil",
+        dosage: "400",
+        unit: "mg/m²",
+        route: "IV bolus",
+        day: "1",
+        drugClass: "chemotherapy",
+        mechanismOfAction: "Antimetabolite",
+        notes: "Bolus dose"
+      },
+      {
+        name: "5-Fluorouracil",
+        dosage: "2400",
+        unit: "mg/m²",
+        route: "IV continuous",
+        day: "1-2",
+        drugClass: "chemotherapy",
+        mechanismOfAction: "Antimetabolite",
+        administrationDuration: "46 hours",
+        notes: "Continuous infusion over 46 hours"
+      },
+      {
+        name: "Panitumumab",
+        dosage: "6",
+        unit: "mg/kg",
+        route: "IV",
+        day: "1",
+        drugClass: "targeted",
+        mechanismOfAction: "Anti-EGFR monoclonal antibody",
+        administrationDuration: "60-90 minutes",
+        dilution: "100-150 mL NS",
+        notes: "First dose over 90 minutes, subsequent doses over 60 minutes if well tolerated"
+      }
+    ],
+    premedications: [
+      {
+        name: "Ondansetron",
+        dosage: "8",
+        unit: "mg",
+        route: "IV",
+        timing: "30 minutes before",
+        category: "antiemetic",
+        indication: "Antiemetic prophylaxis",
+        isRequired: true,
+        isStandard: true
+      },
+      {
+        name: "Dexamethasone",
+        dosage: "12",
+        unit: "mg",
+        route: "IV",
+        timing: "30 minutes before",
+        category: "corticosteroid",
+        indication: "Antiemetic and anti-inflammatory",
+        isRequired: true,
+        isStandard: true
+      }
+    ],
+    schedule: "Every 14 days",
+    cycles: 12,
+    mechanismOfAction: "Platinum-based chemotherapy with anti-EGFR targeted therapy",
+    responseRates: {
+      overall: 55,
+      progressionFreeSurvival: "9.6 months"
+    },
+    drugInteractions: [
+      {
+        drug: "Warfarin",
+        severity: "moderate",
+        effect: "Increased bleeding risk",
+        management: "Monitor INR closely"
+      }
+    ]
+  },
+  {
+    id: "crc-folfiri-panitumumab",
+    name: "FOLFIRI + Panitumumab",
+    description: "First or second-line combination for RAS wild-type metastatic colorectal cancer",
+    category: "metastatic",
+    lineOfTherapy: "first-line",
+    biomarkerRequirements: [
+      {
+        name: "RAS status",
+        status: "wild-type",
+        testingMethod: "NGS or PCR",
+        required: true,
+        turnaroundTime: "5-7 days"
+      },
+      {
+        name: "BRAF status",
+        status: "wild-type",
+        testingMethod: "NGS or PCR",
+        required: true,
+        turnaroundTime: "5-7 days"
+      },
+      {
+        name: "UGT1A1",
+        status: "wild-type",
+        testingMethod: "PCR",
+        required: false,
+        turnaroundTime: "3-5 days"
+      }
+    ],
+    eligibilityCriteria: {
+      ecogStatus: [0, 1],
+      biomarkers: ["RAS wild-type", "BRAF wild-type", "UGT1A1*28 assessment recommended"],
+      contraindications: ["RAS mutation", "BRAF mutation", "Active inflammatory bowel disease"]
+    },
+    drugs: [
+      {
+        name: "Irinotecan",
+        dosage: "180",
+        unit: "mg/m²",
+        route: "IV",
+        day: "1",
+        drugClass: "chemotherapy",
+        mechanismOfAction: "Topoisomerase I inhibitor",
+        administrationDuration: "90 minutes",
+        dilution: "250-500 mL D5W"
+      },
+      {
+        name: "Leucovorin",
+        dosage: "400",
+        unit: "mg/m²",
+        route: "IV",
+        day: "1",
+        drugClass: "supportive",
+        mechanismOfAction: "Folate rescue",
+        administrationDuration: "2 hours",
+        dilution: "100-250 mL NS"
+      },
+      {
+        name: "5-Fluorouracil",
+        dosage: "400",
+        unit: "mg/m²",
+        route: "IV bolus",
+        day: "1",
+        drugClass: "chemotherapy",
+        mechanismOfAction: "Antimetabolite",
+        notes: "Bolus dose"
+      },
+      {
+        name: "5-Fluorouracil",
+        dosage: "2400",
+        unit: "mg/m²",
+        route: "IV continuous",
+        day: "1-2",
+        drugClass: "chemotherapy",
+        mechanismOfAction: "Antimetabolite",
+        administrationDuration: "46 hours",
+        notes: "Continuous infusion over 46 hours"
+      },
+      {
+        name: "Panitumumab",
+        dosage: "6",
+        unit: "mg/kg",
+        route: "IV",
+        day: "1",
+        drugClass: "targeted",
+        mechanismOfAction: "Anti-EGFR monoclonal antibody",
+        administrationDuration: "60-90 minutes",
+        dilution: "100-150 mL NS",
+        notes: "First dose over 90 minutes, subsequent doses over 60 minutes if well tolerated"
+      }
+    ],
+    premedications: [
+      {
+        name: "Ondansetron",
+        dosage: "8",
+        unit: "mg",
+        route: "IV",
+        timing: "30 minutes before",
+        category: "antiemetic",
+        indication: "Antiemetic prophylaxis",
+        isRequired: true,
+        isStandard: true
+      },
+      {
+        name: "Dexamethasone",
+        dosage: "8",
+        unit: "mg",
+        route: "IV",
+        timing: "30 minutes before",
+        category: "corticosteroid",
+        indication: "Antiemetic and anti-inflammatory",
+        isRequired: true,
+        isStandard: true
+      },
+      {
+        name: "Atropine",
+        dosage: "0.25-1",
+        unit: "mg",
+        route: "IV",
+        timing: "PRN for cholinergic symptoms",
+        category: "other",
+        indication: "Cholinergic syndrome prophylaxis",
+        isRequired: false,
+        isStandard: true,
+        notes: "For early-onset diarrhea during irinotecan infusion"
+      }
+    ],
+    schedule: "Every 14 days",
+    cycles: 12,
+    mechanismOfAction: "Topoisomerase I inhibitor with anti-EGFR targeted therapy",
+    responseRates: {
+      overall: 57,
+      progressionFreeSurvival: "9.9 months"
+    },
+    drugInteractions: [
+      {
+        drug: "St. John's Wort",
+        severity: "major",
+        effect: "Reduced irinotecan efficacy",
+        management: "Avoid concurrent use"
+      }
+    ]
+  },
+  {
+    id: "crc-panitumumab-mono",
+    name: "Panitumumab Monotherapy",
+    description: "Single-agent therapy for refractory RAS wild-type metastatic colorectal cancer",
+    category: "metastatic",
+    lineOfTherapy: "third-line",
+    biomarkerRequirements: [
+      {
+        name: "RAS status",
+        status: "wild-type",
+        testingMethod: "NGS or PCR",
+        required: true,
+        turnaroundTime: "5-7 days"
+      },
+      {
+        name: "BRAF status",
+        status: "wild-type",
+        testingMethod: "NGS or PCR",
+        required: true,
+        turnaroundTime: "5-7 days"
+      }
+    ],
+    eligibilityCriteria: {
+      ecogStatus: [0, 1, 2],
+      biomarkers: ["RAS wild-type", "BRAF wild-type", "Progressive disease on fluoropyrimidine, oxaliplatin, and irinotecan"],
+      contraindications: ["RAS mutation", "BRAF mutation", "Severe pulmonary fibrosis"]
+    },
+    drugs: [
+      {
+        name: "Panitumumab",
+        dosage: "6",
+        unit: "mg/kg",
+        route: "IV",
+        day: "1",
+        drugClass: "targeted",
+        mechanismOfAction: "Anti-EGFR monoclonal antibody",
+        administrationDuration: "60-90 minutes",
+        dilution: "100-150 mL NS",
+        notes: "First dose over 90 minutes, subsequent doses over 60 minutes if well tolerated. Monitor for skin toxicity and hypomagnesemia",
+        monitoring: ["Skin assessment", "Electrolytes", "Pulmonary function"]
+      }
+    ],
+    premedications: [
+      {
+        name: "Diphenhydramine",
+        dosage: "25-50",
+        unit: "mg",
+        route: "IV",
+        timing: "30 minutes before first dose only",
+        category: "antihistamine",
+        indication: "Infusion reaction prophylaxis",
+        isRequired: false,
+        isStandard: false,
+        notes: "Optional for first dose, lower infusion reaction risk than cetuximab"
+      }
+    ],
+    schedule: "Every 14 days",
+    cycles: 24,
+    mechanismOfAction: "Anti-EGFR monoclonal antibody targeting EGFR overexpression",
+    responseRates: {
+      overall: 10,
+      progressionFreeSurvival: "1.6 months"
+    },
+    drugInteractions: []
   }
 ];
