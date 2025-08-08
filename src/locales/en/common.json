@@ -1,0 +1,154 @@
+{
+  "header": {
+    "title": "ChemoCalc Pro",
+    "subtitle": "Oncology Dose Calculator",
+    "hipaa": "HIPAA Compliant",
+    "clinicalUseOnly": "Clinical Use Only",
+    "language": "Language",
+    "english": "English",
+    "romanian": "Romanian"
+  },
+  "index": {
+    "toasts": {
+      "patientDataRequired": {
+        "title": "Patient Data Required",
+        "description": "Please enter patient information first to calculate doses."
+      },
+      "regimenSelected": {
+        "title": "Regimen Selected",
+        "description": "{{name}} selected. Doses calculated based on patient data."
+      },
+      "exportSuccess": {
+        "title": "Export Successful",
+        "description": "Dose calculations have been prepared for export."
+      }
+    },
+    "disclaimer": {
+      "title": "Clinical Disclaimer",
+      "body": "This application is designed as a clinical decision support tool. All calculations should be verified independently and doses should be reviewed by qualified healthcare professionals before administration. Always consider patient-specific factors, contraindications, and institutional protocols when prescribing chemotherapy."
+    },
+    "seo": {
+      "title": "ChemoCalc Pro – Oncology Dose Calculator",
+      "description": "Calculate oncology doses, premedication, and print clinical chemotherapy protocols."
+    }
+  },
+  "patientForm": {
+    "title": "Patient Information",
+    "weight": "Weight",
+    "height": "Height",
+    "age": "Age",
+    "sex": "Sex",
+    "male": "Male",
+    "female": "Female",
+    "creatinine": "Serum Creatinine",
+    "placeholders": {
+      "enterWeight": "Enter weight",
+      "enterHeight": "Enter height",
+      "enterAge": "Enter age",
+      "enterCreatinine": "Enter creatinine"
+    },
+    "units": {
+      "kg": "kg",
+      "lbs": "lbs",
+      "cm": "cm",
+      "in": "in",
+      "mgdl": "mg/dL",
+      "umoll": "μmol/L"
+    },
+    "calculatedBSA": "Calculated BSA",
+    "duBoisNote": "Using DuBois formula (validated)",
+    "creatinineClearance": "Creatinine Clearance",
+    "cgNote": "Using Cockcroft-Gault formula (validated)"
+  },
+  "printableProtocol": {
+    "headerTitle": "Chemotherapy Premedication Protocol",
+    "regimen": "Regimen",
+    "emetogenicRisk": "Emetogenic Risk",
+    "patientWeight": "Patient Weight",
+    "dosage": "Dosage",
+    "route": "Route",
+    "timing": "Timing",
+    "duration": "Duration",
+    "clinicalRationale": "Clinical Rationale",
+    "generated": "Generated",
+    "totalAgents": "Total Agents",
+    "noAgents": "No agents selected for protocol",
+    "footerNote": "This protocol is computer-generated and should be reviewed by a qualified healthcare professional before use."
+  },
+  "clinicalSheet": {
+    "mainTitle": "CHEMOTHERAPY TREATMENT PROTOCOL",
+    "subtitle": "Clinical Preparation & Administration Guide",
+    "patientId": "Patient ID",
+    "treatmentDate": "Treatment Date",
+    "regimen": "Regimen",
+    "cycle": "Cycle #",
+    "weight": "Weight",
+    "bsa": "BSA",
+    "crcl": "CrCl",
+    "schedule": "Schedule",
+    "regimenDetails": "Chemotherapy Regimen Details",
+    "calculatedDose": "Calculated Dose",
+    "finalDose": "Final Dose",
+    "dilution": "Dilution",
+    "preparation": "Preparation",
+    "doseAdjustment": "Dose Adjustment",
+    "notes": "Notes",
+    "emetogenicRiskSection": "Emetogenic Risk Classification",
+    "riskBadge": "{{level}} EMETOGENIC RISK",
+    "acutePhase": "Acute Phase (0-24h)",
+    "delayedPhase": "Delayed Phase (24-120h)",
+    "premedTitle": "Premedication & Supportive Care Protocol",
+    "antiemeticTherapy": "Antiemetic Therapy",
+    "infusionProphylaxis": "Infusion Reaction Prophylaxis",
+    "giProtection": "Gastrointestinal Protection",
+    "organProtection": "Organ Protection",
+    "additionalSupport": "Additional Supportive Care",
+    "dose": "Dose",
+    "indication": "Indication",
+    "rationale": "Rationale"
+  },
+  "compactSheet": {
+    "mainTitle": "CHEMOTHERAPY TREATMENT PROTOCOL",
+    "chemotherapyRegimen": "CHEMOTHERAPY REGIMEN",
+    "premedSupport": "PREMEDICATION & SUPPORTIVE CARE",
+    "generated": "Generated",
+    "risk": "RISK",
+    "drug": "Drug",
+    "calculatedDose": "Calculated Dose",
+    "finalDose": "Final Dose",
+    "route": "Route",
+    "day": "Day",
+    "duration": "Duration",
+    "na": "N/A",
+    "medication": "Medication",
+    "dose": "Dose",
+    "category": "Category",
+    "given": "Given ☐",
+    "acutePhase": "Acute Phase (0-24h)",
+    "delayedPhase": "Delayed Phase (24-120h)",
+    "clinicalNotes": "Clinical Notes:",
+    "verification": "Verification",
+    "name": "Name",
+    "datetime": "Date/Time",
+    "signature": "Signature",
+    "pharmacy": "Pharmacy:",
+    "nursing": "Nursing:",
+    "footer": "Computer-generated protocol. Verify all calculations before administration. Document version: {{date}}"
+  },
+  "pdf": {
+    "headerTitle": "CHEMOTHERAPY TREATMENT PROTOCOL",
+    "premedHeaderTitle": "Chemotherapy Premedication Protocol",
+    "patientId": "Patient ID:",
+    "regimen": "Regimen:",
+    "cycle": "Cycle:",
+    "date": "Date:",
+    "generated": "Generated:",
+    "pageOf": "Page {{page}} of {{count}}",
+    "confidential": "CONFIDENTIAL MEDICAL DOCUMENT"
+  },
+  "i18nPrompt": {
+    "detectedRo": "We detected Romanian as your browser language. Switch to Romanian?",
+    "yes": "Yes",
+    "no": "No"
+  }
+}

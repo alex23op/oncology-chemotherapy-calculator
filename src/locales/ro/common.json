@@ -1,0 +1,154 @@
+{
+  "header": {
+    "title": "ChemoCalc Pro",
+    "subtitle": "Calculator de doze oncologice",
+    "hipaa": "Conform HIPAA",
+    "clinicalUseOnly": "Numai pentru uz clinic",
+    "language": "Limbă",
+    "english": "Engleză",
+    "romanian": "Română"
+  },
+  "index": {
+    "toasts": {
+      "patientDataRequired": {
+        "title": "Date pacient necesare",
+        "description": "Introduceți mai întâi informațiile pacientului pentru a calcula dozele."
+      },
+      "regimenSelected": {
+        "title": "Regim selectat",
+        "description": "{{name}} selectat. Dozele au fost calculate pe baza datelor pacientului."
+      },
+      "exportSuccess": {
+        "title": "Export reușit",
+        "description": "Calculul dozelor a fost pregătit pentru export."
+      }
+    },
+    "disclaimer": {
+      "title": "Avertisment clinic",
+      "body": "Această aplicație este un instrument de suport decizional clinic. Toate calculele trebuie verificate independent, iar dozele trebuie revizuite de specialiști înainte de administrare. Întotdeauna luați în considerare factorii specifici pacientului, contraindicațiile și protocoalele instituționale la prescrierea chimioterapiei."
+    },
+    "seo": {
+      "title": "ChemoCalc Pro – Calculator doze oncologice",
+      "description": "Calculați doze oncologice, premedicație și imprimați protocoale clinice de chimioterapie."
+    }
+  },
+  "patientForm": {
+    "title": "Date pacient",
+    "weight": "Greutate",
+    "height": "Înălțime",
+    "age": "Vârstă",
+    "sex": "Sex",
+    "male": "Masculin",
+    "female": "Feminin",
+    "creatinine": "Creatinină serică",
+    "placeholders": {
+      "enterWeight": "Introduceți greutatea",
+      "enterHeight": "Introduceți înălțimea",
+      "enterAge": "Introduceți vârsta",
+      "enterCreatinine": "Introduceți creatinina"
+    },
+    "units": {
+      "kg": "kg",
+      "lbs": "lbs",
+      "cm": "cm",
+      "in": "in",
+      "mgdl": "mg/dL",
+      "umoll": "μmol/L"
+    },
+    "calculatedBSA": "ASC calculată",
+    "duBoisNote": "Conform formulei DuBois (validat)",
+    "creatinineClearance": "Clearance creatinină",
+    "cgNote": "Conform formulei Cockcroft-Gault (validat)"
+  },
+  "printableProtocol": {
+    "headerTitle": "Protocol de premedicație pentru chimioterapie",
+    "regimen": "Regim",
+    "emetogenicRisk": "Risc emetogen",
+    "patientWeight": "Greutatea pacientului",
+    "dosage": "Dozaj",
+    "route": "Cale",
+    "timing": "Moment",
+    "duration": "Durată",
+    "clinicalRationale": "Rațiune clinică",
+    "generated": "Generat",
+    "totalAgents": "Număr total agenți",
+    "noAgents": "Nu au fost selectați agenți pentru protocol",
+    "footerNote": "Acest protocol este generat automat și trebuie revizuit de un profesionist din domeniul sănătății înainte de utilizare."
+  },
+  "clinicalSheet": {
+    "mainTitle": "PROTOCOL TRATAMENT CHIMIOTERAPIC",
+    "subtitle": "Ghid de pregătire și administrare clinică",
+    "patientId": "ID pacient",
+    "treatmentDate": "Data tratamentului",
+    "regimen": "Regim",
+    "cycle": "Ciclu #",
+    "weight": "Greutate",
+    "bsa": "ASC",
+    "crcl": "ClCr",
+    "schedule": "Program",
+    "regimenDetails": "Detalii regim chimioterapic",
+    "calculatedDose": "Doză calculată",
+    "finalDose": "Doză finală",
+    "dilution": "Diluație",
+    "preparation": "Preparare",
+    "doseAdjustment": "Ajustare doză",
+    "notes": "Note",
+    "emetogenicRiskSection": "Clasificare risc emetogen",
+    "riskBadge": "RISC EMETOGEN {{level}}",
+    "acutePhase": "Fază acută (0-24h)",
+    "delayedPhase": "Fază întârziată (24-120h)",
+    "premedTitle": "Premedicație și îngrijiri suportive",
+    "antiemeticTherapy": "Terapie antiemetică",
+    "infusionProphylaxis": "Profilaxia reacțiilor la perfuzie",
+    "giProtection": "Protecție gastrointestinală",
+    "organProtection": "Protecție de organ",
+    "additionalSupport": "Îngrijiri suportive suplimentare",
+    "dose": "Doză",
+    "indication": "Indicație",
+    "rationale": "Rațiune"
+  },
+  "compactSheet": {
+    "mainTitle": "PROTOCOL TRATAMENT CHIMIOTERAPIC",
+    "chemotherapyRegimen": "REGIM CHIMIOTERAPIE",
+    "premedSupport": "PREMEDICAȚIE & ÎNGRIJIRI SUPORTIVE",
+    "generated": "Generat",
+    "risk": "RISC",
+    "drug": "Medicament",
+    "calculatedDose": "Doză calculată",
+    "finalDose": "Doză finală",
+    "route": "Cale",
+    "day": "Zi",
+    "duration": "Durată",
+    "na": "N/A",
+    "medication": "Medicație",
+    "dose": "Doză",
+    "category": "Categorie",
+    "given": "Administrat ☐",
+    "acutePhase": "Fază acută (0-24h)",
+    "delayedPhase": "Fază întârziată (24-120h)",
+    "clinicalNotes": "Note clinice:",
+    "verification": "Verificare",
+    "name": "Nume",
+    "datetime": "Dată/Ora",
+    "signature": "Semnătură",
+    "pharmacy": "Farmacie:",
+    "nursing": "Asistență medicală:",
+    "footer": "Protocol generat de calculator. Verificați toate calculele înainte de administrare. Versiunea documentului: {{date}}"
+  },
+  "pdf": {
+    "headerTitle": "PROTOCOL TRATAMENT CHIMIOTERAPIC",
+    "premedHeaderTitle": "Protocol de premedicație pentru chimioterapie",
+    "patientId": "ID pacient:",
+    "regimen": "Regim:",
+    "cycle": "Ciclu:",
+    "date": "Data:",
+    "generated": "Generat:",
+    "pageOf": "Pagina {{page}} din {{count}}",
+    "confidential": "DOCUMENT MEDICAL CONFIDENȚIAL"
+  },
+  "i18nPrompt": {
+    "detectedRo": "Am detectat limba română în browser. Doriți să treceți la română?",
+    "yes": "Da",
+    "no": "Nu"
+  }
+}

@@ -7,7 +7,7 @@ import { SafeComponentWrapper } from "@/components/SafeComponentWrapper";
 import { toast } from "@/hooks/use-toast";
 import { Info } from "lucide-react";
 import { Regimen } from "@/types/regimens";
-
+import { useTranslation } from "react-i18next";
 interface PatientData {
   weight: string;
   height: string;
@@ -32,16 +32,16 @@ const Index = () => {
   const handleRegimenSelect = (regimen: Regimen) => {
     if (!patientData) {
       toast({
-        title: "Patient Data Required",
-        description: "Please enter patient information first to calculate doses.",
+        title: t("index.toasts.patientDataRequired.title"),
+        description: t("index.toasts.patientDataRequired.description"),
         variant: "destructive",
       });
       return;
     }
     setSelectedRegimen(regimen);
     toast({
-      title: "Regimen Selected",
-      description: `${regimen.name} selected. Doses calculated based on patient data.`,
+      title: t("index.toasts.regimenSelected.title"),
+      description: t("index.toasts.regimenSelected.description", { name: regimen.name }),
     });
   };
 
@@ -56,8 +56,8 @@ const Index = () => {
     // In a real app, this would generate a PDF or send to printer
     console.log("Export data:", exportData);
     toast({
-      title: "Export Successful",
-      description: "Dose calculations have been prepared for export.",
+      title: t("index.toasts.exportSuccess.title"),
+      description: t("index.toasts.exportSuccess.description"),
     });
   };
 
@@ -101,12 +101,9 @@ const Index = () => {
               <Info className="h-4 w-4 text-warning-foreground" />
             </div>
             <div className="text-sm">
-              <h4 className="font-medium text-foreground mb-1">Clinical Disclaimer</h4>
+              <h4 className="font-medium text-foreground mb-1">{t('index.disclaimer.title')}</h4>
               <p className="text-muted-foreground">
-                This application is designed as a clinical decision support tool. All calculations should be 
-                verified independently and doses should be reviewed by qualified healthcare professionals 
-                before administration. Always consider patient-specific factors, contraindications, and 
-                institutional protocols when prescribing chemotherapy.
+                {t('index.disclaimer.body')}
               </p>
             </div>
           </div>
