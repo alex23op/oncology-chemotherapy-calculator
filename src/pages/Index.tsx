@@ -22,6 +22,7 @@ interface PatientData {
 }
 
 const Index = () => {
+  const { t } = useTranslation();
   const [patientData, setPatientData] = useState<PatientData | null>(null);
   const [selectedRegimen, setSelectedRegimen] = useState<Regimen | null>(null);
 
