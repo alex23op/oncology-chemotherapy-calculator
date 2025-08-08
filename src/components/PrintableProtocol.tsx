@@ -1,6 +1,7 @@
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useTranslation } from 'react-i18next';
 
 interface PrintableProtocolProps {
   selectedAgents: any[];
@@ -12,11 +13,12 @@ interface PrintableProtocolProps {
 
 export const PrintableProtocol = React.forwardRef<HTMLDivElement, PrintableProtocolProps>(
   ({ selectedAgents, regimenName, patientWeight, emetogenicRisk, className }, ref) => {
+    const { t, i18n } = useTranslation();
     if (selectedAgents.length === 0) {
       return (
         <div ref={ref} className={className}>
           <p className="text-muted-foreground text-center py-8">
-            No agents selected for protocol
+            {t('printableProtocol.noAgents')}
           </p>
         </div>
       );
