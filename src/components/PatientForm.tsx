@@ -1,4 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,6 +27,7 @@ interface PatientFormProps {
 }
 
 export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
+  const { t } = useTranslation();
   const [patientData, setPatientData] = useState<PatientData>({
     weight: "",
     height: "",
@@ -165,7 +167,7 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
         <CardHeader className="pb-4">
           <CardTitle className="flex items-center gap-2 text-primary">
             <User className="h-5 w-5" />
-            Patient Information
+            {t('patientForm.title')}
             {isCalculating && (
               <div className="ml-auto">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary"></div>
@@ -195,12 +197,12 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
       <CardContent className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label htmlFor="weight">Weight</Label>
+            <Label htmlFor="weight">{t('patientForm.weight')}</Label>
             <div className="flex gap-2">
               <Input
                 id="weight"
                 type="number"
-                placeholder="Enter weight"
+                placeholder={t('patientForm.placeholders.enterWeight')}
                 value={patientData.weight}
                 onChange={(e) => handleInputChange("weight", e.target.value)}
                 className="flex-1"
@@ -210,8 +212,8 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="kg">kg</SelectItem>
-                  <SelectItem value="lbs">lbs</SelectItem>
+                  <SelectItem value="kg">{t('patientForm.units.kg')}</SelectItem>
+                  <SelectItem value="lbs">{t('patientForm.units.lbs')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
