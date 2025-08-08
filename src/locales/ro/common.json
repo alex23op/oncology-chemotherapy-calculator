@@ -146,7 +146,7 @@
     "pageOf": "Pagina {{page}} din {{count}}",
     "confidential": "DOCUMENT MEDICAL CONFIDENȚIAL"
   },
-  // Secțiuni noi pentru localizare completă
+  
   "cancerSelector": {
     "title": "Selectare tip cancer și regim",
     "searchLabel": "Căutare tipuri de cancer",
