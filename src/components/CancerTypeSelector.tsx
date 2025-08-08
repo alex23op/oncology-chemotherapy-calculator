@@ -8,12 +8,14 @@ import { Search, Stethoscope, Filter } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cancerTypes } from "@/data/cancerTypes";
 import { Regimen } from "@/types/regimens";
+import { useTranslation } from 'react-i18next';
 
 interface CancerTypeSelectorProps {
   onRegimenSelect: (regimen: Regimen) => void;
 }
 
 export const CancerTypeSelector = ({ onRegimenSelect }: CancerTypeSelectorProps) => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCancer, setSelectedCancer] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
@@ -33,17 +35,17 @@ export const CancerTypeSelector = ({ onRegimenSelect }: CancerTypeSelectorProps)
       <CardHeader className="pb-4">
         <CardTitle className="flex items-center gap-2 text-primary">
           <Stethoscope className="h-5 w-5" />
-          Cancer Type & Regimen Selection
+          {t('cancerSelector.title')}
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="search">Search Cancer Types</Label>
+          <Label htmlFor="search">{t('cancerSelector.searchLabel')}</Label>
           <div className="relative">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
               id="search"
-              placeholder="Search by cancer type or category..."
+              placeholder={t('cancerSelector.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -66,7 +68,7 @@ export const CancerTypeSelector = ({ onRegimenSelect }: CancerTypeSelectorProps)
                   size="sm"
                   onClick={() => setSelectedCancer(selectedCancer === cancer.id ? null : cancer.id)}
                 >
-                  {selectedCancer === cancer.id ? "Selected" : "Select"}
+                  {selectedCancer === cancer.id ? t('cancerSelector.selected') : t('cancerSelector.select')}
                 </Button>
               </div>
 
@@ -74,16 +76,16 @@ export const CancerTypeSelector = ({ onRegimenSelect }: CancerTypeSelectorProps)
                 <div className="mt-4 space-y-3">
                   <div className="flex items-center gap-2 mb-3">
                     <Filter className="h-4 w-4 text-muted-foreground" />
-                    <h4 className="font-medium text-sm text-foreground">Filter by Treatment Setting:</h4>
+                    <h4 className="font-medium text-sm text-foreground">{t('cancerSelector.filterLabel')}</h4>
                   </div>
                   
                   <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
                     <TabsList className="grid w-full grid-cols-5">
-                      <TabsTrigger value="all" className="text-xs">All</TabsTrigger>
-                      <TabsTrigger value="neoadjuvant" className="text-xs">Neoadjuvant</TabsTrigger>
-                      <TabsTrigger value="adjuvant" className="text-xs">Adjuvant</TabsTrigger>
-                      <TabsTrigger value="advanced" className="text-xs">Advanced</TabsTrigger>
-                      <TabsTrigger value="metastatic" className="text-xs">Metastatic</TabsTrigger>
+                      <TabsTrigger value="all" className="text-xs">{t('cancerSelector.tabs.all')}</TabsTrigger>
+                      <TabsTrigger value="neoadjuvant" className="text-xs">{t('cancerSelector.tabs.neoadjuvant')}</TabsTrigger>
+                      <TabsTrigger value="adjuvant" className="text-xs">{t('cancerSelector.tabs.adjuvant')}</TabsTrigger>
+                      <TabsTrigger value="advanced" className="text-xs">{t('cancerSelector.tabs.advanced')}</TabsTrigger>
+                      <TabsTrigger value="metastatic" className="text-xs">{t('cancerSelector.tabs.metastatic')}</TabsTrigger>
                     </TabsList>
                     
                     <TabsContent value={selectedCategory} className="mt-4 space-y-3">
@@ -107,8 +109,8 @@ export const CancerTypeSelector = ({ onRegimenSelect }: CancerTypeSelectorProps)
                               </div>
                               <p className="text-sm text-muted-foreground mt-1">{regimen.description}</p>
                               <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
-                                <span>Schedule: {regimen.schedule}</span>
-                                <span>Cycles: {regimen.cycles}</span>
+                                <span>{t('cancerSelector.meta.schedule')}: {regimen.schedule}</span>
+                                <span>{t('cancerSelector.meta.cycles')}: {regimen.cycles}</span>
                               </div>
                             </div>
                             <Button
@@ -116,11 +118,11 @@ export const CancerTypeSelector = ({ onRegimenSelect }: CancerTypeSelectorProps)
                               onClick={() => onRegimenSelect(regimen)}
                               className="ml-2"
                             >
-                              Calculate Doses
+                              {t('cancerSelector.meta.calculateDoses')}
                             </Button>
                           </div>
                           <div className="mt-2">
-                            <p className="text-xs font-medium text-muted-foreground mb-1">Drugs:</p>
+                            <p className="text-xs font-medium text-muted-foreground mb-1">{t('cancerSelector.meta.drugs')}:</p>
                             <div className="flex flex-wrap gap-1">
                               {regimen.drugs.map((drug, index) => (
                                 <Badge key={index} variant="outline" className="text-xs">
@@ -135,7 +137,7 @@ export const CancerTypeSelector = ({ onRegimenSelect }: CancerTypeSelectorProps)
                       
                       {getRegimensByCategory(cancer, selectedCategory).length === 0 && (
                         <div className="text-center py-4 text-muted-foreground text-sm">
-                          No {selectedCategory} regimens available for this cancer type.
+                          {t('cancerSelector.meta.noRegimensForFilter', { filter: selectedCategory })}
                         </div>
                       )}
                     </TabsContent>
@@ -148,7 +150,7 @@ export const CancerTypeSelector = ({ onRegimenSelect }: CancerTypeSelectorProps)
 
         {filteredCancers.length === 0 && (
           <div className="text-center py-8 text-muted-foreground">
-            No cancer types found matching your search.
+            {t('cancerSelector.meta.noResults')}
           </div>
         )}
       </CardContent>

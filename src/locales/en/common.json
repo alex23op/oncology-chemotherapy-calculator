@@ -146,6 +146,123 @@
     "pageOf": "Page {{page}} of {{count}}",
     "confidential": "CONFIDENTIAL MEDICAL DOCUMENT"
   },
+  "cancerSelector": {
+    "title": "Cancer Type & Regimen Selection",
+    "searchLabel": "Search Cancer Types",
+    "searchPlaceholder": "Search by cancer type or category...",
+    "select": "Select",
+    "selected": "Selected",
+    "filterLabel": "Filter by Treatment Setting:",
+    "tabs": {
+      "all": "All",
+      "neoadjuvant": "Neoadjuvant",
+      "adjuvant": "Adjuvant",
+      "advanced": "Advanced",
+      "metastatic": "Metastatic"
+    },
+    "meta": {
+      "schedule": "Schedule",
+      "cycles": "Cycles",
+      "calculateDoses": "Calculate Doses",
+      "drugs": "Drugs",
+      "noRegimensForFilter": "No {{filter}} regimens available for this cancer type.",
+      "noResults": "No cancer types found matching your search."
+    }
+  },
+  "doseCalculator": {
+    "title": "Dose Calculations",
+    "edit": "Edit",
+    "save": "Save",
+    "generateSheet": "Generate Sheet",
+    "exportData": "Export Data",
+    "exportPdf": "Export PDF",
+    "print": "Print",
+    "patientIdLabel": "Patient ID *",
+    "patientIdPlaceholder": "Enter Patient ID",
+    "cycleLabel": "Cycle Number",
+    "treatmentDateLabel": "Treatment Date",
+    "applyBsaCap": "Apply BSA Cap",
+    "maxBsa": "Max BSA",
+    "safety": "Safety",
+    "calendar": "Calendar",
+    "metrics": {
+      "bsa": "BSA",
+      "weight": "Weight",
+      "crcl": "CrCl",
+      "schedule": "Schedule",
+      "cycles": "Cycles"
+    },
+    "chemoDrugs": "Chemotherapy Drugs",
+    "standardDose": "Standard Dose",
+    "prepAndAdmin": "Preparation & Administration",
+    "diluent": "Diluent",
+    "adminDuration": "Administration Duration",
+    "calculatedDose": "Calculated Dose",
+    "reductionPercent": "Reduction %",
+    "adjustedDose": "Adjusted Dose",
+    "finalDose": "Final Dose",
+    "totalReduction": "Total Reduction",
+    "notes": "Notes",
+    "notesPlaceholder": "Add notes for dose adjustment...",
+    "clinicalNotes": "Clinical Notes (Optional)",
+    "clinicalNotesPlaceholder": "Add any clinical notes or special instructions...",
+    "treatmentSheetTitle": "Clinical Treatment Sheet",
+    "reminders": {
+      "title": "Important Reminders",
+      "items": [
+        "Verify patient weight and height before administration",
+        "Check for any contraindications or drug interactions",
+        "Consider dose modifications for organ dysfunction",
+        "Ensure appropriate premedications are given",
+        "Generate and review the clinical treatment sheet before proceeding"
+      ]
+    },
+    "emptyState": "Select a cancer type and regimen to calculate doses.",
+    "toasts": {
+      "enterPatientIdBeforeExport": "Please enter a Patient ID before exporting",
+      "noCalcsToExport": "No calculations available for export",
+      "exportSuccess": "Treatment protocol PDF generated successfully",
+      "exportFailed": "Failed to export treatment protocol",
+      "enterPatientIdBeforePrint": "Please enter a Patient ID before printing",
+      "generateSheetNeedId": "Please enter a Patient ID to generate treatment sheet",
+      "generateSheetNeedCalcs": "No dose calculations available. Please ensure regimen is selected and patient data is entered.",
+      "sheetGenerated": "Treatment sheet generated successfully"
+    }
+  },
+  "safetyAlerts": {
+    "allClear": "All safety checks passed",
+    "title": "Clinical Safety Alerts",
+    "counts": {
+      "critical": "{{count}} Critical",
+      "warning": "{{count}} Warning",
+      "info": "{{count}} Info"
+    },
+    "recommendation": "Recommendation",
+    "references": "References",
+    "actions": {
+      "acknowledge": "Acknowledge",
+      "override": "Override"
+    },
+    "dialog": {
+      "overrideTitle": "Override Safety Alert",
+      "overrideDesc": "You are about to override a {{severity}} safety alert.{{requiresJustification}}",
+      "requiresJustification": " Clinical justification is required.",
+      "clinicalJustification": "Clinical Justification *",
+      "placeholder": "Enter clinical justification for overriding this alert...",
+      "cancel": "Cancel",
+      "overrideAlert": "Override Alert"
+    }
+  },
+  "emetogenicRiskClassifier": {
+    "title": "Emetogenic Risk Classification",
+    "description": "Assessment of nausea and vomiting risk based on chemotherapy regimen",
+    "overall": "Overall Emetogenic Risk:",
+    "acute": "Acute (0-24h):",
+    "delayed": "Delayed (24-120h):",
+    "individual": "Individual Drug Risk Assessment",
+    "guidelinesTitle": "Clinical Guidelines:",
+    "guidelinesBody": "Classification based on NCCN 2024, ASCO 2020, and MASCC/ESMO 2023 guidelines for antiemetic use in oncology. Risk levels determine appropriate antiemetic prophylaxis strategies."
+  },
   "i18nPrompt": {
     "detectedRo": "We detected Romanian as your browser language. Switch to Romanian?",
     "yes": "Yes",

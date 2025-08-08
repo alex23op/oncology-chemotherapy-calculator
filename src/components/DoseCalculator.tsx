@@ -22,6 +22,7 @@ import { usePrint } from "@/hooks/usePrint";
 import { ClinicalSafetyEngine, SafetyAlert } from "@/utils/clinicalSafetyEngine";
 import { getMonitoringParametersForRegimen } from "@/data/monitoringProtocols";
 import { toast } from "sonner";
+import { useTranslation } from 'react-i18next';
 
 interface DoseCalculatorProps {
   regimen: Regimen | null;

@@ -146,6 +146,124 @@
     "pageOf": "Pagina {{page}} din {{count}}",
     "confidential": "DOCUMENT MEDICAL CONFIDENȚIAL"
   },
+  // Secțiuni noi pentru localizare completă
+  "cancerSelector": {
+    "title": "Selectare tip cancer și regim",
+    "searchLabel": "Căutare tipuri de cancer",
+    "searchPlaceholder": "Căutați după tip de cancer sau categorie...",
+    "select": "Selectează",
+    "selected": "Selectat",
+    "filterLabel": "Filtrați după mediul de tratament:",
+    "tabs": {
+      "all": "Toate",
+      "neoadjuvant": "Neoadjuvant",
+      "adjuvant": "Adjuvant",
+      "advanced": "Avansat",
+      "metastatic": "Metastatic"
+    },
+    "meta": {
+      "schedule": "Program",
+      "cycles": "Cicluri",
+      "calculateDoses": "Calculează dozele",
+      "drugs": "Medicamente",
+      "noRegimensForFilter": "Nu există regimuri {{filter}} pentru acest tip de cancer.",
+      "noResults": "Nu s-au găsit tipuri de cancer care să corespundă căutării."
+    }
+  },
+  "doseCalculator": {
+    "title": "Calcul doze",
+    "edit": "Editează",
+    "save": "Salvează",
+    "generateSheet": "Generează fișa",
+    "exportData": "Exportă date",
+    "exportPdf": "Exportă PDF",
+    "print": "Printează",
+    "patientIdLabel": "ID pacient *",
+    "patientIdPlaceholder": "Introduceți ID-ul pacientului",
+    "cycleLabel": "Număr ciclu",
+    "treatmentDateLabel": "Data tratamentului",
+    "applyBsaCap": "Aplică limită ASC",
+    "maxBsa": "ASC maximă",
+    "safety": "Siguranță",
+    "calendar": "Calendar",
+    "metrics": {
+      "bsa": "ASC",
+      "weight": "Greutate",
+      "crcl": "ClCr",
+      "schedule": "Program",
+      "cycles": "Cicluri"
+    },
+    "chemoDrugs": "Medicamente chimioterapice",
+    "standardDose": "Doză standard",
+    "prepAndAdmin": "Pregătire și administrare",
+    "diluent": "Diluant",
+    "adminDuration": "Durata administrării",
+    "calculatedDose": "Doză calculată",
+    "reductionPercent": "Reducere %",
+    "adjustedDose": "Doză ajustată",
+    "finalDose": "Doză finală",
+    "totalReduction": "Reducere totală",
+    "notes": "Note",
+    "notesPlaceholder": "Adăugați note pentru ajustarea dozei...",
+    "clinicalNotes": "Note clinice (opțional)",
+    "clinicalNotesPlaceholder": "Adăugați note clinice sau instrucțiuni speciale...",
+    "treatmentSheetTitle": "Fișă de tratament clinic",
+    "reminders": {
+      "title": "Recomandări importante",
+      "items": [
+        "Verificați greutatea și înălțimea pacientului înainte de administrare",
+        "Verificați contraindicațiile sau interacțiunile medicamentoase",
+        "Luați în considerare modificări de doză pentru disfuncții de organ",
+        "Asigurați administrarea corectă a premedicațiilor",
+        "Generați și revizuiți fișa de tratament clinic înainte de a continua"
+      ]
+    },
+    "emptyState": "Selectați un tip de cancer și un regim pentru a calcula dozele.",
+    "toasts": {
+      "enterPatientIdBeforeExport": "Introduceți un ID pacient înainte de export",
+      "noCalcsToExport": "Nu există calcule disponibile pentru export",
+      "exportSuccess": "Protocolul de tratament a fost generat cu succes",
+      "exportFailed": "Eroare la exportul protocolului de tratament",
+      "enterPatientIdBeforePrint": "Introduceți un ID pacient înainte de tipărire",
+      "generateSheetNeedId": "Introduceți un ID pacient pentru a genera fișa de tratament",
+      "generateSheetNeedCalcs": "Nu există calcule de doză. Asigurați-vă că regimul este selectat și datele pacientului sunt introduse.",
+      "sheetGenerated": "Fișa de tratament a fost generată cu succes"
+    }
+  },
+  "safetyAlerts": {
+    "allClear": "Toate verificările de siguranță au fost trecute",
+    "title": "Alerte de siguranță clinică",
+    "counts": {
+      "critical": "{{count}} critice",
+      "warning": "{{count}} avertismente",
+      "info": "{{count}} informări"
+    },
+    "recommendation": "Recomandare",
+    "references": "Referințe",
+    "actions": {
+      "acknowledge": "Confirmă",
+      "override": "Suprascrie"
+    },
+    "dialog": {
+      "overrideTitle": "Suprascriere alertă de siguranță",
+      "overrideDesc": "Urmează să suprascrieți o alertă de siguranță de severitate {{severity}}.{{requiresJustification}}",
+      "requiresJustification": " Este necesară o justificare clinică.",
+      "clinicalJustification": "Justificare clinică *",
+      "placeholder": "Introduceți justificarea clinică pentru a suprascrie această alertă...",
+      "cancel": "Anulează",
+      "overrideAlert": "Suprascrie alerta"
+    }
+  },
+  "emetogenicRiskClassifier": {
+    "title": "Clasificarea riscului emetogen",
+    "description": "Evaluarea riscului de greață și vărsături pe baza regimului de chimioterapie",
+    "overall": "Risc emetogen global:",
+    "acute": "Acut (0-24h):",
+    "delayed": "Întârziat (24-120h):",
+    "individual": "Evaluarea riscului pe medicamente",
+    "guidelinesTitle": "Ghiduri clinice:",
+    "guidelinesBody": "Clasificare bazată pe NCCN 2024, ASCO 2020 și MASCC/ESMO 2023 pentru utilizarea antiemeticelor în oncologie. Nivelurile de risc determină strategiile adecvate de profilaxie antiemetică."
+  },
   "i18nPrompt": {
     "detectedRo": "Am detectat limba română în browser. Doriți să treceți la română?",
     "yes": "Da",

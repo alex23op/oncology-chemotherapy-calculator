@@ -39,17 +39,17 @@ export const PrintableProtocol = React.forwardRef<HTMLDivElement, PrintableProto
         {/* Header */}
         <div className="mb-6 print:mb-4">
           <h1 className="text-2xl font-bold text-center mb-2 print:text-xl">
-            Chemotherapy Premedication Protocol
+            {t('printableProtocol.headerTitle')}
           </h1>
           <div className="flex flex-wrap gap-4 justify-center text-sm text-muted-foreground print:text-black">
             {regimenName && (
-              <span><strong>Regimen:</strong> {regimenName}</span>
+              <span><strong>{t('printableProtocol.regimen')}:</strong> {regimenName}</span>
             )}
             {emetogenicRisk && (
-              <span><strong>Emetogenic Risk:</strong> {emetogenicRisk}</span>
+              <span><strong>{t('printableProtocol.emetogenicRisk')}:</strong> {emetogenicRisk}</span>
             )}
             {patientWeight && (
-              <span><strong>Patient Weight:</strong> {patientWeight} kg</span>
+              <span><strong>{t('printableProtocol.patientWeight')}:</strong> {patientWeight} kg</span>
             )}
           </div>
         </div>
@@ -76,29 +76,29 @@ export const PrintableProtocol = React.forwardRef<HTMLDivElement, PrintableProto
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm print:text-xs">
                       {agent.dosage && (
                         <div>
-                          <span className="font-medium">Dosage:</span> {agent.dosage}
+                          <span className="font-medium">{t('printableProtocol.dosage')}:</span> {agent.dosage}
                         </div>
                       )}
                       {agent.route && (
                         <div>
-                          <span className="font-medium">Route:</span> {agent.route}
+                          <span className="font-medium">{t('printableProtocol.route')}:</span> {agent.route}
                         </div>
                       )}
                       {agent.timing && (
                         <div>
-                          <span className="font-medium">Timing:</span> {agent.timing}
+                          <span className="font-medium">{t('printableProtocol.timing')}:</span> {agent.timing}
                         </div>
                       )}
                       {agent.duration && (
                         <div>
-                          <span className="font-medium">Duration:</span> {agent.duration}
+                          <span className="font-medium">{t('printableProtocol.duration')}:</span> {agent.duration}
                         </div>
                       )}
                     </div>
                     
                     {agent.rationale && (
                       <div className="mt-2 p-2 bg-muted rounded text-sm print:bg-gray-100 print:text-xs">
-                        <span className="font-medium">Clinical Rationale:</span> {agent.rationale}
+                        <span className="font-medium">{t('printableProtocol.clinicalRationale')}:</span> {agent.rationale}
                       </div>
                     )}
                   </div>
@@ -112,14 +112,14 @@ export const PrintableProtocol = React.forwardRef<HTMLDivElement, PrintableProto
         <div className="mt-8 pt-4 border-t text-xs text-muted-foreground print:text-black print:mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
             <div>
-              <strong>Generated:</strong> {new Date().toLocaleString()}
+              <strong>{t('printableProtocol.generated')}:</strong> {new Date().toLocaleString(i18n.language)}
             </div>
             <div className="text-right print:text-left">
-              <strong>Total Agents:</strong> {selectedAgents.length}
+              <strong>{t('printableProtocol.totalAgents')}:</strong> {selectedAgents.length}
             </div>
           </div>
           <div className="mt-2 text-center">
-            <em>This protocol is computer-generated and should be reviewed by a qualified healthcare professional before use.</em>
+            <em>{t('printableProtocol.footerNote')}</em>
           </div>
         </div>
       </div>
