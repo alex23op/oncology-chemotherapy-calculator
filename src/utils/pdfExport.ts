@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { TreatmentData } from '@/types/clinicalTreatment';
+import i18n from '@/i18n';
 
 interface ProtocolData {
   selectedAgents: any[];
@@ -48,15 +49,15 @@ export const generateClinicalTreatmentPDF = async (
     // Add header
     pdf.setFontSize(14);
     pdf.setFont('helvetica', 'bold');
-    pdf.text('CHEMOTHERAPY TREATMENT PROTOCOL', pdfWidth / 2, 10, { align: 'center' });
+    pdf.text(i18n.t('pdf.headerTitle'), pdfWidth / 2, 10, { align: 'center' });
     
     // Add patient info
     pdf.setFontSize(10);
     pdf.setFont('helvetica', 'normal');
-    pdf.text(`Patient ID: ${treatmentData.patient.patientId}`, 10, 20);
-    pdf.text(`Regimen: ${treatmentData.regimen.name}`, 60, 20);
-    pdf.text(`Cycle: ${treatmentData.patient.cycleNumber}`, 120, 20);
-    pdf.text(`Date: ${treatmentData.patient.treatmentDate}`, 150, 20);
+    pdf.text(`${i18n.t('pdf.patientId')} ${treatmentData.patient.patientId}`, 10, 20);
+    pdf.text(`${i18n.t('pdf.regimen')} ${treatmentData.regimen.name}`, 60, 20);
+    pdf.text(`${i18n.t('pdf.cycle')} ${treatmentData.patient.cycleNumber}`, 120, 20);
+    pdf.text(`${i18n.t('pdf.date')} ${treatmentData.patient.treatmentDate}`, 150, 20);
 
     position = 30;
 
@@ -78,10 +79,10 @@ export const generateClinicalTreatmentPDF = async (
       pdf.setPage(i);
       pdf.setFontSize(8);
       pdf.setFont('helvetica', 'normal');
-      const timestamp = new Date().toLocaleString();
-      pdf.text(`Generated: ${timestamp}`, 10, pdfHeight - 5);
-      pdf.text(`Page ${i} of ${pageCount}`, pdfWidth - 30, pdfHeight - 5);
-      pdf.text('CONFIDENTIAL MEDICAL DOCUMENT', pdfWidth / 2, pdfHeight - 5, { align: 'center' });
+      const timestamp = new Date().toLocaleString(i18n.language);
+      pdf.text(`${i18n.t('pdf.generated')} ${timestamp}`, 10, pdfHeight - 5);
+      pdf.text(i18n.t('pdf.pageOf', { page: i, count: pageCount }) as string, pdfWidth - 30, pdfHeight - 5);
+      pdf.text(i18n.t('pdf.confidential'), pdfWidth / 2, pdfHeight - 5, { align: 'center' });
     }
 
     // Clean up temporary element
@@ -131,12 +132,12 @@ export const generateProtocolPDF = async (
     // Add header
     pdf.setFontSize(16);
     pdf.setFont('helvetica', 'bold');
-    pdf.text('Chemotherapy Premedication Protocol', pdfWidth / 2, 15, { align: 'center' });
+    pdf.text(i18n.t('pdf.premedHeaderTitle'), pdfWidth / 2, 15, { align: 'center' });
     
     if (protocolData.regimenName) {
       pdf.setFontSize(12);
       pdf.setFont('helvetica', 'normal');
-      pdf.text(`Regimen: ${protocolData.regimenName}`, 10, 25);
+      pdf.text(`${i18n.t('pdf.regimen')} ${protocolData.regimenName}`, 10, 25);
     }
 
     position = 35;
@@ -159,9 +160,9 @@ export const generateProtocolPDF = async (
       pdf.setPage(i);
       pdf.setFontSize(8);
       pdf.setFont('helvetica', 'normal');
-      const timestamp = new Date().toLocaleString();
-      pdf.text(`Generated: ${timestamp}`, 10, pdfHeight - 5);
-      pdf.text(`Page ${i} of ${pageCount}`, pdfWidth - 30, pdfHeight - 5);
+      const timestamp = new Date().toLocaleString(i18n.language);
+      pdf.text(`${i18n.t('pdf.generated')} ${timestamp}`, 10, pdfHeight - 5);
+      pdf.text(i18n.t('pdf.pageOf', { page: i, count: pageCount }) as string, pdfWidth - 30, pdfHeight - 5);
     }
 
     // Save the PDF

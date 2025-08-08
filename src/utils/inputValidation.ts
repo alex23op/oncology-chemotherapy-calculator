@@ -1,4 +1,5 @@
 import { toast } from "@/hooks/use-toast";
+import i18n from "@/i18n";
 
 export interface ValidationResult {
   isValid: boolean;
@@ -196,14 +197,14 @@ export const showValidationToast = (validation: ValidationResult, context: strin
   if (!validation.isValid && validation.errors.length > 0) {
     toast({
       variant: "destructive",
-      title: `Validation Error${context ? ` - ${context}` : ''}`,
+      title: `${i18n.t('validation.titles.error')}${context ? ` - ${context}` : ''}`,
       description: validation.errors.join('; ')
     });
   }
 
   if (validation.warnings.length > 0) {
     toast({
-      title: `Clinical Warning${context ? ` - ${context}` : ''}`,
+      title: `${i18n.t('validation.titles.warning')}${context ? ` - ${context}` : ''}`,
       description: validation.warnings.join('; '),
       className: "border-warning bg-warning/10"
     });

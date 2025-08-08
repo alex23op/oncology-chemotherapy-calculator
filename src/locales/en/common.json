@@ -45,7 +45,8 @@
       "enterWeight": "Enter weight",
       "enterHeight": "Enter height",
       "enterAge": "Enter age",
-      "enterCreatinine": "Enter creatinine"
+      "enterCreatinine": "Enter creatinine",
+      "selectSex": "Select sex"
     },
     "units": {
       "kg": "kg",
@@ -262,6 +263,122 @@
     "individual": "Individual Drug Risk Assessment",
     "guidelinesTitle": "Clinical Guidelines:",
     "guidelinesBody": "Classification based on NCCN 2024, ASCO 2020, and MASCC/ESMO 2023 guidelines for antiemetic use in oncology. Risk levels determine appropriate antiemetic prophylaxis strategies."
+  },
+  "antiemeticSelector": {
+    "title": "Antiemetic Protocol Selection",
+    "description": "Evidence-based antiemetic prophylaxis for {{riskLevel}} emetogenic risk regimens",
+    "tabs": {
+      "recommended": "Recommended",
+      "all": "All Protocols",
+      "individual": "Individual Agents"
+    },
+    "agentsLabel": "Agents ({{count}})",
+    "viewDetails": "View Clinical Details",
+    "acuteManagement": "ACUTE MANAGEMENT",
+    "delayedManagement": "DELAYED MANAGEMENT",
+    "rationale": "RATIONALE",
+    "guidelinesLabel": "Guidelines:",
+    "alerts": {
+      "recommended": "Protocols specifically recommended for your current regimen based on evidence-based guidelines.",
+      "none": "No specific protocols recommended for this combination. Please review all protocols or select individual agents."
+    },
+    "individualHelper": "Select individual antiemetic agents to create a custom protocol. Evidence levels: IA (highest), IB, IC, IIA, IIB, IIIA, IIIB (lowest).",
+    "summaryTitle": "Selected Antiemetic Protocol Summary",
+    "mechanismLabel": "Mechanism:",
+    "noteLabel": "Note:"
+  },
+  "validation": {
+    "titles": {
+      "error": "Validation Error",
+      "warning": "Clinical Warning"
+    },
+    "weightNaN": "Weight must be a valid number",
+    "weightMin": "Weight must be at least {{min}} kg",
+    "weightMax": "Weight cannot exceed {{max}} kg",
+    "pediatricWeight": "Pediatric weight detected - verify dosing protocols",
+    "highWeight": "High weight - consider dose capping for BSA > {{bsaCap}} m²",
+    "heightNaN": "Height must be a valid number",
+    "heightMin": "Height must be at least {{min}} cm",
+    "heightMax": "Height cannot exceed {{max}} cm",
+    "ageNaN": "Age must be a valid number",
+    "ageMin": "Age must be at least {{min}}",
+    "ageMax": "Age cannot exceed {{max}} years",
+    "pediatricPatient": "Pediatric patient - verify dosing protocols and consider pediatric-specific regimens",
+    "elderlyPatient": "Elderly patient - consider dose reduction and enhanced monitoring",
+    "bsaLow": "Low BSA detected - verify calculations and consider pediatric protocols",
+    "bsaHigh": "High BSA detected - consider dose capping at 2.2 m² for some agents",
+    "crclSevere": "Severe renal impairment - consider dose reduction or nephrotoxic drug avoidance",
+    "crclModerateSevere": "Moderate-severe renal impairment - dose adjustment may be required",
+    "crclMildModerate": "Mild-moderate renal impairment - monitor for nephrotoxicity",
+    "creatinineNaN": "Creatinine must be a valid number",
+    "creatinineLow": "Unusually low creatinine - verify lab values",
+    "creatinineHigh": "Severely elevated creatinine - consider nephrology consultation",
+    "missingDoseParams": "Missing required dose calculation parameters",
+    "calculatedDosePositive": "{{drug}}: Calculated dose must be positive",
+    "doseExtremelyLow": "{{drug}}: Calculated dose ({{dose}} {{unit}}) is extremely low (< 10% of standard)",
+    "doseLow": "{{drug}}: Low dose detected ({{dose}} {{unit}}) - verify calculation",
+    "doseExceedsMax": "{{drug}}: Calculated dose ({{dose}} {{unit}}) exceeds maximum safe limit (200% of standard)",
+    "doseHigh": "{{drug}}: High dose detected ({{dose}} {{unit}}) - consider dose capping",
+    "doxorubicinCumulative": "{{drug}}: Consider cumulative dose monitoring (current: {{dose}} mg)",
+    "cisplatinHigh": "{{drug}}: High cisplatin dose - ensure adequate hydration and monitoring"
+  },
+  "antiemeticSelector": {
+    "title": "Antiemetic Protocol Selection",
+    "description": "Evidence-based antiemetic prophylaxis for {{riskLevel}} emetogenic risk regimens",
+    "tabs": {
+      "recommended": "Recommended",
+      "all": "All Protocols",
+      "individual": "Individual Agents"
+    },
+    "agentsLabel": "Agents ({{count}})",
+    "viewDetails": "View Clinical Details",
+    "acuteManagement": "ACUTE MANAGEMENT",
+    "delayedManagement": "DELAYED MANAGEMENT",
+    "rationale": "RATIONALE",
+    "guidelinesLabel": "Guidelines:",
+    "alerts": {
+      "recommended": "Protocols specifically recommended for your current regimen based on evidence-based guidelines.",
+      "none": "No specific protocols recommended for this combination. Please review all protocols or select individual agents."
+    },
+    "individualHelper": "Select individual antiemetic agents to create a custom protocol. Evidence levels: IA (highest), IB, IC, IIA, IIB, IIIA, IIIB (lowest).",
+    "summaryTitle": "Selected Antiemetic Protocol Summary",
+    "mechanismLabel": "Mechanism:",
+    "noteLabel": "Note:"
+  },
+  "validation": {
+    "titles": {
+      "error": "Validation Error",
+      "warning": "Clinical Warning"
+    },
+    "weightNaN": "Weight must be a valid number",
+    "weightMin": "Weight must be at least {{min}} kg",
+    "weightMax": "Weight cannot exceed {{max}} kg",
+    "pediatricWeight": "Pediatric weight detected - verify dosing protocols",
+    "highWeight": "High weight - consider dose capping for BSA > {{bsaCap}} m²",
+    "heightNaN": "Height must be a valid number",
+    "heightMin": "Height must be at least {{min}} cm",
+    "heightMax": "Height cannot exceed {{max}} cm",
+    "ageNaN": "Age must be a valid number",
+    "ageMin": "Age must be at least {{min}}",
+    "ageMax": "Age cannot exceed {{max}} years",
+    "pediatricPatient": "Pediatric patient - verify dosing protocols and consider pediatric-specific regimens",
+    "elderlyPatient": "Elderly patient - consider dose reduction and enhanced monitoring",
+    "bsaLow": "Low BSA detected - verify calculations and consider pediatric protocols",
+    "bsaHigh": "High BSA detected - consider dose capping at 2.2 m² for some agents",
+    "crclSevere": "Severe renal impairment - consider dose reduction or nephrotoxic drug avoidance",
+    "crclModerateSevere": "Moderate-severe renal impairment - dose adjustment may be required",
+    "crclMildModerate": "Mild-moderate renal impairment - monitor for nephrotoxicity",
+    "creatinineNaN": "Creatinine must be a valid number",
+    "creatinineLow": "Unusually low creatinine - verify lab values",
+    "creatinineHigh": "Severely elevated creatinine - consider nephrology consultation",
+    "missingDoseParams": "Missing required dose calculation parameters",
+    "calculatedDosePositive": "{{drug}}: Calculated dose must be positive",
+    "doseExtremelyLow": "{{drug}}: Calculated dose ({{dose}} {{unit}}) is extremely low (< 10% of standard)",
+    "doseLow": "{{drug}}: Low dose detected ({{dose}} {{unit}}) - verify calculation",
+    "doseExceedsMax": "{{drug}}: Calculated dose ({{dose}} {{unit}}) exceeds maximum safe limit (200% of standard)",
+    "doseHigh": "{{drug}}: High dose detected ({{dose}} {{unit}}) - consider dose capping",
+    "doxorubicinCumulative": "{{drug}}: Consider cumulative dose monitoring (current: {{dose}} mg)",
+    "cisplatinHigh": "{{drug}}: High cisplatin dose - ensure adequate hydration and monitoring"
   },
   "i18nPrompt": {
     "detectedRo": "We detected Romanian as your browser language. Switch to Romanian?",

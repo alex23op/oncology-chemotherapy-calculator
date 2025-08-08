@@ -264,6 +264,66 @@
     "guidelinesTitle": "Ghiduri clinice:",
     "guidelinesBody": "Clasificare bazată pe NCCN 2024, ASCO 2020 și MASCC/ESMO 2023 pentru utilizarea antiemeticelor în oncologie. Nivelurile de risc determină strategiile adecvate de profilaxie antiemetică."
   },
+  "antiemeticSelector": {
+    "title": "Selecție protocol antiemetic",
+    "description": "Profilaxie antiemetică bazată pe dovezi pentru regimuri cu risc emetogen {{riskLevel}}",
+    "tabs": {
+      "recommended": "Recomandate",
+      "all": "Toate protocoalele",
+      "individual": "Agenți individuali"
+    },
+    "agentsLabel": "Agenți ({{count}})",
+    "viewDetails": "Vezi detalii clinice",
+    "acuteManagement": "MANAGEMENT ACUT",
+    "delayedManagement": "MANAGEMENT ÎNTÂRZIAT",
+    "rationale": "RAȚIUNE",
+    "guidelinesLabel": "Ghiduri:",
+    "alerts": {
+      "recommended": "Protocoale recomandate specific pentru regimul curent pe baza ghidurilor.",
+      "none": "Nu există protocoale specifice recomandate pentru această combinație. Revizuiți toate protocoalele sau selectați agenți individuali."
+    },
+    "individualHelper": "Selectați agenți antiemetici individuali pentru a crea un protocol personalizat. Niveluri de dovezi: IA (cel mai înalt), IB, IC, IIA, IIB, IIIA, IIIB (cel mai scăzut).",
+    "summaryTitle": "Sumar protocol antiemetic selectat",
+    "mechanismLabel": "Mecanism:",
+    "noteLabel": "Notă:"
+  },
+  
+  "validation": {
+    "titles": {
+      "error": "Eroare de validare",
+      "warning": "Avertisment clinic"
+    },
+    "weightNaN": "Greutatea trebuie să fie un număr valid",
+    "weightMin": "Greutatea trebuie să fie cel puțin {{min}} kg",
+    "weightMax": "Greutatea nu poate depăși {{max}} kg",
+    "pediatricWeight": "Greutate pediatrică - verificați protocoalele de dozare",
+    "highWeight": "Greutate mare - luați în considerare limitarea dozei pentru ASC > {{bsaCap}} m²",
+    "heightNaN": "Înălțimea trebuie să fie un număr valid",
+    "heightMin": "Înălțimea trebuie să fie cel puțin {{min}} cm",
+    "heightMax": "Înălțimea nu poate depăși {{max}} cm",
+    "ageNaN": "Vârsta trebuie să fie un număr valid",
+    "ageMin": "Vârsta trebuie să fie cel puțin {{min}}",
+    "ageMax": "Vârsta nu poate depăși {{max}} ani",
+    "pediatricPatient": "Pacient pediatric - verificați protocoalele de dozare și regimurile pediatrice",
+    "elderlyPatient": "Pacient vârstnic - luați în considerare reducerea dozei și monitorizarea intensificată",
+    "bsaLow": "ASC scăzută - verificați calculele și luați în considerare protocoalele pediatrice",
+    "bsaHigh": "ASC ridicată - luați în considerare limitarea dozei la 2.2 m² pentru unele medicamente",
+    "crclSevere": "Insuficiență renală severă - luați în considerare reducerea dozei sau evitarea nefrotoxice",
+    "crclModerateSevere": "Insuficiență renală moderat-severă - poate fi necesară ajustarea dozei",
+    "crclMildModerate": "Insuficiență renală ușoară-moderată - monitorizați nefrotoxicitatea",
+    "creatinineNaN": "Creatinina trebuie să fie un număr valid",
+    "creatinineLow": "Creatinină neobișnuit de mică - verificați valorile de laborator",
+    "creatinineHigh": "Creatinină sever crescută - luați în considerare consult nefrologie",
+    "missingDoseParams": "Parametri de calcul al dozei lipsă",
+    "calculatedDosePositive": "{{drug}}: Doza calculată trebuie să fie pozitivă",
+    "doseExtremelyLow": "{{drug}}: Doza calculată ({{dose}} {{unit}}) este extrem de mică (< 10% din standard)",
+    "doseLow": "{{drug}}: Doză mică detectată ({{dose}} {{unit}}) - verificați calculul",
+    "doseExceedsMax": "{{drug}}: Doza calculată ({{dose}} {{unit}}) depășește limita maximă sigură (200% din standard)",
+    "doseHigh": "{{drug}}: Doză mare detectată ({{dose}} {{unit}}) - luați în considerare limitarea dozei",
+    "doxorubicinCumulative": "{{drug}}: Luați în considerare monitorizarea dozei cumulative (curent: {{dose}} mg)",
+    "cisplatinHigh": "{{drug}}: Doză de cisplatină mare - asigurați hidratare și monitorizare adecvată"
+  },
+  
   "i18nPrompt": {
     "detectedRo": "Am detectat limba română în browser. Doriți să treceți la română?",
     "yes": "Da",

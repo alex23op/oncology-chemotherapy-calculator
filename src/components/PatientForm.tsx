@@ -155,7 +155,7 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
   // Show validation toast when validation changes
   useEffect(() => {
     if (validation.errors.length > 0 || validation.warnings.length > 0) {
-      showValidationToast(validation, "Patient Data");
+      showValidationToast(validation, t('patientForm.title'));
     }
   }, [validation]);
 
@@ -220,12 +220,12 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="height">Height</Label>
+            <Label htmlFor="height">{t('patientForm.height')}</Label>
             <div className="flex gap-2">
               <Input
                 id="height"
                 type="number"
-                placeholder="Enter height"
+                placeholder={t('patientForm.placeholders.enterHeight')}
                 value={patientData.height}
                 onChange={(e) => handleInputChange("height", e.target.value)}
                 className="flex-1"
@@ -235,45 +235,45 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="cm">cm</SelectItem>
-                  <SelectItem value="inches">in</SelectItem>
+                  <SelectItem value="cm">{t('patientForm.units.cm')}</SelectItem>
+                  <SelectItem value="inches">{t('patientForm.units.in')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="age">Age</Label>
+            <Label htmlFor="age">{t('patientForm.age')}</Label>
             <Input
               id="age"
               type="number"
-              placeholder="Enter age"
+              placeholder={t('patientForm.placeholders.enterAge')}
               value={patientData.age}
               onChange={(e) => handleInputChange("age", e.target.value)}
             />
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="sex">Sex</Label>
+            <Label htmlFor="sex">{t('patientForm.sex')}</Label>
             <Select value={patientData.sex} onValueChange={(value) => handleInputChange("sex", value)}>
               <SelectTrigger>
-                <SelectValue placeholder="Select sex" />
+                <SelectValue placeholder={t('patientForm.placeholders.selectSex')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="male">Male</SelectItem>
-                <SelectItem value="female">Female</SelectItem>
+                <SelectItem value="male">{t('patientForm.male')}</SelectItem>
+                <SelectItem value="female">{t('patientForm.female')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="creatinine">Serum Creatinine</Label>
+            <Label htmlFor="creatinine">{t('patientForm.creatinine')}</Label>
             <div className="flex gap-2">
               <Input
                 id="creatinine"
                 type="number"
                 step="0.1"
-                placeholder="Enter creatinine"
+                placeholder={t('patientForm.placeholders.enterCreatinine')}
                 value={patientData.creatinine}
                 onChange={(e) => handleInputChange("creatinine", e.target.value)}
                 className="flex-1"
@@ -283,8 +283,8 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="mg/dL">mg/dL</SelectItem>
-                  <SelectItem value="μmol/L">μmol/L</SelectItem>
+                  <SelectItem value="mg/dL">{t('patientForm.units.mgdl')}</SelectItem>
+                  <SelectItem value="μmol/L">{t('patientForm.units.umoll')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -299,7 +299,7 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
               <div className="flex items-center gap-2 mb-2">
                 <Calculator className={`h-4 w-4 ${validation.isValid ? 'text-success' : 'text-warning'}`} />
                 <span className={`font-medium ${validation.isValid ? 'text-success' : 'text-warning'}`}>
-                  Calculated BSA
+                  {t('patientForm.calculatedBSA')}
                 </span>
                 {validation.isValid && <CheckCircle className="h-4 w-4 text-success ml-auto" />}
               </div>
@@ -312,7 +312,7 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
                 )} m²
               </p>
               <p className="text-sm text-muted-foreground mt-1">
-                Using DuBois formula (validated)
+                {t('patientForm.duBoisNote')}
               </p>
             </div>
             
@@ -323,7 +323,7 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
                 <div className="flex items-center gap-2 mb-2">
                   <Calculator className={`h-4 w-4 ${validation.isValid ? 'text-success' : 'text-warning'}`} />
                   <span className={`font-medium ${validation.isValid ? 'text-success' : 'text-warning'}`}>
-                    Creatinine Clearance
+                    {t('patientForm.creatinineClearance')}
                   </span>
                   {validation.isValid && <CheckCircle className="h-4 w-4 text-success ml-auto" />}
                 </div>
@@ -338,7 +338,7 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
                   )} mL/min
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Using Cockcroft-Gault formula (validated)
+                  {t('patientForm.cgNote')}
                 </p>
               </div>
             )}
