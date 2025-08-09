@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { AlertTriangle, AlertCircle, Info, X, Check } from 'lucide-react';
 import { SafetyAlert } from '@/utils/clinicalSafetyEngine';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface SafetyAlertsPanelProps {
   alerts: SafetyAlert[];
@@ -29,6 +30,7 @@ export const SafetyAlertsPanel: React.FC<SafetyAlertsPanelProps> = ({
   onAlertAcknowledge,
   className
 }) => {
+  const { t } = useTranslation();
   const [selectedAlert, setSelectedAlert] = useState<SafetyAlert | null>(null);
   const [showOverrideDialog, setShowOverrideDialog] = useState(false);
   const [justification, setJustification] = useState('');
@@ -101,10 +103,10 @@ export const SafetyAlertsPanel: React.FC<SafetyAlertsPanelProps> = ({
   if (visibleAlerts.length === 0) {
     return (
       <div className={cn("space-y-4", className)}>
-        <div className="flex items-center gap-2 text-success">
-          <Check className="h-4 w-4" />
-          <span className="text-sm font-medium">All safety checks passed</span>
-        </div>
+<div className="flex items-center gap-2 text-success">
+  <Check className="h-4 w-4" />
+  <span className="text-sm font-medium">{t('safetyAlerts.allClear')}</span>
+</div>
       </div>
     );
   }
@@ -112,27 +114,27 @@ export const SafetyAlertsPanel: React.FC<SafetyAlertsPanelProps> = ({
   return (
     <div className={cn("space-y-4", className)}>
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-foreground">Clinical Safety Alerts</h3>
-        <div className="flex gap-2">
-          {criticalAlerts.length > 0 && (
-            <Badge variant="destructive" className="flex items-center gap-1">
-              <AlertTriangle className="h-3 w-3" />
-              {criticalAlerts.length} Critical
-            </Badge>
-          )}
-          {warningAlerts.length > 0 && (
-            <Badge variant="secondary" className="flex items-center gap-1">
-              <AlertCircle className="h-3 w-3" />
-              {warningAlerts.length} Warning
-            </Badge>
-          )}
-          {infoAlerts.length > 0 && (
-            <Badge variant="outline" className="flex items-center gap-1">
-              <Info className="h-3 w-3" />
-              {infoAlerts.length} Info
-            </Badge>
-          )}
-        </div>
+<h3 className="text-lg font-semibold text-foreground">{t('safetyAlerts.title')}</h3>
+<div className="flex gap-2">
+  {criticalAlerts.length > 0 && (
+    <Badge variant="destructive" className="flex items-center gap-1">
+      <AlertTriangle className="h-3 w-3" />
+      {t('safetyAlerts.counts.critical', { count: criticalAlerts.length })}
+    </Badge>
+  )}
+  {warningAlerts.length > 0 && (
+    <Badge variant="secondary" className="flex items-center gap-1">
+      <AlertCircle className="h-3 w-3" />
+      {t('safetyAlerts.counts.warning', { count: warningAlerts.length })}
+    </Badge>
+  )}
+  {infoAlerts.length > 0 && (
+    <Badge variant="outline" className="flex items-center gap-1">
+      <Info className="h-3 w-3" />
+      {t('safetyAlerts.counts.info', { count: infoAlerts.length })}
+    </Badge>
+  )}
+</div>
       </div>
 
       <div className="space-y-3">
@@ -162,14 +164,14 @@ export const SafetyAlertsPanel: React.FC<SafetyAlertsPanelProps> = ({
                 <AlertDescription className="text-sm">
                   <div className="space-y-1">
                     <p>{alert.message}</p>
-                    <p className="font-medium text-foreground">
-                      <strong>Recommendation:</strong> {alert.recommendation}
-                    </p>
-                    {alert.references && alert.references.length > 0 && (
-                      <p className="text-xs text-muted-foreground">
-                        <strong>References:</strong> {alert.references.join(', ')}
-                      </p>
-                    )}
+<p className="font-medium text-foreground">
+  <strong>{t('safetyAlerts.recommendation')}:</strong> {alert.recommendation}
+</p>
+{alert.references && alert.references.length > 0 && (
+  <p className="text-xs text-muted-foreground">
+    <strong>{t('safetyAlerts.references')}:</strong> {alert.references.join(', ')}
+  </p>
+)}
                   </div>
                 </AlertDescription>
                 
@@ -181,22 +183,22 @@ export const SafetyAlertsPanel: React.FC<SafetyAlertsPanelProps> = ({
                       onClick={() => handleAcknowledgeAlert(alert)}
                       className="text-xs"
                     >
-                      <Check className="h-3 w-3 mr-1" />
-                      Acknowledge
-                    </Button>
-                  )}
-                  
-                  {alert.canOverride && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => openOverrideDialog(alert)}
-                      className="text-xs"
-                    >
-                      <X className="h-3 w-3 mr-1" />
-                      Override
-                    </Button>
-                  )}
+<Check className="h-3 w-3 mr-1" />
+{t('safetyAlerts.actions.acknowledge')}
+</Button>
+)}
+
+{alert.canOverride && (
+  <Button
+    size="sm"
+    variant="outline"
+    onClick={() => openOverrideDialog(alert)}
+    className="text-xs"
+  >
+    <X className="h-3 w-3 mr-1" />
+    {t('safetyAlerts.actions.override')}
+  </Button>
+)}
                 </div>
               </div>
             </div>
@@ -208,11 +210,10 @@ export const SafetyAlertsPanel: React.FC<SafetyAlertsPanelProps> = ({
       <Dialog open={showOverrideDialog} onOpenChange={setShowOverrideDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Override Safety Alert</DialogTitle>
-            <DialogDescription>
-              You are about to override a {selectedAlert?.severity} safety alert.
-              {selectedAlert?.requiresJustification && ' Clinical justification is required.'}
-            </DialogDescription>
+<DialogTitle>{t('safetyAlerts.dialog.overrideTitle')}</DialogTitle>
+<DialogDescription>
+  {t('safetyAlerts.dialog.overrideDesc', { severity: selectedAlert?.severity, requiresJustification: selectedAlert?.requiresJustification ? t('safetyAlerts.dialog.requiresJustification') : '' })}
+</DialogDescription>
           </DialogHeader>
           
           {selectedAlert && (
@@ -225,37 +226,37 @@ export const SafetyAlertsPanel: React.FC<SafetyAlertsPanelProps> = ({
               
               {selectedAlert.requiresJustification && (
                 <div className="space-y-2">
-                  <Label htmlFor="justification">Clinical Justification *</Label>
-                  <Textarea
-                    id="justification"
-                    value={justification}
-                    onChange={(e) => setJustification(e.target.value)}
-                    placeholder="Enter clinical justification for overriding this alert..."
-                    className="min-h-20"
-                  />
+<Label htmlFor="justification">{t('safetyAlerts.dialog.clinicalJustification')}</Label>
+<Textarea
+  id="justification"
+  value={justification}
+  onChange={(e) => setJustification(e.target.value)}
+  placeholder={t('safetyAlerts.dialog.placeholder')}
+  className="min-h-20"
+/>
                 </div>
               )}
             </div>
           )}
           
           <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => {
-                setShowOverrideDialog(false);
-                setSelectedAlert(null);
-                setJustification('');
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={handleOverrideAlert}
-              disabled={selectedAlert?.requiresJustification && !justification.trim()}
-            >
-              Override Alert
-            </Button>
+<Button
+  variant="outline"
+  onClick={() => {
+    setShowOverrideDialog(false);
+    setSelectedAlert(null);
+    setJustification('');
+  }}
+>
+  {t('safetyAlerts.dialog.cancel')}
+</Button>
+<Button
+  variant="destructive"
+  onClick={handleOverrideAlert}
+  disabled={selectedAlert?.requiresJustification && !justification.trim()}
+>
+  {t('safetyAlerts.dialog.overrideAlert')}
+</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

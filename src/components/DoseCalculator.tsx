@@ -75,7 +75,8 @@ export const DoseCalculator = ({
   const [bsaCap, setBsaCap] = useState<number>(2.0);
   const [useBsaCap, setUseBsaCap] = useState<boolean>(false);
 
-  const { componentRef, printTreatmentSheet } = usePrint();
+const { componentRef, printTreatmentSheet } = usePrint();
+const { t } = useTranslation();
 
   useEffect(() => {
     console.log("DoseCalculator useEffect triggered - regimen:", regimen?.name, "bsa:", bsa);
@@ -352,35 +353,35 @@ export const DoseCalculator = ({
   };
 
   const handleExportTreatmentPDF = async () => {
-    try {
-      console.log('Export PDF clicked', { patientId, calculations: calculations.length });
-      if (!patientId.trim()) {
-        toast.error('Please enter a Patient ID before exporting');
-        return;
-      }
-      if (calculations.length === 0) {
-        toast.error('No calculations available for export');
-        return;
-      }
+try {
+  console.log('Export PDF clicked', { patientId, calculations: calculations.length });
+  if (!patientId.trim()) {
+    toast.error(t('doseCalculator.toasts.enterPatientIdBeforeExport'));
+    return;
+  }
+  if (calculations.length === 0) {
+    toast.error(t('doseCalculator.toasts.noCalcsToExport'));
+    return;
+  }
 
-      const treatmentData = prepareTreatmentData();
-      await generateClinicalTreatmentPDF({
-        ...treatmentData,
-        elementId: 'clinical-treatment-sheet'
-      });
-      toast.success('Treatment protocol PDF generated successfully');
-    } catch (error) {
-      console.error('Export error:', error);
-      toast.error('Failed to export treatment protocol');
-    }
+  const treatmentData = prepareTreatmentData();
+  await generateClinicalTreatmentPDF({
+    ...treatmentData,
+    elementId: 'clinical-treatment-sheet'
+  });
+  toast.success(t('doseCalculator.toasts.exportSuccess'));
+} catch (error) {
+  console.error('Export error:', error);
+  toast.error(t('doseCalculator.toasts.exportFailed'));
+}
   };
 
   const handlePrintTreatmentSheet = () => {
-    if (!patientId.trim()) {
-      toast.error('Please enter a Patient ID before printing');
-      return;
-    }
-    printTreatmentSheet();
+if (!patientId.trim()) {
+  toast.error(t('doseCalculator.toasts.enterPatientIdBeforePrint'));
+  return;
+}
+printTreatmentSheet();
   };
 
   const handleGenerateTreatmentSheet = () => {
@@ -393,19 +394,19 @@ export const DoseCalculator = ({
     console.log('weight:', weight);
     console.log('creatinineClearance:', creatinineClearance);
     
-    if (!patientId.trim()) {
-      console.log('ERROR: No patient ID');
-      toast.error('Please enter a Patient ID to generate treatment sheet');
-      return;
-    }
-    if (calculations.length === 0) {
-      console.log('ERROR: No calculations available');
-      toast.error('No dose calculations available. Please ensure regimen is selected and patient data is entered.');
-      return;
-    }
-    console.log('Setting showTreatmentSheet to true');
-    setShowTreatmentSheet(true);
-    toast.success('Treatment sheet generated successfully');
+if (!patientId.trim()) {
+  console.log('ERROR: No patient ID');
+  toast.error(t('doseCalculator.toasts.generateSheetNeedId'));
+  return;
+}
+if (calculations.length === 0) {
+  console.log('ERROR: No calculations available');
+  toast.error(t('doseCalculator.toasts.generateSheetNeedCalcs'));
+  return;
+}
+console.log('Setting showTreatmentSheet to true');
+setShowTreatmentSheet(true);
+toast.success(t('doseCalculator.toasts.sheetGenerated'));
   };
 
   console.log("DoseCalculator rendering - regimen:", regimen?.name, "calculations:", calculations.length);
@@ -413,13 +414,13 @@ export const DoseCalculator = ({
   if (!regimen) {
     console.log("No regimen selected, showing placeholder");
     return (
-      <Card className="w-full">
-        <CardContent className="pt-6">
-          <div className="text-center py-8 text-muted-foreground">
-            Select a cancer type and regimen to calculate doses.
-          </div>
-        </CardContent>
-      </Card>
+<Card className="w-full">
+  <CardContent className="pt-6">
+    <div className="text-center py-8 text-muted-foreground">
+      {t('doseCalculator.emptyState')}
+    </div>
+  </CardContent>
+</Card>
     );
   }
 
@@ -428,31 +429,31 @@ export const DoseCalculator = ({
       <CardHeader className="pb-4">
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="flex items-center gap-2 text-primary">
-              <Calculator className="h-5 w-5" />
-              Dose Calculations
-            </CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              {regimen.name}
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Button
-              variant={isEditing ? "default" : "outline"}
-              size="sm"
-              onClick={() => setIsEditing(!isEditing)}
-            >
-              {isEditing ? <Save className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
-              {isEditing ? "Save" : "Edit"}
-            </Button>
+<CardTitle className="flex items-center gap-2 text-primary">
+  <Calculator className="h-5 w-5" />
+  {t('doseCalculator.title')}
+</CardTitle>
+<p className="text-sm text-muted-foreground mt-1">
+  {regimen.name}
+</p>
+</div>
+<div className="flex gap-2">
+  <Button
+    variant={isEditing ? "default" : "outline"}
+    size="sm"
+    onClick={() => setIsEditing(!isEditing)}
+  >
+    {isEditing ? <Save className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
+    {isEditing ? t('doseCalculator.save') : t('doseCalculator.edit')}
+  </Button>
             <Button
               variant="secondary"
               size="sm"
               onClick={handleGenerateTreatmentSheet}
               disabled={!patientId.trim() || calculations.length === 0}
             >
-              <FileCheck className="h-4 w-4" />
-              Generate Sheet
+<FileCheck className="h-4 w-4" />
+{t('doseCalculator.generateSheet')}
             </Button>
             <Button
               variant="outline"
@@ -463,18 +464,18 @@ export const DoseCalculator = ({
                 console.log('calculations:', calculations);
                 console.log('onExport function exists:', !!onExport);
                 
-                if (calculations.length === 0) {
-                  console.log('ERROR: No calculations to export');
-                  toast.error('No calculations to export. Please select a regimen and enter patient data first.');
-                  return;
-                }
-                console.log('Calling onExport with calculations');
-                onExport?.(calculations);
-                toast.success('Data exported successfully');
-              }}
-            >
-              <FileText className="h-4 w-4" />
-              Export Data
+if (calculations.length === 0) {
+  console.log('ERROR: No calculations to export');
+  toast.error(t('doseCalculator.toasts.noCalcsToExport'));
+  return;
+}
+console.log('Calling onExport with calculations');
+onExport?.(calculations);
+toast.success(t('doseCalculator.toasts.dataExported'));
+}}
+>
+  <FileText className="h-4 w-4" />
+  {t('doseCalculator.exportData')}
             </Button>
           </div>
         </div>
@@ -482,37 +483,37 @@ export const DoseCalculator = ({
       <CardContent className="space-y-6">
         {/* Patient Information for Treatment Sheet */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-muted/30 rounded-lg">
-          <div>
-            <Label htmlFor="patientId">Patient ID *</Label>
-            <Input
-              id="patientId"
-              value={patientId}
-              onChange={(e) => setPatientId(e.target.value)}
-              placeholder="Enter Patient ID"
-              className="mt-1"
-            />
-          </div>
-          <div>
-            <Label htmlFor="cycleNumber">Cycle Number</Label>
-            <Input
-              id="cycleNumber"
-              type="number"
-              value={cycleNumber}
-              onChange={(e) => setCycleNumber(parseInt(e.target.value) || 1)}
-              min="1"
-              className="mt-1"
-            />
-          </div>
-          <div>
-            <Label htmlFor="treatmentDate">Treatment Date</Label>
-            <Input
-              id="treatmentDate"
-              type="date"
-              value={treatmentDate}
-              onChange={(e) => setTreatmentDate(e.target.value)}
-              className="mt-1"
-            />
-          </div>
+<div>
+  <Label htmlFor="patientId">{t('doseCalculator.patientIdLabel')}</Label>
+  <Input
+    id="patientId"
+    value={patientId}
+    onChange={(e) => setPatientId(e.target.value)}
+    placeholder={t('doseCalculator.patientIdPlaceholder')}
+    className="mt-1"
+  />
+</div>
+<div>
+  <Label htmlFor="cycleNumber">{t('doseCalculator.cycleLabel')}</Label>
+  <Input
+    id="cycleNumber"
+    type="number"
+    value={cycleNumber}
+    onChange={(e) => setCycleNumber(parseInt(e.target.value) || 1)}
+    min="1"
+    className="mt-1"
+  />
+</div>
+<div>
+  <Label htmlFor="treatmentDate">{t('doseCalculator.treatmentDateLabel')}</Label>
+  <Input
+    id="treatmentDate"
+    type="date"
+    value={treatmentDate}
+    onChange={(e) => setTreatmentDate(e.target.value)}
+    className="mt-1"
+  />
+</div>
         </div>
 
         {/* Enhanced Dosing Controls */}
@@ -524,15 +525,15 @@ export const DoseCalculator = ({
                 checked={useBsaCap}
                 onCheckedChange={(checked) => setUseBsaCap(checked as boolean)}
               />
-              <Label htmlFor="useBsaCap" className="text-sm font-medium">
-                Apply BSA Cap
-              </Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Label htmlFor="bsaCap" className="text-xs text-muted-foreground">
-                Max BSA:
-              </Label>
-              <Input
+<Label htmlFor="useBsaCap" className="text-sm font-medium">
+  {t('doseCalculator.applyBsaCap')}
+</Label>
+</div>
+<div className="flex items-center space-x-2">
+  <Label htmlFor="bsaCap" className="text-xs text-muted-foreground">
+    {t('doseCalculator.maxBsa')}:
+  </Label>
+  <Input
                 id="bsaCap"
                 type="number"
                 value={bsaCap}
@@ -554,41 +555,41 @@ export const DoseCalculator = ({
               className={safetyAlerts.filter(a => a.severity === 'critical').length > 0 ? 
                 "border-destructive text-destructive" : ""}
             >
-              <Shield className="h-4 w-4 mr-2" />
-              Safety ({safetyAlerts.length})
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowCalendar(!showCalendar)}
-            >
-              <Calendar className="h-4 w-4 mr-2" />
-              Calendar
-            </Button>
+<Shield className="h-4 w-4 mr-2" />
+{t('doseCalculator.safety')} ({safetyAlerts.length})
+</Button>
+<Button
+  variant="outline"
+  size="sm"
+  onClick={() => setShowCalendar(!showCalendar)}
+>
+  <Calendar className="h-4 w-4 mr-2" />
+  {t('doseCalculator.calendar')}
+</Button>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">BSA:</span>
-            <span className="font-medium">{bsa} m²</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Weight:</span>
-            <span className="font-medium">{weight} kg</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">CrCl:</span>
-            <span className="font-medium">{creatinineClearance} mL/min</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Schedule:</span>
-            <span className="font-medium">{regimen.schedule}</span>
-          </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Cycles:</span>
-            <span className="font-medium">{regimen.cycles}</span>
-          </div>
+<div className="flex justify-between">
+  <span className="text-muted-foreground">{t('doseCalculator.metrics.bsa')}:</span>
+  <span className="font-medium">{bsa} m²</span>
+</div>
+<div className="flex justify-between">
+  <span className="text-muted-foreground">{t('doseCalculator.metrics.weight')}:</span>
+  <span className="font-medium">{weight} kg</span>
+</div>
+<div className="flex justify-between">
+  <span className="text-muted-foreground">{t('doseCalculator.metrics.crcl')}:</span>
+  <span className="font-medium">{creatinineClearance} mL/min</span>
+</div>
+<div className="flex justify-between">
+  <span className="text-muted-foreground">{t('doseCalculator.metrics.schedule')}:</span>
+  <span className="font-medium">{regimen.schedule}</span>
+</div>
+<div className="flex justify-between">
+  <span className="text-muted-foreground">{t('doseCalculator.metrics.cycles')}:</span>
+  <span className="font-medium">{regimen.cycles}</span>
+</div>
         </div>
 
         {/* Emetogenic Risk Assessment */}
@@ -640,7 +641,7 @@ export const DoseCalculator = ({
         <Separator />
 
         <div>
-          <h3 className="font-semibold text-foreground mb-3">Chemotherapy Drugs</h3>
+          <h3 className="font-semibold text-foreground mb-3">{t('doseCalculator.chemoDrugs')}</h3>
           <div className="space-y-4">
              {calculations.map((calc, index) => (
                <div key={index} className={`border-2 rounded-lg p-5 space-y-4 transition-all ${
@@ -662,92 +663,92 @@ export const DoseCalculator = ({
                            <Badge variant="outline" className="font-medium">{calc.drug.route}</Badge>
                            {calc.drug.day && <Badge variant="secondary" className="font-medium">{calc.drug.day}</Badge>}
                          </div>
-                         <p className="text-sm text-muted-foreground mt-2 font-medium">
-                           Standard Dose: <span className="text-foreground">{calc.drug.dosage} {calc.drug.unit}</span>
+<p className="text-sm text-muted-foreground mt-2 font-medium">
+  {t('doseCalculator.standardDose')}: <span className="text-foreground">{calc.drug.dosage} {calc.drug.unit}</span>
                          </p>
                        </div>
                      </div>
 
-                     {(calc.drug.dilution || calc.drug.administrationDuration) && (
-                       <div className="border-2 border-accent/30 bg-accent/10 rounded-lg p-4">
-                         <h5 className="font-semibold text-accent mb-3">Preparation & Administration</h5>
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                           {calc.drug.dilution && (
-                             <div className="bg-background/70 p-3 rounded border">
-                               <Label className="text-muted-foreground font-semibold text-sm">Diluent</Label>
-                               <p className="text-foreground font-medium mt-1">{calc.drug.dilution}</p>
-                             </div>
-                           )}
-                           {calc.drug.administrationDuration && (
-                             <div className="bg-background/70 p-3 rounded border">
-                               <Label className="text-muted-foreground font-semibold text-sm">Administration Duration</Label>
-                               <p className="text-foreground font-medium mt-1">{calc.drug.administrationDuration}</p>
-                             </div>
-                           )}
-                         </div>
-                       </div>
-                     )}
+{(calc.drug.dilution || calc.drug.administrationDuration) && (
+  <div className="border-2 border-accent/30 bg-accent/10 rounded-lg p-4">
+    <h5 className="font-semibold text-accent mb-3">{t('doseCalculator.prepAndAdmin')}</h5>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {calc.drug.dilution && (
+        <div className="bg-background/70 p-3 rounded border">
+          <Label className="text-muted-foreground font-semibold text-sm">{t('doseCalculator.diluent')}</Label>
+          <p className="text-foreground font-medium mt-1">{calc.drug.dilution}</p>
+        </div>
+      )}
+      {calc.drug.administrationDuration && (
+        <div className="bg-background/70 p-3 rounded border">
+          <Label className="text-muted-foreground font-semibold text-sm">{t('doseCalculator.adminDuration')}</Label>
+          <p className="text-foreground font-medium mt-1">{calc.drug.administrationDuration}</p>
+        </div>
+      )}
+    </div>
+  </div>
+)}
 
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-                      <div>
-                        <Label className="text-muted-foreground">Calculated Dose</Label>
-                        <p className="font-medium text-lg">
-                          {calc.calculatedDose.toFixed(1)} mg
-                        </p>
-                      </div>
+<div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+  <div>
+    <Label className="text-muted-foreground">{t('doseCalculator.calculatedDose')}</Label>
+    <p className="font-medium text-lg">
+      {calc.calculatedDose.toFixed(1)} mg
+    </p>
+  </div>
 
-                      <div>
-                        <Label className="text-muted-foreground">Reduction %</Label>
-                        {isEditing ? (
-                          <Input
-                            type="number"
-                            value={calc.reductionPercentage}
-                            onChange={(e) => handlePercentageReduction(index, e.target.value)}
-                            className="mt-1"
-                            step="1"
-                            min="0"
-                            max="100"
-                            placeholder="0"
-                          />
-                        ) : (
-                          <p className={`font-medium ${
-                            calc.reductionPercentage > 0 ? "text-warning" : "text-success"
-                          }`}>
-                            {calc.reductionPercentage}%
-                          </p>
-                        )}
-                      </div>
+  <div>
+    <Label className="text-muted-foreground">{t('doseCalculator.reductionPercent')}</Label>
+    {isEditing ? (
+      <Input
+        type="number"
+        value={calc.reductionPercentage}
+        onChange={(e) => handlePercentageReduction(index, e.target.value)}
+        className="mt-1"
+        step="1"
+        min="0"
+        max="100"
+        placeholder="0"
+      />
+    ) : (
+      <p className={`font-medium ${
+        calc.reductionPercentage > 0 ? "text-warning" : "text-success"
+      }`}>
+        {calc.reductionPercentage}%
+      </p>
+    )}
+  </div>
 
-                      <div>
-                        <Label className="text-muted-foreground">
-                          {isEditing ? "Adjusted Dose" : "Final Dose"}
-                        </Label>
-                        {isEditing ? (
-                          <Input
-                            type="number"
-                            value={calc.adjustedDose}
-                            onChange={(e) => handleDoseAdjustment(index, e.target.value)}
-                            className="mt-1"
-                            step="0.1"
-                          />
-                        ) : (
-                          <p className="font-medium text-lg text-accent">
-                            {calc.finalDose} mg
-                          </p>
-                        )}
-                      </div>
+  <div>
+    <Label className="text-muted-foreground">
+      {isEditing ? t('doseCalculator.adjustedDose') : t('doseCalculator.finalDose')}
+    </Label>
+    {isEditing ? (
+      <Input
+        type="number"
+        value={calc.adjustedDose}
+        onChange={(e) => handleDoseAdjustment(index, e.target.value)}
+        className="mt-1"
+        step="0.1"
+      />
+    ) : (
+      <p className="font-medium text-lg text-accent">
+        {calc.finalDose} mg
+      </p>
+    )}
+  </div>
 
-                      <div>
-                        <Label className="text-muted-foreground">Total Reduction</Label>
-                        <p className={`font-medium ${
-                          getDoseReduction(calc.calculatedDose, calc.adjustedDose) > 0 
-                            ? "text-warning" 
-                            : "text-success"
-                        }`}>
-                          {getDoseReduction(calc.calculatedDose, calc.adjustedDose)}%
-                        </p>
-                      </div>
-                    </div>
+  <div>
+    <Label className="text-muted-foreground">{t('doseCalculator.totalReduction')}</Label>
+    <p className={`font-medium ${
+      getDoseReduction(calc.calculatedDose, calc.adjustedDose) > 0 
+        ? "text-warning" 
+        : "text-success"
+    }`}>
+      {getDoseReduction(calc.calculatedDose, calc.adjustedDose)}%
+    </p>
+  </div>
+</div>
 
                     {isEditing && (
                       <div>
@@ -775,15 +776,15 @@ export const DoseCalculator = ({
 
         {/* Clinical Notes */}
         <div>
-          <Label htmlFor="clinicalNotes">Clinical Notes (Optional)</Label>
-          <Textarea
-            id="clinicalNotes"
-            value={clinicalNotes}
-            onChange={(e) => setClinicalNotes(e.target.value)}
-            placeholder="Add any clinical notes or special instructions..."
-            className="mt-1"
-            rows={3}
-          />
+<Label htmlFor="clinicalNotes">{t('doseCalculator.clinicalNotes')}</Label>
+<Textarea
+  id="clinicalNotes"
+  value={clinicalNotes}
+  onChange={(e) => setClinicalNotes(e.target.value)}
+  placeholder={t('doseCalculator.clinicalNotesPlaceholder')}
+  className="mt-1"
+  rows={3}
+/>
         </div>
 
         {/* Treatment Sheet Section */}
@@ -791,25 +792,25 @@ export const DoseCalculator = ({
           <div className="space-y-4">
             <Separator />
             <div className="flex justify-between items-center">
-              <h3 className="text-lg font-semibold">Clinical Treatment Sheet</h3>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleExportTreatmentPDF}
-                  disabled={!patientId.trim()}
-                >
-                  <Download className="h-4 w-4" />
-                  Export PDF
-                </Button>
+<h3 className="text-lg font-semibold">{t('doseCalculator.treatmentSheetTitle')}</h3>
+<div className="flex gap-2">
+  <Button
+    variant="outline"
+    size="sm"
+    onClick={handleExportTreatmentPDF}
+    disabled={!patientId.trim()}
+  >
+    <Download className="h-4 w-4" />
+    {t('doseCalculator.exportPdf')}
+  </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handlePrintTreatmentSheet}
                   disabled={!patientId.trim()}
                 >
-                  <Printer className="h-4 w-4" />
-                  Print
+<Printer className="h-4 w-4" />
+{t('doseCalculator.print')}
                 </Button>
               </div>
             </div>
@@ -833,14 +834,12 @@ export const DoseCalculator = ({
 
         {calculations.length > 0 && (
           <div className="bg-accent/10 rounded-lg p-4 border border-accent/20">
-            <h4 className="font-medium text-accent mb-2">Important Reminders</h4>
-            <ul className="text-sm text-muted-foreground space-y-1">
-              <li>• Verify patient weight and height before administration</li>
-              <li>• Check for any contraindications or drug interactions</li>
-              <li>• Consider dose modifications for organ dysfunction</li>
-              <li>• Ensure appropriate premedications are given</li>
-              <li>• Generate and review the clinical treatment sheet before proceeding</li>
-            </ul>
+<h4 className="font-medium text-accent mb-2">{t('doseCalculator.reminders.title')}</h4>
+<ul className="text-sm text-muted-foreground space-y-1">
+  {(t('doseCalculator.reminders.items', { returnObjects: true }) as string[]).map((item, idx) => (
+    <li key={idx}>• {item}</li>
+  ))}
+</ul>
           </div>
         )}
       </CardContent>

@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { AlertTriangle, CheckCircle, Info, Clock } from "lucide-react";
 import { drugEmetogenicClassification, emetogenicRiskLevels } from "@/types/emetogenicRisk";
 import { Drug } from "@/types/regimens";
+import { useTranslation } from 'react-i18next';
 
 interface EmetogenicRiskClassifierProps {
   drugs: Drug[];
@@ -16,6 +17,7 @@ export const EmetogenicRiskClassifier: React.FC<EmetogenicRiskClassifierProps> =
   drugs, 
   onRiskLevelChange 
 }) => {
+  const { t } = useTranslation();
   const riskAssessment = useMemo(() => {
     type RiskLevel = "minimal" | "low" | "moderate" | "high";
     let highestRisk: RiskLevel = "minimal";
@@ -110,13 +112,13 @@ export const EmetogenicRiskClassifier: React.FC<EmetogenicRiskClassifierProps> =
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          {getRiskIcon(riskAssessment.overallRisk)}
-          Emetogenic Risk Classification
-        </CardTitle>
-        <CardDescription>
-          Assessment of nausea and vomiting risk based on chemotherapy regimen
-        </CardDescription>
+<CardTitle className="flex items-center gap-2">
+  {getRiskIcon(riskAssessment.overallRisk)}
+  {t('emetogenicRiskClassifier.title')}
+</CardTitle>
+<CardDescription>
+  {t('emetogenicRiskClassifier.description')}
+</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Overall Risk Summary */}
@@ -133,25 +135,25 @@ export const EmetogenicRiskClassifier: React.FC<EmetogenicRiskClassifierProps> =
         }`}>
           <AlertDescription>
             <div className="flex items-center justify-between mb-2">
-              <span className="font-semibold">Overall Emetogenic Risk: </span>
-              <Badge variant={getRiskBadgeVariant(riskAssessment.overallRisk)} className="text-sm">
-                {riskAssessment.overallRisk.toUpperCase()} ({overallRiskData.risk})
-              </Badge>
-            </div>
-            <p className="text-sm text-muted-foreground mb-3">
-              {overallRiskData.description}
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-              <div className="flex items-center gap-2">
-                <Clock className="h-3 w-3" />
-                <span className="font-medium">Acute (0-24h):</span>
-                <span>{overallRiskData.timeframe.acute}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Clock className="h-3 w-3" />
-                <span className="font-medium">Delayed (24-120h):</span>
-                <span>{overallRiskData.timeframe.delayed}</span>
-              </div>
+<span className="font-semibold">{t('emetogenicRiskClassifier.overall')} </span>
+<Badge variant={getRiskBadgeVariant(riskAssessment.overallRisk)} className="text-sm">
+  {riskAssessment.overallRisk.toUpperCase()} ({overallRiskData.risk})
+</Badge>
+</div>
+<p className="text-sm text-muted-foreground mb-3">
+  {overallRiskData.description}
+</p>
+<div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+  <div className="flex items-center gap-2">
+    <Clock className="h-3 w-3" />
+    <span className="font-medium">{t('emetogenicRiskClassifier.acute')}</span>
+    <span>{overallRiskData.timeframe.acute}</span>
+  </div>
+  <div className="flex items-center gap-2">
+    <Clock className="h-3 w-3" />
+    <span className="font-medium">{t('emetogenicRiskClassifier.delayed')}</span>
+    <span>{overallRiskData.timeframe.delayed}</span>
+  </div>
             </div>
           </AlertDescription>
         </Alert>
@@ -160,7 +162,7 @@ export const EmetogenicRiskClassifier: React.FC<EmetogenicRiskClassifierProps> =
 
         {/* Individual Drug Risk Assessment */}
         <div>
-          <h4 className="font-semibold mb-3">Individual Drug Risk Assessment</h4>
+          <h4 className="font-semibold mb-3">{t('emetogenicRiskClassifier.individual')}</h4>
           <div className="space-y-2">
             {riskAssessment.drugRisks.map((drugRisk, index) => (
               <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
@@ -184,13 +186,12 @@ export const EmetogenicRiskClassifier: React.FC<EmetogenicRiskClassifierProps> =
         </div>
 
         {/* Clinical Guidelines Reference */}
-        <Alert>
-          <Info className="h-4 w-4" />
-          <AlertDescription className="text-sm">
-            <strong>Clinical Guidelines:</strong> Classification based on NCCN 2024, ASCO 2020, and MASCC/ESMO 2023 guidelines for antiemetic use in oncology. 
-            Risk levels determine appropriate antiemetic prophylaxis strategies.
-          </AlertDescription>
-        </Alert>
+<Alert>
+  <Info className="h-4 w-4" />
+  <AlertDescription className="text-sm">
+    <strong>{t('emetogenicRiskClassifier.guidelinesTitle')}</strong> {t('emetogenicRiskClassifier.guidelinesBody')}
+  </AlertDescription>
+</Alert>
       </CardContent>
     </Card>
   );

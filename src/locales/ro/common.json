@@ -219,16 +219,17 @@
       ]
     },
     "emptyState": "Selectați un tip de cancer și un regim pentru a calcula dozele.",
-    "toasts": {
-      "enterPatientIdBeforeExport": "Introduceți un ID pacient înainte de export",
-      "noCalcsToExport": "Nu există calcule disponibile pentru export",
-      "exportSuccess": "Protocolul de tratament a fost generat cu succes",
-      "exportFailed": "Eroare la exportul protocolului de tratament",
-      "enterPatientIdBeforePrint": "Introduceți un ID pacient înainte de tipărire",
-      "generateSheetNeedId": "Introduceți un ID pacient pentru a genera fișa de tratament",
-      "generateSheetNeedCalcs": "Nu există calcule de doză. Asigurați-vă că regimul este selectat și datele pacientului sunt introduse.",
-      "sheetGenerated": "Fișa de tratament a fost generată cu succes"
-    }
+"toasts": {
+  "enterPatientIdBeforeExport": "Introduceți un ID pacient înainte de export",
+  "noCalcsToExport": "Nu există calcule disponibile pentru export",
+  "exportSuccess": "Protocolul de tratament a fost generat cu succes",
+  "exportFailed": "Eroare la exportul protocolului de tratament",
+  "enterPatientIdBeforePrint": "Introduceți un ID pacient înainte de tipărire",
+  "generateSheetNeedId": "Introduceți un ID pacient pentru a genera fișa de tratament",
+  "generateSheetNeedCalcs": "Nu există calcule de doză. Asigurați-vă că regimul este selectat și datele pacientului sunt introduse.",
+  "sheetGenerated": "Fișa de tratament a fost generată cu succes",
+  "dataExported": "Date exportate cu succes"
+}
   },
   "safetyAlerts": {
     "allClear": "Toate verificările de siguranță au fost trecute",
