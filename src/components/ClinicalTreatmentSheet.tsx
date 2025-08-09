@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { TreatmentData } from '@/types/clinicalTreatment';
 import { Calendar, FileText, Pill, Shield, AlertTriangle, CheckCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface ClinicalTreatmentSheetProps {
   treatmentData: TreatmentData;
@@ -12,6 +13,7 @@ interface ClinicalTreatmentSheetProps {
 
 export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalTreatmentSheetProps>(
   ({ treatmentData, className }, ref) => {
+    const { t } = useTranslation();
     const { patient, regimen, calculatedDrugs, emetogenicRisk, premedications } = treatmentData;
 
     const getRiskIcon = (level: string) => {
@@ -38,28 +40,28 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
         <div className="print:mb-4">
           <div className="text-center border-b-2 border-primary pb-4 mb-6 print:border-border">
             <h1 className="text-3xl font-bold text-primary print:text-2xl">
-              CHEMOTHERAPY TREATMENT PROTOCOL
+              {t('clinicalSheet.mainTitle')}
             </h1>
             <p className="text-muted-foreground mt-2 print:text-foreground">
-              Clinical Preparation & Administration Guide
+              {t('clinicalSheet.subtitle')}
             </p>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 print:grid-cols-4 print:gap-2">
             <div className="space-y-1">
-              <span className="text-sm font-medium text-muted-foreground print:text-foreground">Patient ID</span>
+              <span className="text-sm font-medium text-muted-foreground print:text-foreground">{t('clinicalSheet.patientId')}</span>
               <p className="font-bold text-lg print:text-base">{patient.patientId}</p>
             </div>
             <div className="space-y-1">
-              <span className="text-sm font-medium text-muted-foreground print:text-foreground">Treatment Date</span>
+              <span className="text-sm font-medium text-muted-foreground print:text-foreground">{t('pdf.date')}</span>
               <p className="font-bold text-lg print:text-base">{patient.treatmentDate}</p>
             </div>
             <div className="space-y-1">
-              <span className="text-sm font-medium text-muted-foreground print:text-foreground">Regimen</span>
+              <span className="text-sm font-medium text-muted-foreground print:text-foreground">{t('clinicalSheet.regimen')}</span>
               <p className="font-bold text-lg print:text-base">{regimen.name}</p>
             </div>
             <div className="space-y-1">
-              <span className="text-sm font-medium text-muted-foreground print:text-foreground">Cycle #</span>
+              <span className="text-sm font-medium text-muted-foreground print:text-foreground">{t('clinicalSheet.cycle')}</span>
               <p className="font-bold text-lg print:text-base">{patient.cycleNumber}</p>
             </div>
           </div>

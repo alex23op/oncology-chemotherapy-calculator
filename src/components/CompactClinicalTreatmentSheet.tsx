@@ -2,6 +2,7 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { TreatmentData } from '@/types/clinicalTreatment';
 import { AlertTriangle, Shield, CheckCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface CompactClinicalTreatmentSheetProps {
   treatmentData: TreatmentData;
@@ -10,6 +11,7 @@ interface CompactClinicalTreatmentSheetProps {
 
 export const CompactClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, CompactClinicalTreatmentSheetProps>(
   ({ treatmentData, className }, ref) => {
+    const { t } = useTranslation();
     const { patient, regimen, calculatedDrugs, emetogenicRisk, premedications } = treatmentData;
 
     const getRiskIcon = (level: string) => {
@@ -45,14 +47,14 @@ export const CompactClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Co
         <div className="print:mb-3">
           <div className="text-center border-b-2 border-gray-800 pb-2 mb-3 print:border-black">
             <h1 className="text-lg font-bold print:text-base print:mb-1">
-              CHEMOTHERAPY TREATMENT PROTOCOL
+              {t('compactSheet.mainTitle')}
             </h1>
             <div className="flex justify-between items-center print:text-xs">
-              <span>Generated: {new Date().toLocaleDateString()}</span>
+              <span>{t('compactSheet.generated')}: {new Date().toLocaleDateString()}</span>
               <span className="flex items-center gap-2">
                 {getRiskIcon(emetogenicRisk.level)}
                 <Badge variant={getRiskBadgeVariant(emetogenicRisk.level) as any} className="print:text-xs print:px-1 print:py-0">
-                  {emetogenicRisk.level.toUpperCase()} RISK
+                  {emetogenicRisk.level.toUpperCase()} {t('compactSheet.risk')}
                 </Badge>
               </span>
             </div>
@@ -62,25 +64,25 @@ export const CompactClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Co
           <table className="w-full print:text-xs print:mb-3 border border-gray-300 print:border-black">
             <tbody>
               <tr>
-                <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">Patient ID:</td>
+                <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{t('pdf.patientId')}</td>
                 <td className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{patient.patientId}</td>
-                <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">Weight:</td>
+                <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{t('clinicalSheet.weight')}:</td>
                 <td className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{patient.weight} kg</td>
-                <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">BSA:</td>
+                <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{t('clinicalSheet.bsa')}:</td>
                 <td className="print:px-1 print:py-0.5 w-1/6">{patient.bsa} m²</td>
               </tr>
               <tr className="border-t border-gray-300 print:border-black">
-                <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5">Date:</td>
+                <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{t('pdf.date')}</td>
                 <td className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{patient.treatmentDate}</td>
-                <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5">CrCl:</td>
+                <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{t('clinicalSheet.crcl')}:</td>
                 <td className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{patient.creatinineClearance} mL/min</td>
-                <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5">Cycle:</td>
+                <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{t('pdf.cycle')}</td>
                 <td className="print:px-1 print:py-0.5">{patient.cycleNumber}</td>
               </tr>
               <tr className="border-t border-gray-300 print:border-black">
-                <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5">Regimen:</td>
+                <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{t('pdf.regimen')}</td>
                 <td className="print:px-1 print:py-0.5" colSpan={3}>{regimen.name}</td>
-                <td className="font-semibold border-l border-r border-gray-300 print:border-black print:px-1 print:py-0.5">Schedule:</td>
+                <td className="font-semibold border-l border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{t('clinicalSheet.schedule')}:</td>
                 <td className="print:px-1 print:py-0.5">{regimen.schedule}</td>
               </tr>
             </tbody>
@@ -90,7 +92,7 @@ export const CompactClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Co
         {/* Chemotherapy Drugs Table */}
         <div className="print:mb-3">
           <h3 className="font-bold print:text-sm print:mb-1 bg-gray-100 print:bg-gray-200 print:px-2 print:py-1 border-l-4 border-gray-800 print:border-black">
-            CHEMOTHERAPY REGIMEN
+            {t('compactSheet.chemotherapyRegimen')}
           </h3>
           <table className="w-full print:text-xs border border-gray-300 print:border-black">
             <thead>
