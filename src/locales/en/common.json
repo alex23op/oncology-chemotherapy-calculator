@@ -106,7 +106,17 @@
     "additionalSupport": "Additional Supportive Care",
     "dose": "Dose",
     "indication": "Indication",
-    "rationale": "Rationale"
+    "rationale": "Rationale",
+    "clinicalNotesHeader": "Clinical Notes",
+    "pharmacyVerification": "Pharmacy Verification",
+    "preparedBy": "Prepared by:",
+    "dateTime": "Date/Time:",
+    "signature": "Signature:",
+    "nursingVerification": "Nursing Verification",
+    "verifiedBy": "Verified by:",
+    "generatedLabel": "Generated:",
+    "documentVersion": "Document Version:",
+    "disclaimer": "This treatment protocol is computer-generated and must be reviewed by qualified healthcare professionals. Verify all calculations and dosing before administration. Report any discrepancies immediately."
   },
   "compactSheet": {
     "mainTitle": "CHEMOTHERAPY TREATMENT PROTOCOL",

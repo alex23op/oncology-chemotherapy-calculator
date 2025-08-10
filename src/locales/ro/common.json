@@ -105,7 +105,17 @@
     "additionalSupport": "Îngrijiri suportive suplimentare",
     "dose": "Doză",
     "indication": "Indicație",
-    "rationale": "Rațiune"
+    "rationale": "Rațiune",
+    "clinicalNotesHeader": "Note clinice",
+    "pharmacyVerification": "Verificare farmacie",
+    "preparedBy": "Pregătit de:",
+    "dateTime": "Dată/Ora:",
+    "signature": "Semnătură:",
+    "nursingVerification": "Verificare asistență medicală",
+    "verifiedBy": "Verificat de:",
+    "generatedLabel": "Generat:",
+    "documentVersion": "Versiunea documentului:",
+    "disclaimer": "Acest protocol de tratament este generat de calculator și trebuie revizuit de profesioniști calificați. Verificați toate calculele și dozele înainte de administrare. Raportați imediat orice neconcordanțe."
   },
   "compactSheet": {
     "mainTitle": "PROTOCOL TRATAMENT CHIMIOTERAPIC",
