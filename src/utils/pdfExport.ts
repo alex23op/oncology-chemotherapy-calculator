@@ -2,6 +2,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { TreatmentData } from '@/types/clinicalTreatment';
 import i18n from '@/i18n';
+import { formatDate } from '@/utils/dateFormat';
 
 interface ProtocolData {
   selectedAgents: any[];
@@ -56,12 +57,12 @@ export const generateClinicalTreatmentPDF = async (
     pdf.setFontSize(12);
     pdf.setFont('helvetica', 'normal');
     pdf.text(`${i18n.t('pdf.patientName')} ${treatmentData.patient.fullName || i18n.t('compactSheet.na')}`, 10, 20);
-    pdf.text(`${i18n.t('pdf.patientId')} ${treatmentData.patient.patientId}`, 80, 20);
+    pdf.text(`${i18n.t('pdf.patientId')} ${treatmentData.patient.cnp}`, 80, 20);
     pdf.text(`${i18n.t('pdf.regimen')} ${treatmentData.regimen.name}`, 10, 26);
     pdf.text(`${i18n.t('pdf.cycle')} ${treatmentData.patient.cycleNumber}`, 80, 26);
-    pdf.text(`${i18n.t('pdf.date')} ${treatmentData.patient.treatmentDate}`, 140, 26);
+    pdf.text(`${i18n.t('pdf.date')} ${formatDate(treatmentData.patient.treatmentDate)}`, 140, 26);
     if (treatmentData.patient.nextCycleDate) {
-      pdf.text(`${i18n.t('pdf.nextCycleDate')} ${treatmentData.patient.nextCycleDate}`, 140, 20);
+      pdf.text(`${i18n.t('pdf.nextCycleDate')} ${formatDate(treatmentData.patient.nextCycleDate)}`, 140, 20);
     }
 
     position = 30;
@@ -94,7 +95,7 @@ export const generateClinicalTreatmentPDF = async (
     document.body.removeChild(compactElement);
 
     // Save the PDF with clinical naming convention
-    const filename = `treatment-protocol-${treatmentData.patient.patientId}-${treatmentData.regimen.name.toLowerCase().replace(/\s+/g, '-')}-cycle${treatmentData.patient.cycleNumber}-${new Date().toISOString().split('T')[0]}.pdf`;
+    const filename = `treatment-protocol-${treatmentData.patient.cnp}-${treatmentData.regimen.name.toLowerCase().replace(/\s+/g, '-')}-cycle${treatmentData.patient.cycleNumber}-${new Date().toISOString().split('T')[0]}.pdf`;
     pdf.save(filename);
   } catch (error) {
     console.error('Error generating treatment protocol PDF:', error);

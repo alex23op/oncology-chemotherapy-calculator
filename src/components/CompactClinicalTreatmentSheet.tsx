@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { TreatmentData } from '@/types/clinicalTreatment';
 import { AlertTriangle, Shield, CheckCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { formatDate } from '@/utils/dateFormat';
 
 interface CompactClinicalTreatmentSheetProps {
   treatmentData: TreatmentData;
@@ -70,15 +71,15 @@ export const CompactClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Co
                 <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{t('compactSheet.patientName')}</td>
                 <td className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{patient.fullName || t('compactSheet.na')}</td>
                 <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{t('pdf.patientId')}</td>
-                <td className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{patient.patientId}</td>
+                <td className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{patient.cnp}</td>
                 <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{t('clinicalSheet.weight')}:</td>
                 <td className="print:px-1 print:py-0.5 w-1/6">{patient.weight} kg</td>
               </tr>
               <tr className="border-t border-gray-300 print:border-black">
                 <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{t('pdf.date')}</td>
-                <td className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{patient.treatmentDate}</td>
+                 <td className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{formatDate(patient.treatmentDate)}</td>
                 <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{t('compactSheet.nextCycleDate')}</td>
-                <td className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{patient.nextCycleDate || t('compactSheet.na')}</td>
+                <td className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{formatDate(patient.nextCycleDate) || t('compactSheet.na')}</td>
                 <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{t('clinicalSheet.bsa')}:</td>
                 <td className="print:px-1 print:py-0.5">{patient.bsa} m²</td>
               </tr>

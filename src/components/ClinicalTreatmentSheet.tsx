@@ -5,6 +5,7 @@ import { Separator } from '@/components/ui/separator';
 import { TreatmentData } from '@/types/clinicalTreatment';
 import { Calendar, FileText, Pill, Shield, AlertTriangle, CheckCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { formatDate } from '@/utils/dateFormat';
 
 interface ClinicalTreatmentSheetProps {
   treatmentData: TreatmentData;
@@ -50,11 +51,11 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 print:grid-cols-4 print:gap-2">
             <div className="space-y-1">
               <span className="text-sm font-medium text-muted-foreground print:text-foreground">{t('clinicalSheet.patientId')}</span>
-              <p className="font-bold text-lg print:text-base">{patient.patientId}</p>
+              <p className="font-bold text-lg print:text-base">{patient.cnp}</p>
             </div>
             <div className="space-y-1">
               <span className="text-sm font-medium text-muted-foreground print:text-foreground">{t('pdf.date')}</span>
-              <p className="font-bold text-lg print:text-base">{patient.treatmentDate}</p>
+              <p className="font-bold text-lg print:text-base">{formatDate(patient.treatmentDate)}</p>
             </div>
             <div className="space-y-1">
               <span className="text-sm font-medium text-muted-foreground print:text-foreground">{t('clinicalSheet.regimen')}</span>
