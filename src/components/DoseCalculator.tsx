@@ -92,6 +92,7 @@ export const DoseCalculator = ({
 
 const { componentRef, printTreatmentSheet } = usePrint(undefined, { orientation: printOrientation });
 const { t } = useTranslation();
+const { calendarFirst } = useSmartNav();
 
 // Additional patient details
 const [patientFullName, setPatientFullName] = useState<string>('');
@@ -238,10 +239,6 @@ useEffect(() => {
 }, [regimen?.id, cnp, foNumber, cycleNumber, treatmentDate, clinicalNotes, selectedPremedications, selectedAntiemetics, calculations]);
 
 
-  // Auto-calculate next cycle date based on regimen schedule and treatment date
-useEffect(() => {
-  setShowCalendar(calendarFirst);
-}, [calendarFirst]);
 // Auto-calculate next cycle date based on regimen schedule and treatment date
 useEffect(() => {
   if (regimen && treatmentDate && autoNextCycle) {
