@@ -341,5 +341,23 @@
     "yes": "Da",
     "no": "Nu"
   },
-  **PREMED_UNIFIED_PLACEHOLDER**
+  "premedSelector": {
+    "clearAll": "Șterge tot",
+    "required": "Necesar"
+  },
+  "unifiedSelector": {
+    "title": "Premedicație și profilaxie suportivă",
+    "riskBadge": "Risc emetogen {{level}}",
+    "selectedCount": "{{count}} selectate",
+    "tabs": {
+      "recommendations": "Recomandări",
+      "categories": "Categorii",
+      "selected": "Selectate"
+    },
+    "recommendationsDesc": "Recomandări pe baza medicamentelor ({{drugs}}) și a riscului {{risk}}.",
+    "applyAll": "Aplică toate ({{count}})",
+    "specificFor": "Specific pentru",
+    "emptySelected": "Nu ați selectat încă agenți.",
+    "selectedHeader": "Agenți selectați pentru {{drugs}} ({{count}})"
+  }
 }

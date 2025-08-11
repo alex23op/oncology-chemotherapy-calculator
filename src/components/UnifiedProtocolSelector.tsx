@@ -686,7 +686,6 @@ export const UnifiedProtocolSelector = ({
                 <AlertDescription>
                   {t('unifiedSelector.emptySelected')}
                 </AlertDescription>
-                </AlertDescription>
               </Alert>
             ) : (
               <>
@@ -695,7 +694,6 @@ export const UnifiedProtocolSelector = ({
                 <AlertDescription>
                   {t('unifiedSelector.selectedHeader', { drugs: drugNames.join(", "), count: selectedAgents.length })}
                 </AlertDescription>
-                  </AlertDescription>
                 </Alert>
 
                 <div className="space-y-4">
