@@ -518,38 +518,7 @@ import('@/utils/cnp').then(({ validateCNP }) => {
     {isEditing ? <Save className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
     {isEditing ? t('doseCalculator.save') : t('doseCalculator.edit')}
   </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleGenerateTreatmentSheet}
-              disabled={!cnp.trim() || calculations.length === 0}
-            >
-<FileCheck className="h-4 w-4" />
-{t('doseCalculator.generateSheet')}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                console.log('=== Export Data Button Clicked ===');
-                console.log('calculations length:', calculations.length);
-                console.log('calculations:', calculations);
-                console.log('onExport function exists:', !!onExport);
-                
-if (calculations.length === 0) {
-  console.log('ERROR: No calculations to export');
-  toast.error(t('doseCalculator.toasts.noCalcsToExport'));
-  return;
-}
-console.log('Calling onExport with calculations');
-onExport?.(calculations);
-toast.success(t('doseCalculator.toasts.dataExported'));
-}}
->
-  <FileText className="h-4 w-4" />
-  {t('doseCalculator.exportData')}
-            </Button>
-          </div>
+</div>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -911,6 +880,41 @@ toast.success(t('doseCalculator.toasts.dataExported'));
   className="mt-1"
   rows={3}
 />
+        </div>
+
+        {/* Primary actions moved below chemo drugs and notes */}
+        <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={handleGenerateTreatmentSheet}
+            disabled={!cnp.trim() || calculations.length === 0}
+          >
+            <FileCheck className="h-4 w-4" />
+            {t('doseCalculator.generateSheet')}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              console.log('=== Export Data Button Clicked ===');
+              console.log('calculations length:', calculations.length);
+              console.log('calculations:', calculations);
+              console.log('onExport function exists:', !!onExport);
+              
+              if (calculations.length === 0) {
+                console.log('ERROR: No calculations to export');
+                toast.error(t('doseCalculator.toasts.noCalcsToExport'));
+                return;
+              }
+              console.log('Calling onExport with calculations');
+              onExport?.(calculations);
+              toast.success(t('doseCalculator.toasts.dataExported'));
+            }}
+          >
+            <FileText className="h-4 w-4" />
+            {t('doseCalculator.exportData')}
+          </Button>
         </div>
 
         {/* Treatment Sheet Section */}
