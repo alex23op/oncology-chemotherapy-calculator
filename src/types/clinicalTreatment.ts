@@ -2,6 +2,7 @@ import { Drug, Regimen } from './regimens';
 
 export interface PatientInfo {
   patientId: string;
+  fullName?: string;
   weight: number;
   height: number;
   age: number;
@@ -10,6 +11,7 @@ export interface PatientInfo {
   creatinineClearance: number;
   cycleNumber: number;
   treatmentDate: string;
+  nextCycleDate?: string;
 }
 
 export interface CalculatedDrug extends Drug {
@@ -17,6 +19,8 @@ export interface CalculatedDrug extends Drug {
   finalDose: string;
   adjustmentNotes?: string;
   preparationInstructions?: string;
+  administrationDuration?: string;
+  solvent?: string;
 }
 
 export interface PremedAgent {

@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calculator, Edit, Save, FileText, Download, Printer, FileCheck, Shield, AlertTriangle, Calendar } from "lucide-react";
 import { Regimen, Drug, Premedication } from "@/types/regimens";
 import { UnifiedProtocolSelector } from "./UnifiedProtocolSelector";
@@ -45,6 +46,8 @@ interface DoseCalculation {
   notes: string;
   selected: boolean;
   reductionPercentage: number;
+  administrationDuration?: string;
+  solvent?: string;
 }
 
 export const DoseCalculator = ({ 
@@ -77,6 +80,19 @@ export const DoseCalculator = ({
 
 const { componentRef, printTreatmentSheet } = usePrint();
 const { t } = useTranslation();
+
+// Additional patient details
+const [patientFullName, setPatientFullName] = useState<string>('');
+const [nextCycleDate, setNextCycleDate] = useState<string>('');
+const [autoNextCycle, setAutoNextCycle] = useState<boolean>(true);
+
+// Helper to parse cycle length from regimen schedule (e.g., "q21")
+const getCycleLengthDays = (schedule: string | undefined): number => {
+  if (!schedule) return 21;
+  const match = schedule.match(/q(\d+)/i);
+  return match ? parseInt(match[1]) : 21;
+};
+
 
   useEffect(() => {
     console.log("DoseCalculator useEffect triggered - regimen:", regimen?.name, "bsa:", bsa);
@@ -134,7 +150,9 @@ const { t } = useTranslation();
             finalDose: Math.round(existingCalc.adjustedDose * 10) / 10,
             notes: existingCalc.notes, // Preserve user's notes
             selected: existingCalc.selected, // Preserve user's selection
-            reductionPercentage: existingCalc.reductionPercentage // Preserve user's reduction
+            reductionPercentage: existingCalc.reductionPercentage, // Preserve user's reduction
+            administrationDuration: existingCalc.administrationDuration ?? drug.administrationDuration,
+            solvent: existingCalc.solvent,
           };
         }
 
@@ -168,6 +186,17 @@ const { t } = useTranslation();
       setSafetyAlerts([]);
     }
   }, [regimen, bsa, weight, creatinineClearance, age, useBsaCap, bsaCap, biomarkerStatus]);
+
+  // Auto-calculate next cycle date based on regimen schedule and treatment date
+  useEffect(() => {
+    if (regimen && treatmentDate && autoNextCycle) {
+      const base = new Date(treatmentDate);
+      const days = getCycleLengthDays(regimen.schedule);
+      const next = new Date(base);
+      next.setDate(base.getDate() + days);
+      setNextCycleDate(next.toISOString().split('T')[0]);
+    }
+  }, [regimen, treatmentDate, autoNextCycle]);
 
   const performSafetyChecks = (regimen: Regimen, calculations: DoseCalculation[]) => {
     const patient: PatientInfo = {
@@ -481,8 +510,17 @@ toast.success(t('doseCalculator.toasts.dataExported'));
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Patient Information for Treatment Sheet */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-muted/30 rounded-lg">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-muted/30 rounded-lg">
+<div>
+  <Label htmlFor="patientFullName">{t('doseCalculator.fullNameLabel')}</Label>
+  <Input
+    id="patientFullName"
+    value={patientFullName}
+    onChange={(e) => setPatientFullName(e.target.value)}
+    placeholder={t('doseCalculator.fullNamePlaceholder')}
+    className="mt-1"
+  />
+</div>
 <div>
   <Label htmlFor="patientId">{t('doseCalculator.patientIdLabel')}</Label>
   <Input
@@ -513,6 +551,20 @@ toast.success(t('doseCalculator.toasts.dataExported'));
     onChange={(e) => setTreatmentDate(e.target.value)}
     className="mt-1"
   />
+</div>
+<div>
+  <Label htmlFor="nextCycleDate">{t('doseCalculator.nextCycleDateLabel')}</Label>
+  <Input
+    id="nextCycleDate"
+    type="date"
+    value={nextCycleDate}
+    onChange={(e) => { setAutoNextCycle(false); setNextCycleDate(e.target.value); }}
+    className="mt-1"
+  />
+  <div className="flex items-center gap-2 mt-2">
+    <Checkbox id="autoNextCycle" checked={autoNextCycle} onCheckedChange={(v) => setAutoNextCycle(!!v)} />
+    <Label htmlFor="autoNextCycle" className="text-xs text-muted-foreground">{t('doseCalculator.autoNextCycle')}</Label>
+  </div>
 </div>
         </div>
 
