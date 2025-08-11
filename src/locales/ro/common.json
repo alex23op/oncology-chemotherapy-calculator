@@ -80,12 +80,14 @@
     "mainTitle": "PROTOCOL TRATAMENT CHIMIOTERAPIC",
     "subtitle": "Ghid de pregătire și administrare clinică",
     "patientId": "ID pacient",
+    "patientName": "Nume pacient",
     "treatmentDate": "Data tratamentului",
     "regimen": "Regim",
     "cycle": "Ciclu #",
     "weight": "Greutate",
     "bsa": "ASC",
     "crcl": "ClCr",
+    "nextCycleDate": "Data următorului ciclu",
     "schedule": "Program",
     "regimenDetails": "Detalii regim chimioterapic",
     "calculatedDose": "Doză calculată",
@@ -124,6 +126,8 @@
     "premedSupport": "PREMEDICAȚIE & ÎNGRIJIRI SUPORTIVE",
     "generated": "Generat",
     "risk": "RISC",
+    "patientName": "Nume pacient",
+    "nextCycleDate": "Data următorului ciclu",
     "drug": "Medicament",
     "calculatedDose": "Doză calculată",
     "finalDose": "Doză finală",
@@ -149,10 +153,12 @@
   "pdf": {
     "headerTitle": "PROTOCOL TRATAMENT CHIMIOTERAPIC",
     "premedHeaderTitle": "Protocol de premedicație pentru chimioterapie",
+    "patientName": "Nume pacient:",
     "patientId": "ID pacient:",
     "regimen": "Regim:",
     "cycle": "Ciclu:",
     "date": "Data:",
+    "nextCycleDate": "Data următorului ciclu:",
     "generated": "Generat:",
     "pageOf": "Pagina {{page}} din {{count}}",
     "confidential": "DOCUMENT MEDICAL CONFIDENȚIAL"
@@ -189,10 +195,14 @@
     "exportData": "Exportă date",
     "exportPdf": "Exportă PDF",
     "print": "Printează",
+    "fullNameLabel": "Nume și Prenume",
+    "fullNamePlaceholder": "Introduceți numele complet al pacientului",
     "patientIdLabel": "ID pacient *",
     "patientIdPlaceholder": "Introduceți ID-ul pacientului",
     "cycleLabel": "Număr ciclu",
     "treatmentDateLabel": "Data tratamentului",
+    "nextCycleDateLabel": "Data următorului ciclu",
+    "autoNextCycle": "Calculează automat din regim",
     "applyBsaCap": "Aplică limită ASC",
     "maxBsa": "ASC maximă",
     "safety": "Siguranță",
@@ -208,6 +218,9 @@
     "standardDose": "Doză standard",
     "prepAndAdmin": "Pregătire și administrare",
     "diluent": "Diluant",
+    "selectSolvent": "Selectați solventul",
+    "solvents": {"normalSaline": "Ser fiziologic 0,9%","dextrose5": "Glucoză 5%","ringer": "Soluție Ringer"},
+    "protocolSuggest": "Sugestie din protocol",
     "adminDuration": "Durata administrării",
     "calculatedDose": "Doză calculată",
     "reductionPercent": "Reducere %",
@@ -391,6 +404,10 @@
       "growth_factors": {
         "name": "Factori de creștere hematologici",
         "description": "Suport pentru funcția măduvei și recuperarea celulelor sanguine"
+      },
+      "nutrition": {
+        "name": "Suport nutrițional și vitamine",
+        "description": "Aminoacizi și vitamine adjuvante pentru îngrijire suportivă"
       }
     }
   },

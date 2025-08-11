@@ -420,6 +420,10 @@
       "growth_factors": {
         "name": "Hematologic Growth Factors",
         "description": "Support for bone marrow function and blood cell recovery"
+      },
+      "nutrition": {
+        "name": "Nutritional and Vitamin Support",
+        "description": "Adjunctive amino acids and vitamins for supportive care"
       }
     }
   },

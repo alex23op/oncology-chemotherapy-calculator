@@ -418,6 +418,113 @@ const premedCategories: CategoryData[] = [
         evidenceLevel: "IA"
       }
     ]
+  },
+  {
+    id: "nutrition",
+    name: "Nutritional and Vitamin Support",
+    description: "Adjunctive amino acids and vitamins for supportive care",
+    icon: BookOpen,
+    color: "bg-teal-50 border-teal-200 text-teal-800",
+    agents: [
+      {
+        name: "Arginine Sorbitol",
+        category: "Amino Acid Solution",
+        class: "Nutritional Support",
+        dosage: "100",
+        unit: "mL",
+        route: "IV",
+        timing: "During chemotherapy as prescribed",
+        indication: "Nutritional support",
+        rationale: "Adjunctive nutritional support in selected patients",
+        isRequired: false,
+        isStandard: false,
+        evidenceLevel: "IIA"
+      },
+      {
+        name: "Aminosterin N-hepa",
+        category: "Amino Acid Solution",
+        class: "Nutritional Support",
+        dosage: "250",
+        unit: "mL",
+        route: "IV",
+        timing: "As prescribed",
+        indication: "Parenteral nutrition support",
+        rationale: "Amino acids for hepatic patients",
+        isRequired: false,
+        isStandard: false,
+        evidenceLevel: "IIB"
+      },
+      {
+        name: "Aspatofort",
+        category: "Hepatoprotective",
+        class: "Amino acids",
+        dosage: "1-2",
+        unit: "amp",
+        route: "IV",
+        timing: "As prescribed",
+        indication: "Hepatic support",
+        rationale: "Supportive hepatic protection",
+        isRequired: false,
+        isStandard: false,
+        evidenceLevel: "IIB"
+      },
+      {
+        name: "Vitamin B1 (Thiamine)",
+        category: "Vitamin",
+        class: "Water-soluble vitamin",
+        dosage: "100",
+        unit: "mg",
+        route: "IV",
+        timing: "Before/after chemotherapy",
+        indication: "Vitamin supplementation",
+        rationale: "Thiamine repletion",
+        isRequired: false,
+        isStandard: false,
+        evidenceLevel: "IIIA"
+      },
+      {
+        name: "Vitamin B6 (Pyridoxine)",
+        category: "Vitamin",
+        class: "Water-soluble vitamin",
+        dosage: "50",
+        unit: "mg",
+        route: "IV",
+        timing: "As prescribed",
+        indication: "Vitamin supplementation",
+        rationale: "Pyridoxine supplementation",
+        isRequired: false,
+        isStandard: false,
+        evidenceLevel: "IIIA"
+      },
+      {
+        name: "Vitamin C (Ascorbic Acid)",
+        category: "Vitamin",
+        class: "Antioxidant",
+        dosage: "1-2",
+        unit: "g",
+        route: "IV",
+        timing: "As prescribed",
+        indication: "Vitamin supplementation",
+        rationale: "Antioxidant support",
+        isRequired: false,
+        isStandard: false,
+        evidenceLevel: "IIIA"
+      },
+      {
+        name: "Solu-Vit",
+        category: "Multivitamin",
+        class: "Parenteral Multivitamin",
+        dosage: "1",
+        unit: "vial",
+        route: "IV",
+        timing: "Added to infusion as prescribed",
+        indication: "Multivitamin support",
+        rationale: "Parenteral multivitamin preparation",
+        isRequired: false,
+        isStandard: false,
+        evidenceLevel: "IIB"
+      }
+    ]
   }
 ];
 
