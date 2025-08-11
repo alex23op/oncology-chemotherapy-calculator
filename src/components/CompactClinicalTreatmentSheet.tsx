@@ -71,7 +71,12 @@ export const CompactClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Co
                 <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{t('compactSheet.patientName')}</td>
                 <td className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{patient.fullName || t('compactSheet.na')}</td>
                 <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{t('pdf.patientId')}</td>
-                <td className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{patient.cnp}</td>
+                <td className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">
+                  <div>{patient.cnp}</div>
+                  {patient.foNumber && (
+                    <div>{t('compactSheet.foNumber')}: {patient.foNumber}</div>
+                  )}
+                </td>
                 <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{t('clinicalSheet.weight')}:</td>
                 <td className="print:px-1 print:py-0.5 w-1/6">{patient.weight} kg</td>
               </tr>

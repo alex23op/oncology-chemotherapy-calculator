@@ -52,6 +52,9 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
             <div className="space-y-1">
               <span className="text-sm font-medium text-muted-foreground print:text-foreground">{t('clinicalSheet.patientId')}</span>
               <p className="font-bold text-lg print:text-base">{patient.cnp}</p>
+              {patient.foNumber && (
+                <p className="text-sm text-muted-foreground print:text-foreground">{t('clinicalSheet.foNumber')}: {patient.foNumber}</p>
+              )}
             </div>
             <div className="space-y-1">
               <span className="text-sm font-medium text-muted-foreground print:text-foreground">{t('pdf.date')}</span>

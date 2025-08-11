@@ -64,8 +64,11 @@ export const generateClinicalTreatmentPDF = async (
     if (treatmentData.patient.nextCycleDate) {
       pdf.text(`${i18n.t('pdf.nextCycleDate')} ${formatDate(treatmentData.patient.nextCycleDate)}`, 140, 20);
     }
+    if (treatmentData.patient.foNumber) {
+      pdf.text(`${i18n.t('pdf.foNumber')} ${treatmentData.patient.foNumber}`, 80, 32);
+    }
 
-    position = 30;
+    position = 34;
 
     // Add the main content
     pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
