@@ -131,6 +131,11 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
                           <span className="font-medium">{t('printableProtocol.duration')}:</span> {drug.administrationDuration}
                         </div>
                       )}
+                      {drug.solvent && (
+                        <div>
+                          <span className="font-medium">{t('doseCalculator.diluent')}:</span> {drug.solvent}
+                        </div>
+                      )}
                     </div>
                     
                     <div className="space-y-2">

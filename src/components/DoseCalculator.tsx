@@ -164,7 +164,9 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
           finalDose: Math.round(calculatedDose * 10) / 10, // Round to 1 decimal
           notes: "",
           selected: true,
-          reductionPercentage: 0
+          reductionPercentage: 0,
+          administrationDuration: drug.administrationDuration,
+          solvent: undefined,
         };
       });
       
@@ -242,6 +244,18 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
     setCalculations(updatedCalculations);
   };
 
+  const handleAdminDurationChange = (index: number, value: string) => {
+    const updated = [...calculations];
+    updated[index].administrationDuration = value;
+    setCalculations(updated);
+  };
+
+  const handleSolventChange = (index: number, value: string) => {
+    const updated = [...calculations];
+    updated[index].solvent = value || undefined;
+    setCalculations(updated);
+  };
+
   const handleDrugSelection = (index: number, selected: boolean) => {
     console.log("Drug selection changed:", index, selected);
     const updatedCalculations = [...calculations];
@@ -285,6 +299,7 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
 
     const patient: PatientInfo = {
       patientId,
+      fullName: patientFullName || undefined,
       weight,
       height,
       age,
@@ -293,6 +308,7 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
       creatinineClearance,
       cycleNumber,
       treatmentDate,
+      nextCycleDate: nextCycleDate || undefined,
     };
 
     const calculatedDrugs: CalculatedDrug[] = calculations
@@ -303,7 +319,14 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
         finalDose: `${calc.finalDose} mg`,
         adjustmentNotes: calc.notes,
         preparationInstructions: calc.drug.dilution,
+        administrationDuration: calc.administrationDuration || calc.drug.administrationDuration,
+        solvent: calc.solvent,
       }));
+
+    const toDoseWithUnit = (dosage?: string, unit?: string) => {
+      if (!dosage) return '';
+      return unit ? `${dosage} ${unit}` : dosage;
+    };
 
     const categorizeAgent = (agent: any) => {
       const category = agent.category?.toLowerCase() || '';
@@ -328,35 +351,35 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
       antiemetics: selectedAntiemetics.filter(agent => categorizeAgent(agent) === 'antiemetics').map(agent => ({
         ...agent,
         category: agent.category || 'antiemetic',
-        dosage: agent.dosage || '',
+        dosage: toDoseWithUnit(agent.dosage, agent.unit),
         route: agent.route || '',
         timing: agent.timing || '',
       })),
       infusionReactionProphylaxis: selectedAntiemetics.filter(agent => categorizeAgent(agent) === 'infusionReactionProphylaxis').map(agent => ({
         ...agent,
         category: agent.category || 'infusion',
-        dosage: agent.dosage || '',
+        dosage: toDoseWithUnit(agent.dosage, agent.unit),
         route: agent.route || '',
         timing: agent.timing || '',
       })),
       gastroprotection: selectedAntiemetics.filter(agent => categorizeAgent(agent) === 'gastroprotection').map(agent => ({
         ...agent,
         category: agent.category || 'gastro',
-        dosage: agent.dosage || '',
+        dosage: toDoseWithUnit(agent.dosage, agent.unit),
         route: agent.route || '',
         timing: agent.timing || '',
       })),
       organProtection: selectedAntiemetics.filter(agent => categorizeAgent(agent) === 'organProtection').map(agent => ({
         ...agent,
         category: agent.category || 'organ',
-        dosage: agent.dosage || '',
+        dosage: toDoseWithUnit(agent.dosage, agent.unit),
         route: agent.route || '',
         timing: agent.timing || '',
       })),
       other: selectedAntiemetics.filter(agent => categorizeAgent(agent) === 'other').map(agent => ({
         ...agent,
         category: agent.category || 'other',
-        dosage: agent.dosage || '',
+        dosage: toDoseWithUnit(agent.dosage, agent.unit),
         route: agent.route || '',
         timing: agent.timing || '',
       })),
@@ -721,22 +744,45 @@ toast.success(t('doseCalculator.toasts.dataExported'));
                        </div>
                      </div>
 
-{(calc.drug.dilution || calc.drug.administrationDuration) && (
+{(calc.drug.dilution || calc.administrationDuration || calc.solvent) && (
   <div className="border-2 border-accent/30 bg-accent/10 rounded-lg p-4">
     <h5 className="font-semibold text-accent mb-3">{t('doseCalculator.prepAndAdmin')}</h5>
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {calc.drug.dilution && (
-        <div className="bg-background/70 p-3 rounded border">
-          <Label className="text-muted-foreground font-semibold text-sm">{t('doseCalculator.diluent')}</Label>
-          <p className="text-foreground font-medium mt-1">{calc.drug.dilution}</p>
-        </div>
-      )}
-      {calc.drug.administrationDuration && (
-        <div className="bg-background/70 p-3 rounded border">
-          <Label className="text-muted-foreground font-semibold text-sm">{t('doseCalculator.adminDuration')}</Label>
-          <p className="text-foreground font-medium mt-1">{calc.drug.administrationDuration}</p>
-        </div>
-      )}
+      <div className="bg-background/70 p-3 rounded border">
+        <Label className="text-muted-foreground font-semibold text-sm">{t('doseCalculator.diluent')}</Label>
+        {isEditing ? (
+          <>
+            <Select value={calc.solvent || ''} onValueChange={(v) => handleSolventChange(index, v)}>
+              <SelectTrigger className="mt-1">
+                <SelectValue placeholder={t('doseCalculator.selectSolvent')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Normal Saline 0.9%">{t('doseCalculator.solvents.normalSaline')}</SelectItem>
+                <SelectItem value="Dextrose 5%">{t('doseCalculator.solvents.dextrose5')}</SelectItem>
+                <SelectItem value="Ringer Solution">{t('doseCalculator.solvents.ringer')}</SelectItem>
+              </SelectContent>
+            </Select>
+            {calc.drug.dilution && (
+              <p className="text-xs text-muted-foreground mt-1">{t('doseCalculator.protocolSuggest')}: {calc.drug.dilution}</p>
+            )}
+          </>
+        ) : (
+          <p className="text-foreground font-medium mt-1">{calc.solvent || calc.drug.dilution || t('compactSheet.na')}</p>
+        )}
+      </div>
+      <div className="bg-background/70 p-3 rounded border">
+        <Label className="text-muted-foreground font-semibold text-sm">{t('doseCalculator.adminDuration')}</Label>
+        {isEditing ? (
+          <Input
+            value={calc.administrationDuration || ''}
+            onChange={(e) => handleAdminDurationChange(index, e.target.value)}
+            placeholder={t('doseCalculator.adminDurationPlaceholder')}
+            className="mt-1"
+          />
+        ) : (
+          <p className="text-foreground font-medium mt-1">{calc.administrationDuration || t('compactSheet.na')}</p>
+        )}
+      </div>
     </div>
   </div>
 )}

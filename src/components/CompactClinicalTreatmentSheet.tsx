@@ -72,26 +72,26 @@ export const CompactClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Co
           <table className="w-full print:text-xs print:mb-3 border border-gray-300 print:border-black">
             <tbody>
               <tr>
+                <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{t('compactSheet.patientName')}</td>
+                <td className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{patient.fullName || t('compactSheet.na')}</td>
                 <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{t('pdf.patientId')}</td>
                 <td className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{patient.patientId}</td>
                 <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{t('clinicalSheet.weight')}:</td>
-                <td className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{patient.weight} kg</td>
-                <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5 w-1/6">{t('clinicalSheet.bsa')}:</td>
-                <td className="print:px-1 print:py-0.5 w-1/6">{patient.bsa} m²</td>
+                <td className="print:px-1 print:py-0.5 w-1/6">{patient.weight} kg</td>
               </tr>
               <tr className="border-t border-gray-300 print:border-black">
                 <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{t('pdf.date')}</td>
                 <td className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{patient.treatmentDate}</td>
-                <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{t('clinicalSheet.crcl')}:</td>
-                <td className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{patient.creatinineClearance} mL/min</td>
-                <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{t('pdf.cycle')}</td>
-                <td className="print:px-1 print:py-0.5">{patient.cycleNumber}</td>
+                <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{t('compactSheet.nextCycleDate')}</td>
+                <td className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{patient.nextCycleDate || t('compactSheet.na')}</td>
+                <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{t('clinicalSheet.bsa')}:</td>
+                <td className="print:px-1 print:py-0.5">{patient.bsa} m²</td>
               </tr>
               <tr className="border-t border-gray-300 print:border-black">
                 <td className="font-semibold border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{t('pdf.regimen')}</td>
                 <td className="print:px-1 print:py-0.5" colSpan={3}>{regimen.name}</td>
-                <td className="font-semibold border-l border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{t('clinicalSheet.schedule')}:</td>
-                <td className="print:px-1 print:py-0.5">{regimen.schedule}</td>
+                <td className="font-semibold border-l border-r border-gray-300 print:border-black print:px-1 print:py-0.5">{t('clinicalSheet.crcl')}:</td>
+                <td className="print:px-1 print:py-0.5">{patient.creatinineClearance} mL/min</td>
               </tr>
             </tbody>
           </table>
@@ -110,7 +110,8 @@ export const CompactClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Co
                 <th className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 text-left font-semibold">{t('compactSheet.finalDose')}</th>
                 <th className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 text-left font-semibold">{t('compactSheet.route')}</th>
                 <th className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 text-left font-semibold">{t('compactSheet.day')}</th>
-                <th className="print:px-1 print:py-0.5 text-left font-semibold">{t('compactSheet.duration')}</th>
+                <th className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 text-left font-semibold">{t('compactSheet.duration')}</th>
+                <th className="print:px-1 print:py-0.5 text-left font-semibold">{t('doseCalculator.diluent')}</th>
               </tr>
             </thead>
             <tbody>
@@ -121,7 +122,8 @@ export const CompactClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Co
                   <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5 font-semibold">{drug.finalDose}</td>
                   <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5">{drug.route}</td>
                   <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5">{drug.day || t('compactSheet.na')}</td>
-                  <td className="border-t border-gray-300 print:border-black print:px-1 print:py-0.5">{drug.administrationDuration || t('compactSheet.na')}</td>
+                  <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5">{drug.administrationDuration || t('compactSheet.na')}</td>
+                  <td className="border-t border-gray-300 print:border-black print:px-1 print:py-0.5">{drug.solvent || t('compactSheet.na')}</td>
                 </tr>
               ))}
             </tbody>

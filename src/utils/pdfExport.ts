@@ -54,10 +54,14 @@ export const generateClinicalTreatmentPDF = async (
     // Add patient info
     pdf.setFontSize(10);
     pdf.setFont('helvetica', 'normal');
-    pdf.text(`${i18n.t('pdf.patientId')} ${treatmentData.patient.patientId}`, 10, 20);
-    pdf.text(`${i18n.t('pdf.regimen')} ${treatmentData.regimen.name}`, 60, 20);
-    pdf.text(`${i18n.t('pdf.cycle')} ${treatmentData.patient.cycleNumber}`, 120, 20);
-    pdf.text(`${i18n.t('pdf.date')} ${treatmentData.patient.treatmentDate}`, 150, 20);
+    pdf.text(`${i18n.t('pdf.patientName')} ${treatmentData.patient.fullName || i18n.t('compactSheet.na')}`, 10, 20);
+    pdf.text(`${i18n.t('pdf.patientId')} ${treatmentData.patient.patientId}`, 80, 20);
+    pdf.text(`${i18n.t('pdf.regimen')} ${treatmentData.regimen.name}`, 10, 26);
+    pdf.text(`${i18n.t('pdf.cycle')} ${treatmentData.patient.cycleNumber}`, 80, 26);
+    pdf.text(`${i18n.t('pdf.date')} ${treatmentData.patient.treatmentDate}`, 140, 26);
+    if (treatmentData.patient.nextCycleDate) {
+      pdf.text(`${i18n.t('pdf.nextCycleDate')} ${treatmentData.patient.nextCycleDate}`, 140, 20);
+    }
 
     position = 30;
 
