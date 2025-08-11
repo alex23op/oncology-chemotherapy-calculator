@@ -33,6 +33,7 @@ const IndexContent = () => {
 
   const [patientData, setPatientData] = useState<PatientData | null>(null);
   const [selectedRegimen, setSelectedRegimen] = useState<Regimen | null>(null);
+  const [treatmentData, setTreatmentData] = useState<any | null>(null);
 
   const handlePatientDataChange = (data: PatientData) => {
     setPatientData(data);
@@ -53,7 +54,7 @@ const IndexContent = () => {
       description: t("index.toasts.regimenSelected.description", { name: regimen.name }),
     });
     if (autoJumpEnabled) {
-      goTo("doses");
+      goTo("support");
     }
   };
 
@@ -87,6 +88,20 @@ const IndexContent = () => {
         </SafeComponentWrapper>
       </WizardStep>
 
+      <WizardStep id="support" title={t('wizard.steps.support', { defaultValue: 'Supportive care' })}>
+        <SafeComponentWrapper componentName="Emetogenic Risk" fallbackMessage={t('errors.emetogenicRiskFailed')}>
+          {selectedRegimen ? (
+            <>
+              {/* Simple preview of emetogenic risk based on regimen drugs */}
+              {/* Avoid duplicating state with DoseCalculator; this step is informative */}
+              {React.createElement(require('@/components/EmetogenicRiskClassifier').EmetogenicRiskClassifier, { drugs: selectedRegimen.drugs })}
+            </>
+          ) : (
+            <div className="text-sm text-muted-foreground">{t('doseCalculator.emptyState')}</div>
+          )}
+        </SafeComponentWrapper>
+      </WizardStep>
+
       <WizardStep id="doses" title={t('wizard.steps.doses', { defaultValue: 'Dose calculation' })}>
         <SafeComponentWrapper componentName="Dose Calculator" fallbackMessage={t('errors.doseCalculatorFailed')}>
           <DoseCalculator
@@ -98,7 +113,35 @@ const IndexContent = () => {
             sex={patientData?.sex || ""}
             creatinineClearance={patientData?.creatinineClearance || 0}
             onExport={handleExport}
+            onFinalize={(data: any) => setTreatmentData(data)}
+            onGoToReview={() => goTo('review')}
           />
+        </SafeComponentWrapper>
+      </WizardStep>
+
+      <WizardStep id="review" title={t('wizard.steps.review', { defaultValue: 'Review & Print' })}>
+        <SafeComponentWrapper componentName="Review & Print" fallbackMessage={t('errors.reviewFailed')}>
+          {treatmentData ? (
+            <div className="space-y-4">
+              {React.createElement(require('@/components/CompactClinicalTreatmentSheet').CompactClinicalTreatmentSheet, { treatmentData, className: 'compact-treatment-sheet' })}
+              <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
+                <button
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded border bg-background hover-scale"
+                  onClick={async () => {
+                    const { generateClinicalTreatmentPDF } = await import('@/utils/pdfExport');
+                    await generateClinicalTreatmentPDF({ ...treatmentData, elementId: 'clinical-treatment-sheet', orientation: 'portrait' });
+                  }}
+                >
+                  {t('doseCalculator.exportPdf')}
+                </button>
+                <button className="inline-flex items-center gap-2 px-3 py-2 rounded border bg-background hover-scale" onClick={() => window.print()}>
+                  {t('doseCalculator.print')}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground">{t('doseCalculator.emptyState')}</div>
+          )}
         </SafeComponentWrapper>
       </WizardStep>
 
@@ -122,7 +165,9 @@ const Index = () => {
   const steps = [
     { id: 'patient', title: t('wizard.steps.patient', { defaultValue: 'Patient data' }) },
     { id: 'regimen', title: t('wizard.steps.regimen', { defaultValue: 'Regimen selection' }) },
+    { id: 'support', title: t('wizard.steps.support', { defaultValue: 'Supportive care' }) },
     { id: 'doses', title: t('wizard.steps.doses', { defaultValue: 'Dose calculation' }) },
+    { id: 'review', title: t('wizard.steps.review', { defaultValue: 'Review & Print' }) },
   ];
 
   return (

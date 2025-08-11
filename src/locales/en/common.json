@@ -1,4 +1,13 @@
 {
+  "wizard": {
+    "steps": {
+      "patient": "Patient data",
+      "regimen": "Regimen selection",
+      "support": "Supportive care",
+      "doses": "Dose calculation",
+      "review": "Review & Print"
+    }
+  },
   "header": {
     "title": "ChemoCalc Pro",
     "subtitle": "Oncology Dose Calculator",
@@ -260,7 +269,7 @@
   "exportFailed": "Failed to export treatment protocol",
   "enterCnpBeforePrint": "Please enter a CNP before printing",
   "enterPatientIdBeforePrint": "Please enter a CNP before printing",
-  "generateSheetNeedId": "Please enter a CNP to generate treatment sheet",
+  "generateSheetNeedCnp": "Please enter a CNP to generate treatment sheet",
   "generateSheetNeedCalcs": "No dose calculations available. Please ensure regimen is selected and patient data is entered.",
   "sheetGenerated": "Treatment sheet generated successfully",
   "dataExported": "Data exported successfully"

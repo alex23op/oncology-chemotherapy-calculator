@@ -1,4 +1,13 @@
 {
+  "wizard": {
+    "steps": {
+      "patient": "Date pacient",
+      "regimen": "Selectare regim",
+      "support": "Îngrijiri suportive",
+      "doses": "Calcul doze",
+      "review": "Revizuire & Print"
+    }
+  },
   "header": {
     "title": "ChemoCalc Pro",
     "subtitle": "Calculator de doze oncologice",
@@ -262,7 +271,7 @@
   "exportFailed": "Eroare la exportul protocolului de tratament",
   "enterCnpBeforePrint": "Introduceți un CNP înainte de tipărire",
   "enterPatientIdBeforePrint": "Introduceți un ID pacient înainte de tipărire",
-  "generateSheetNeedId": "Introduceți un ID pacient pentru a genera fișa de tratament",
+  "generateSheetNeedCnp": "Introduceți un CNP pentru a genera fișa de tratament",
   "generateSheetNeedCalcs": "Nu există calcule de doză. Asigurați-vă că regimul este selectat și datele pacientului sunt introduse.",
   "sheetGenerated": "Fișa de tratament a fost generată cu succes",
   "dataExported": "Date exportate cu succes"

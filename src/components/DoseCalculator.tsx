@@ -38,6 +38,8 @@ interface DoseCalculatorProps {
   biomarkerStatus?: Record<string, string>;
   currentMedications?: string[];
   onExport?: (calculations: DoseCalculation[]) => void;
+  onFinalize?: (data: TreatmentData) => void;
+  onGoToReview?: () => void;
 }
 
 interface DoseCalculation {
@@ -62,7 +64,9 @@ export const DoseCalculator = ({
   creatinineClearance, 
   biomarkerStatus = {},
   currentMedications = [],
-  onExport 
+  onExport,
+  onFinalize,
+  onGoToReview
 }: DoseCalculatorProps) => {
   const [calculations, setCalculations] = useState<DoseCalculation[]>([]);
   const [selectedPremedications, setSelectedPremedications] = useState<Premedication[]>([]);
@@ -477,6 +481,9 @@ import('@/utils/cnp').then(({ validateCNP }) => {
   }
   console.log('Setting showTreatmentSheet to true');
   setShowTreatmentSheet(true);
+  const data = prepareTreatmentData();
+  try { onFinalize?.(data); } catch {}
+  try { onGoToReview?.(); } catch {}
   toast.success(t('doseCalculator.toasts.sheetGenerated'));
 });
   };

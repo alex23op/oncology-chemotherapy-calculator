@@ -30,6 +30,7 @@ export const WizardStep = ({ id, title, children }: { id: string; title: string;
       <AccordionItem value={id}>
         <AccordionTrigger>{title}</AccordionTrigger>
         <AccordionContent>
+          <span className="sr-only" aria-live="polite">{open ? `${title} expanded` : `${title} collapsed`}</span>
           <div ref={contentRef} className="animate-fade-in">
             {children}
           </div>
