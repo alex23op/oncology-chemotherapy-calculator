@@ -1,6 +1,7 @@
 import React, { Component, ReactNode } from 'react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
+import i18n from '@/i18n';
 
 interface Props {
   children: ReactNode;
@@ -36,9 +37,9 @@ export class ErrorBoundary extends Component<Props, State> {
         <Alert className="border-destructive bg-destructive/10">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            Something went wrong loading this component.
+            {i18n.t('errors.genericComponentLoadFailed')}
             <details className="mt-2 text-xs">
-              <summary>Error details</summary>
+              <summary>{i18n.t('errors.labels.errorDetails')}</summary>
               <pre className="mt-1 overflow-auto">
                 {this.state.error?.message}
               </pre>

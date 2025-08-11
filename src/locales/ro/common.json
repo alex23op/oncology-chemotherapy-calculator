@@ -391,7 +391,102 @@
       "growth_factors": {
         "name": "Factori de creștere hematologici",
         "description": "Suport pentru funcția măduvei și recuperarea celulelor sanguine"
-      }
     }
+  },
+  "calendar": {
+    "title": "Calendar tratament",
+    "cycleLabel": "Ciclu {{number}}",
+    "overview": {
+      "infusions": "Infuzii",
+      "labs": "Analize de laborator",
+      "monitoring": "Monitorizare",
+      "urgent": "Urgent"
+    },
+    "next30Days": "Următoarele 30 de zile",
+    "badges": {
+      "today": "Astăzi",
+      "past": "Trecut",
+      "inDays": "în {{count}} zile"
+    },
+    "legendTitle": "Tipuri de evenimente",
+    "legend": {
+      "infusion": "Infuzie/Injecție",
+      "lab": "Laborator",
+      "imaging": "Investigații imagistice",
+      "monitoring": "Monitorizare",
+      "visit": "Vizită/Programare",
+      "gcsf": "G-CSF"
+    },
+    "events": {
+      "cycleDay": "Ciclu {{cycle}} Ziua {{day}}",
+      "chemoAdministration": "Administrare chimioterapie",
+      "pretreatmentLabs": "Analize înainte de tratament",
+      "labsDesc": "Hemogramă completă, biochimie, evaluare toxicitate",
+      "gcsfTitle": "Injecție G-CSF",
+      "gcsfDesc": "Suport cu factori de creștere",
+      "cardiacTitle": "Funcție cardiacă",
+      "cardiacDesc": "ECO sau MUGA - evaluare FEVS",
+      "audioTitle": "Audiometrie",
+      "audioDesc": "Evaluare auz – ototoxicitate la cisplatină",
+      "restagingTitle": "Investigații de restadializare",
+      "restagingDesc": "CT torace/abdomen/pelvis – evaluare răspuns",
+      "cycleStart": "Început ciclu {{cycle}}",
+      "cycleStartDesc": "Începe următorul ciclu de tratament"
+    }
+  },
+  "notFound": {
+    "title": "404",
+    "subtitle": "Ups! Pagina nu a fost găsită",
+    "backHome": "Înapoi la Acasă"
+  },
+  "errors": {
+    "criticalToastTitle": "Eroare clinică critică",
+    "criticalToastDesc": "A apărut o eroare critică în {{context}}. Reîncărcați și raportați această problemă.",
+    "criticalTitle": "Eroare clinică critică",
+    "componentErrorTitle": "Eroare componentă",
+    "inComponent": "în {{context}}",
+    "criticalCardBody": "A apărut o eroare critică ce poate afecta calculele clinice sau siguranța.",
+    "criticalCardReload": "Reîncărcați aplicația și raportați imediat această problemă.",
+    "componentErrorBody": "Această componentă a întâmpinat o eroare și nu a putut fi încărcată corect.",
+    "tryAgain": "Încearcă din nou",
+    "reloadApp": "Reîncarcă aplicația",
+    "devInfo": "Informații pentru dezvoltatori",
+    "genericComponentLoadFailed": "A apărut o problemă la încărcarea acestei componente.",
+    "labels": {
+      "error": "Eroare:",
+      "stack": "Stack:",
+      "componentStack": "Stack componentă:",
+      "errorDetails": "Detalii eroare"
+    },
+    "headerFailed": "Antetul nu s-a încărcat",
+    "patientFormFailed": "Formularul pacientului nu s-a încărcat",
+    "cancerSelectorFailed": "Selectorul de tip cancer nu s-a încărcat",
+    "doseCalculatorFailed": "Calculatorul de doze nu s-a încărcat"
+  },
+  "biomarker": {
+    "title": "Testare biomarkeri",
+    "panelTitle": "Panou de testare biomarkeri",
+    "noPanel": "Nu există panou de biomarkeri pentru acest tip de cancer și stadiu",
+    "turnaround": "Timp de răspuns",
+    "tissueReq": "Cerințe de țesut",
+    "requiredTitle": "Biomarkeri necesari",
+    "requiredDesc": "Acești biomarkeri sunt esențiali pentru alegerea tratamentului",
+    "recommendedTitle": "Biomarkeri recomandați",
+    "recommendedDesc": "Biomarkeri suplimentari care pot ghida deciziile terapeutice",
+    "status": {
+      "unknown": "Necunoscut",
+      "positive": "Pozitiv",
+      "negative": "Negativ",
+      "wildType": "Tip sălbatic",
+      "mutated": "Mutat",
+      "amplified": "Amplificat",
+      "high": "Ridicat",
+      "low": "Scăzut"
+    },
+    "allRequiredTested": "Toți biomarkerii necesari au fost testați",
+    "requiredTestedCount": "{{done}}/{{total}} biomarkeri necesari testați",
+    "completeProfile": "Finalizează profilul de biomarkeri",
+    "completeRequired": "Finalizează testările necesare"
   }
 }
+

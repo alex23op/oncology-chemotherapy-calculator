@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar, ChevronLeft, ChevronRight, Syringe, Microscope, Heart, Activity } from 'lucide-react';
 import { Regimen, Drug } from '@/types/regimens';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface TreatmentCalendarProps {
   regimen: Regimen;
@@ -30,6 +31,7 @@ export const TreatmentCalendar: React.FC<TreatmentCalendarProps> = ({
   className
 }) => {
   const [currentMonth, setCurrentMonth] = useState(new Date(startDate));
+  const { t, i18n } = useTranslation();
 
   const generateCalendarEvents = (): CalendarEvent[] => {
     const events: CalendarEvent[] = [];
@@ -53,8 +55,8 @@ export const TreatmentCalendar: React.FC<TreatmentCalendarProps> = ({
         id: `infusion_cycle${cycleNumber}_day${dayNum}`,
         date: infusionDate,
         type: 'infusion',
-        title: `Cycle ${cycleNumber} Day ${dayNum}`,
-        description: `Chemotherapy administration`,
+        title: t('calendar.events.cycleDay', { cycle: cycleNumber, day: dayNum }),
+        description: t('calendar.events.chemoAdministration'),
         drugs: regimen.drugs.map(d => d.name)
       });
 
@@ -66,8 +68,8 @@ export const TreatmentCalendar: React.FC<TreatmentCalendarProps> = ({
         id: `labs_cycle${cycleNumber}_day${dayNum}`,
         date: labDate,
         type: 'lab',
-        title: 'Pre-treatment Labs',
-        description: 'CBC with diff, CMP, assess for toxicity'
+        title: t('calendar.events.pretreatmentLabs'),
+        description: t('calendar.events.labsDesc')
       });
     });
 
@@ -84,8 +86,8 @@ export const TreatmentCalendar: React.FC<TreatmentCalendarProps> = ({
           id: `gcsf_cycle${cycleNumber}_day${i + 1}`,
           date: gcsfDate,
           type: 'gcsf',
-          title: 'G-CSF Injection',
-          description: 'Growth factor support'
+          title: t('calendar.events.gcsfTitle'),
+          description: t('calendar.events.gcsfDesc')
         });
       }
     }
@@ -102,8 +104,8 @@ export const TreatmentCalendar: React.FC<TreatmentCalendarProps> = ({
             id: `echo_cycle${cycleNumber}`,
             date: echoDate,
             type: 'monitoring',
-            title: 'Cardiac Function',
-            description: 'ECHO or MUGA - LVEF assessment',
+            title: t('calendar.events.cardiacTitle'),
+            description: t('calendar.events.cardiacDesc'),
             urgent: true
           });
         }
@@ -119,8 +121,8 @@ export const TreatmentCalendar: React.FC<TreatmentCalendarProps> = ({
             id: `audio_cycle${cycleNumber}`,
             date: audioDate,
             type: 'monitoring',
-            title: 'Audiometry',
-            description: 'Hearing assessment - cisplatin ototoxicity'
+            title: t('calendar.events.audioTitle'),
+            description: t('calendar.events.audioDesc')
           });
         }
       }
@@ -135,9 +137,9 @@ export const TreatmentCalendar: React.FC<TreatmentCalendarProps> = ({
         id: `restaging_cycle${cycleNumber}`,
         date: scanDate,
         type: 'imaging',
-        title: 'Restaging Scans',
-        description: 'CT chest/abdomen/pelvis - response assessment',
-        urgent: true
+          title: t('calendar.events.restagingTitle'),
+          description: t('calendar.events.restagingDesc'),
+          urgent: true
       });
     }
 
@@ -149,8 +151,8 @@ export const TreatmentCalendar: React.FC<TreatmentCalendarProps> = ({
       id: `cycle${cycleNumber + 1}_start`,
       date: nextCycleDate,
       type: 'visit',
-      title: `Cycle ${cycleNumber + 1} Start`,
-      description: 'Next treatment cycle begins'
+      title: t('calendar.events.cycleStart', { cycle: cycleNumber + 1 }),
+      description: t('calendar.events.cycleStartDesc')
     });
 
     return events.sort((a, b) => a.date.getTime() - b.date.getTime());
@@ -197,11 +199,11 @@ export const TreatmentCalendar: React.FC<TreatmentCalendarProps> = ({
   };
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', {
+    return new Intl.DateTimeFormat(i18n.language, {
       weekday: 'short',
       month: 'short',
       day: 'numeric'
-    });
+    }).format(date);
   };
 
   const isToday = (date: Date) => {
@@ -236,10 +238,10 @@ export const TreatmentCalendar: React.FC<TreatmentCalendarProps> = ({
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-primary">
             <Calendar className="h-5 w-5" />
-            Treatment Calendar
+            {t('calendar.title')}
           </CardTitle>
           <div className="text-sm text-muted-foreground">
-            Cycle {cycleNumber} • {regimen.name}
+            {t('calendar.cycleLabel', { number: cycleNumber })} • {regimen.name}
           </div>
         </div>
       </CardHeader>
@@ -251,31 +253,31 @@ export const TreatmentCalendar: React.FC<TreatmentCalendarProps> = ({
             <div className="text-2xl font-bold text-primary">
               {upcomingEvents.filter(e => e.type === 'infusion').length}
             </div>
-            <div className="text-xs text-muted-foreground">Infusions</div>
+            <div className="text-xs text-muted-foreground">{t('calendar.overview.infusions')}</div>
           </div>
           <div className="text-center p-3 bg-muted/30 rounded-lg">
             <div className="text-2xl font-bold text-accent">
               {upcomingEvents.filter(e => e.type === 'lab').length}
             </div>
-            <div className="text-xs text-muted-foreground">Lab Draws</div>
+            <div className="text-xs text-muted-foreground">{t('calendar.overview.labs')}</div>
           </div>
           <div className="text-center p-3 bg-muted/30 rounded-lg">
             <div className="text-2xl font-bold text-warning">
               {upcomingEvents.filter(e => e.type === 'monitoring').length}
             </div>
-            <div className="text-xs text-muted-foreground">Monitoring</div>
+            <div className="text-xs text-muted-foreground">{t('calendar.overview.monitoring')}</div>
           </div>
           <div className="text-center p-3 bg-muted/30 rounded-lg">
             <div className="text-2xl font-bold text-destructive">
               {upcomingEvents.filter(e => e.urgent).length}
             </div>
-            <div className="text-xs text-muted-foreground">Urgent</div>
+            <div className="text-xs text-muted-foreground">{t('calendar.overview.urgent')}</div>
           </div>
         </div>
 
         {/* Upcoming Events Timeline */}
         <div className="space-y-4">
-          <h4 className="font-medium text-foreground">Next 30 Days</h4>
+          <h4 className="font-medium text-foreground">{t('calendar.next30Days')}</h4>
           <div className="space-y-3 max-h-96 overflow-y-auto">
             {upcomingEvents.map((event) => (
               <div
@@ -290,7 +292,7 @@ export const TreatmentCalendar: React.FC<TreatmentCalendarProps> = ({
                 <div className="flex-shrink-0">
                   <Badge variant={getEventColor(event.type)} className="flex items-center gap-1">
                     {getEventIcon(event.type)}
-                    {event.type}
+                    {t(`calendar.legend.${event.type}`)}
                   </Badge>
                 </div>
                 
@@ -300,9 +302,9 @@ export const TreatmentCalendar: React.FC<TreatmentCalendarProps> = ({
                       {event.title}
                     </p>
                     {event.urgent && (
-                      <Badge variant="destructive" className="text-xs">
-                        Urgent
-                      </Badge>
+                    <Badge variant="destructive" className="text-xs">
+                         {t('calendar.overview.urgent')}
+                       </Badge>
                     )}
                   </div>
                   <p className="text-sm text-muted-foreground">
@@ -328,9 +330,10 @@ export const TreatmentCalendar: React.FC<TreatmentCalendarProps> = ({
                     {formatDate(event.date)}
                   </div>
                   <div className="text-xs text-muted-foreground">
-                    {isToday(event.date) ? 'Today' : 
-                     isPast(event.date) ? 'Past' : 
-                     `${Math.ceil((event.date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))} days`}
+                    {isToday(event.date) ? t('calendar.badges.today') : 
+                     isPast(event.date) ? t('calendar.badges.past') : 
+                     t('calendar.badges.inDays', { count: Math.ceil((event.date.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)) })}
+
                   </div>
                 </div>
               </div>
@@ -340,27 +343,27 @@ export const TreatmentCalendar: React.FC<TreatmentCalendarProps> = ({
 
         {/* Legend */}
         <div className="pt-4 border-t">
-          <h5 className="text-sm font-medium text-foreground mb-2">Event Types</h5>
+          <h5 className="text-sm font-medium text-foreground mb-2">{t('calendar.legendTitle')}</h5>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
             <div className="flex items-center gap-2">
               <Syringe className="h-3 w-3 text-primary" />
-              <span>Infusion/Injection</span>
+              <span>{t('calendar.legend.infusion')}</span>
             </div>
             <div className="flex items-center gap-2">
               <Microscope className="h-3 w-3 text-accent" />
-              <span>Laboratory</span>
+              <span>{t('calendar.legend.lab')}</span>
             </div>
             <div className="flex items-center gap-2">
               <Activity className="h-3 w-3 text-info" />
-              <span>Imaging</span>
+              <span>{t('calendar.legend.imaging')}</span>
             </div>
             <div className="flex items-center gap-2">
               <Heart className="h-3 w-3 text-destructive" />
-              <span>Monitoring</span>
+              <span>{t('calendar.legend.monitoring')}</span>
             </div>
             <div className="flex items-center gap-2">
               <Calendar className="h-3 w-3 text-muted-foreground" />
-              <span>Visit/Appointment</span>
+              <span>{t('calendar.legend.visit')}</span>
             </div>
           </div>
         </div>

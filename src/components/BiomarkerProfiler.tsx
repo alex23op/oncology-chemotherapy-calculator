@@ -19,6 +19,7 @@ export const BiomarkerProfiler: React.FC<BiomarkerProfilerProps> = ({
   stage,
   onBiomarkerStatusChange
 }) => {
+  const { t } = useTranslation();
   const [biomarkerStatuses, setBiomarkerStatuses] = useState<{ [key: string]: string }>({});
   const [testingComplete, setTestingComplete] = useState(false);
 
@@ -28,8 +29,8 @@ export const BiomarkerProfiler: React.FC<BiomarkerProfilerProps> = ({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Biomarker Testing</CardTitle>
-          <CardDescription>No biomarker panel available for this cancer type and stage</CardDescription>
+          <CardTitle>{t('biomarker.title')}</CardTitle>
+          <CardDescription>{t('biomarker.noPanel')}</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -95,9 +96,9 @@ export const BiomarkerProfiler: React.FC<BiomarkerProfilerProps> = ({
 
       <Card>
         <CardHeader>
-          <CardTitle>Required Biomarkers</CardTitle>
+          <CardTitle>{t('biomarker.requiredTitle')}</CardTitle>
           <CardDescription>
-            These biomarkers are essential for treatment selection
+            {t('biomarker.requiredDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -123,19 +124,19 @@ export const BiomarkerProfiler: React.FC<BiomarkerProfilerProps> = ({
                   value={biomarkerStatuses[biomarker.name] || 'unknown'}
                   onValueChange={(value) => handleBiomarkerChange(biomarker.name, value)}
                 >
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="unknown">Unknown</SelectItem>
-                    <SelectItem value="positive">Positive</SelectItem>
-                    <SelectItem value="negative">Negative</SelectItem>
-                    <SelectItem value="wild-type">Wild-type</SelectItem>
-                    <SelectItem value="mutated">Mutated</SelectItem>
-                    <SelectItem value="amplified">Amplified</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="low">Low</SelectItem>
-                  </SelectContent>
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder={t('biomarker.status.unknown')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="unknown">{t('biomarker.status.unknown')}</SelectItem>
+                <SelectItem value="positive">{t('biomarker.status.positive')}</SelectItem>
+                <SelectItem value="negative">{t('biomarker.status.negative')}</SelectItem>
+                <SelectItem value="wild-type">{t('biomarker.status.wildType')}</SelectItem>
+                <SelectItem value="mutated">{t('biomarker.status.mutated')}</SelectItem>
+                <SelectItem value="amplified">{t('biomarker.status.amplified')}</SelectItem>
+                <SelectItem value="high">{t('biomarker.status.high')}</SelectItem>
+                <SelectItem value="low">{t('biomarker.status.low')}</SelectItem>
+              </SelectContent>
                 </Select>
               </div>
             </div>
@@ -146,9 +147,9 @@ export const BiomarkerProfiler: React.FC<BiomarkerProfilerProps> = ({
       {biomarkerPanel.recommendedBiomarkers.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Recommended Biomarkers</CardTitle>
+            <CardTitle>{t('biomarker.recommendedTitle')}</CardTitle>
             <CardDescription>
-              Additional biomarkers that may guide treatment decisions
+              {t('biomarker.recommendedDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -174,19 +175,19 @@ export const BiomarkerProfiler: React.FC<BiomarkerProfilerProps> = ({
                     value={biomarkerStatuses[biomarker.name] || 'unknown'}
                     onValueChange={(value) => handleBiomarkerChange(biomarker.name, value)}
                   >
-                    <SelectTrigger className="w-32">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="unknown">Unknown</SelectItem>
-                      <SelectItem value="positive">Positive</SelectItem>
-                      <SelectItem value="negative">Negative</SelectItem>
-                      <SelectItem value="wild-type">Wild-type</SelectItem>
-                      <SelectItem value="mutated">Mutated</SelectItem>
-                      <SelectItem value="amplified">Amplified</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                      <SelectItem value="low">Low</SelectItem>
-                    </SelectContent>
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder={t('biomarker.status.unknown')} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="unknown">{t('biomarker.status.unknown')}</SelectItem>
+                <SelectItem value="positive">{t('biomarker.status.positive')}</SelectItem>
+                <SelectItem value="negative">{t('biomarker.status.negative')}</SelectItem>
+                <SelectItem value="wild-type">{t('biomarker.status.wildType')}</SelectItem>
+                <SelectItem value="mutated">{t('biomarker.status.mutated')}</SelectItem>
+                <SelectItem value="amplified">{t('biomarker.status.amplified')}</SelectItem>
+                <SelectItem value="high">{t('biomarker.status.high')}</SelectItem>
+                <SelectItem value="low">{t('biomarker.status.low')}</SelectItem>
+              </SelectContent>
                   </Select>
                 </div>
               </div>
@@ -198,8 +199,8 @@ export const BiomarkerProfiler: React.FC<BiomarkerProfilerProps> = ({
       <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">
           {allRequiredTested
-            ? "✓ All required biomarkers tested"
-            : `${biomarkerPanel.requiredBiomarkers.filter(b => biomarkerStatuses[b.name] && biomarkerStatuses[b.name] !== 'unknown').length}/${biomarkerPanel.requiredBiomarkers.length} required biomarkers tested`
+            ? t('biomarker.allRequiredTested')
+            : t('biomarker.requiredTestedCount', { done: biomarkerPanel.requiredBiomarkers.filter(b => biomarkerStatuses[b.name] && biomarkerStatuses[b.name] !== 'unknown').length, total: biomarkerPanel.requiredBiomarkers.length })
           }
         </div>
         <Button
@@ -207,7 +208,7 @@ export const BiomarkerProfiler: React.FC<BiomarkerProfilerProps> = ({
           disabled={!allRequiredTested}
           variant={allRequiredTested ? "default" : "outline"}
         >
-          {allRequiredTested ? "Complete Biomarker Profile" : "Complete Required Testing"}
+          {allRequiredTested ? t('biomarker.completeProfile') : t('biomarker.completeRequired')}
         </Button>
       </div>
     </div>

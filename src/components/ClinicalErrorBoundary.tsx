@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { AlertTriangle, RefreshCw, Bug } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
+import i18n from '@/i18n';
 
 interface Props {
   children: ReactNode;
@@ -45,8 +46,8 @@ export class ClinicalErrorBoundary extends Component<Props, State> {
     if (this.isCriticalError(error)) {
       toast({
         variant: "destructive",
-        title: "Critical Clinical Error",
-        description: `A critical error occurred in ${context}. Please reload and report this issue.`
+        title: i18n.t('errors.criticalToastTitle'),
+        description: i18n.t('errors.criticalToastDesc', { context })
       });
     }
     
@@ -123,7 +124,7 @@ export class ClinicalErrorBoundary extends Component<Props, State> {
                 className="flex items-center gap-2"
               >
                 <RefreshCw className="h-4 w-4" />
-                Try Again ({this.state.retryCount}/3)
+                {i18n.t('errors.tryAgain')} ({this.state.retryCount}/3)
               </Button>
               
               {isCritical && (
@@ -134,7 +135,7 @@ export class ClinicalErrorBoundary extends Component<Props, State> {
                   className="flex items-center gap-2"
                 >
                   <RefreshCw className="h-4 w-4" />
-                  Reload App
+                  {i18n.t('errors.reloadApp')}
                 </Button>
               )}
             </div>
@@ -143,25 +144,25 @@ export class ClinicalErrorBoundary extends Component<Props, State> {
               <details className="mt-4">
                 <summary className="cursor-pointer text-sm font-medium flex items-center gap-2">
                   <Bug className="h-4 w-4" />
-                  Developer Information
+                  {i18n.t('errors.devInfo')}
                 </summary>
                 <div className="mt-2 p-3 bg-muted rounded-md">
                   <div className="space-y-2 text-xs">
                     <div>
-                      <strong>Error:</strong>
+                      <strong>{i18n.t('errors.labels.error')}</strong>
                       <pre className="mt-1 overflow-auto text-destructive">
                         {this.state.error?.message}
                       </pre>
                     </div>
                     <div>
-                      <strong>Stack:</strong>
+                      <strong>{i18n.t('errors.labels.stack')}</strong>
                       <pre className="mt-1 overflow-auto text-muted-foreground">
                         {this.state.error?.stack}
                       </pre>
                     </div>
                     {this.state.errorInfo && (
                       <div>
-                        <strong>Component Stack:</strong>
+                        <strong>{i18n.t('errors.labels.componentStack')}</strong>
                         <pre className="mt-1 overflow-auto text-muted-foreground">
                           {this.state.errorInfo.componentStack}
                         </pre>

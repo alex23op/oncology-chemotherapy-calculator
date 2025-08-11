@@ -65,23 +65,23 @@ const Index = () => {
   
   return (
     <div className="min-h-screen bg-background">
-      <SafeComponentWrapper componentName="App Header" fallbackMessage="Header failed to load">
+      <SafeComponentWrapper componentName="App Header" fallbackMessage={t('errors.headerFailed')}>
         <AppHeader />
       </SafeComponentWrapper>
       
       <main className="container mx-auto px-4 py-6 space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="space-y-6">
-            <SafeComponentWrapper componentName="Patient Form" fallbackMessage="Patient form failed to load">
+            <SafeComponentWrapper componentName="Patient Form" fallbackMessage={t('errors.patientFormFailed')}>
               <PatientForm onPatientDataChange={handlePatientDataChange} />
             </SafeComponentWrapper>
-            <SafeComponentWrapper componentName="Cancer Type Selector" fallbackMessage="Cancer type selector failed to load">
+            <SafeComponentWrapper componentName="Cancer Type Selector" fallbackMessage={t('errors.cancerSelectorFailed')}>
               <CancerTypeSelector onRegimenSelect={handleRegimenSelect} />
             </SafeComponentWrapper>
           </div>
           
           <div>
-            <SafeComponentWrapper componentName="Dose Calculator" fallbackMessage="Dose calculator failed to load">
+            <SafeComponentWrapper componentName="Dose Calculator" fallbackMessage={t('errors.doseCalculatorFailed')}>
               <DoseCalculator
                 regimen={selectedRegimen}
                 bsa={patientData?.bsa || 0}

@@ -415,5 +415,101 @@
         "description": "Support for bone marrow function and blood cell recovery"
       }
     }
+  },
+  "calendar": {
+    "title": "Treatment Calendar",
+    "cycleLabel": "Cycle {{number}}",
+    "overview": {
+      "infusions": "Infusions",
+      "labs": "Lab Draws",
+      "monitoring": "Monitoring",
+      "urgent": "Urgent"
+    },
+    "next30Days": "Next 30 Days",
+    "badges": {
+      "today": "Today",
+      "past": "Past",
+      "inDays": "in {{count}} days"
+    },
+    "legendTitle": "Event Types",
+    "legend": {
+      "infusion": "Infusion/Injection",
+      "lab": "Laboratory",
+      "imaging": "Imaging",
+      "monitoring": "Monitoring",
+      "visit": "Visit/Appointment",
+      "gcsf": "G-CSF"
+    },
+    "events": {
+      "cycleDay": "Cycle {{cycle}} Day {{day}}",
+      "chemoAdministration": "Chemotherapy administration",
+      "pretreatmentLabs": "Pre-treatment Labs",
+      "labsDesc": "CBC with diff, CMP, assess for toxicity",
+      "gcsfTitle": "G-CSF Injection",
+      "gcsfDesc": "Growth factor support",
+      "cardiacTitle": "Cardiac Function",
+      "cardiacDesc": "ECHO or MUGA - LVEF assessment",
+      "audioTitle": "Audiometry",
+      "audioDesc": "Hearing assessment - cisplatin ototoxicity",
+      "restagingTitle": "Restaging Scans",
+      "restagingDesc": "CT chest/abdomen/pelvis - response assessment",
+      "cycleStart": "Cycle {{cycle}} Start",
+      "cycleStartDesc": "Next treatment cycle begins"
+    }
+  },
+  "notFound": {
+    "title": "404",
+    "subtitle": "Oops! Page not found",
+    "backHome": "Return to Home"
+  },
+  "errors": {
+    "criticalToastTitle": "Critical Clinical Error",
+    "criticalToastDesc": "A critical error occurred in {{context}}. Please reload and report this issue.",
+    "criticalTitle": "Critical Clinical Error",
+    "componentErrorTitle": "Component Error",
+    "inComponent": "in {{context}}",
+    "criticalCardBody": "A critical error occurred that could affect clinical calculations or safety.",
+    "criticalCardReload": "Please reload the application and report this issue immediately.",
+    "componentErrorBody": "This component encountered an error and couldn't load properly.",
+    "tryAgain": "Try Again",
+    "reloadApp": "Reload App",
+    "devInfo": "Developer Information",
+    "genericComponentLoadFailed": "Something went wrong loading this component.",
+    "labels": {
+      "error": "Error:",
+      "stack": "Stack:",
+      "componentStack": "Component Stack:",
+      "errorDetails": "Error details"
+    },
+    "headerFailed": "Header failed to load",
+    "patientFormFailed": "Patient form failed to load",
+    "cancerSelectorFailed": "Cancer type selector failed to load",
+    "doseCalculatorFailed": "Dose calculator failed to load"
+  },
+  "biomarker": {
+    "title": "Biomarker Testing",
+    "panelTitle": "Biomarker Testing Panel",
+    "noPanel": "No biomarker panel available for this cancer type and stage",
+    "turnaround": "Turnaround Time",
+    "tissueReq": "Tissue Requirements",
+    "requiredTitle": "Required Biomarkers",
+    "requiredDesc": "These biomarkers are essential for treatment selection",
+    "recommendedTitle": "Recommended Biomarkers",
+    "recommendedDesc": "Additional biomarkers that may guide treatment decisions",
+    "status": {
+      "unknown": "Unknown",
+      "positive": "Positive",
+      "negative": "Negative",
+      "wildType": "Wild-type",
+      "mutated": "Mutated",
+      "amplified": "Amplified",
+      "high": "High",
+      "low": "Low"
+    },
+    "allRequiredTested": "All required biomarkers tested",
+    "requiredTestedCount": "{{done}}/{{total}} required biomarkers tested",
+    "completeProfile": "Complete Biomarker Profile",
+    "completeRequired": "Complete Required Testing"
   }
 }
+
