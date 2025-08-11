@@ -8,6 +8,11 @@ import { toast } from "@/hooks/use-toast";
 import { Info } from "lucide-react";
 import { Regimen } from "@/types/regimens";
 import { useTranslation } from "react-i18next";
+import { WizardProvider, useWizard } from "@/components/wizard/WizardProvider";
+import { WizardStep } from "@/components/wizard/WizardStep";
+import { ProgressBar } from "@/components/wizard/ProgressBar";
+import { useSmartNav } from "@/context/SmartNavContext";
+
 interface PatientData {
   weight: string;
   height: string;
@@ -21,8 +26,11 @@ interface PatientData {
   creatinineClearance: number;
 }
 
-const Index = () => {
+const IndexContent = () => {
   const { t } = useTranslation();
+  const { autoJumpEnabled } = useSmartNav();
+  const { goTo } = useWizard();
+
   const [patientData, setPatientData] = useState<PatientData | null>(null);
   const [selectedRegimen, setSelectedRegimen] = useState<Regimen | null>(null);
 
@@ -44,6 +52,9 @@ const Index = () => {
       title: t("index.toasts.regimenSelected.title"),
       description: t("index.toasts.regimenSelected.description", { name: regimen.name }),
     });
+    if (autoJumpEnabled) {
+      goTo("doses");
+    }
   };
 
   const handleExport = (calculations: any[]) => {
@@ -53,8 +64,6 @@ const Index = () => {
       calculations,
       timestamp: new Date().toISOString(),
     };
-    
-    // In a real app, this would generate a PDF or send to printer
     console.log("Export data:", exportData);
     toast({
       title: t("index.toasts.exportSuccess.title"),
@@ -62,54 +71,69 @@ const Index = () => {
     });
   };
 
-  
+  return (
+    <main className="container mx-auto px-4 py-6 space-y-6">
+      <ProgressBar />
+
+      <WizardStep id="patient" title={t('wizard.steps.patient', { defaultValue: 'Patient data' })}>
+        <SafeComponentWrapper componentName="Patient Form" fallbackMessage={t('errors.patientFormFailed')}>
+          <PatientForm onPatientDataChange={handlePatientDataChange} />
+        </SafeComponentWrapper>
+      </WizardStep>
+
+      <WizardStep id="regimen" title={t('wizard.steps.regimen', { defaultValue: 'Regimen selection' })}>
+        <SafeComponentWrapper componentName="Cancer Type Selector" fallbackMessage={t('errors.cancerSelectorFailed')}>
+          <CancerTypeSelector onRegimenSelect={handleRegimenSelect} />
+        </SafeComponentWrapper>
+      </WizardStep>
+
+      <WizardStep id="doses" title={t('wizard.steps.doses', { defaultValue: 'Dose calculation' })}>
+        <SafeComponentWrapper componentName="Dose Calculator" fallbackMessage={t('errors.doseCalculatorFailed')}>
+          <DoseCalculator
+            regimen={selectedRegimen}
+            bsa={patientData?.bsa || 0}
+            weight={parseFloat(patientData?.weight || "0")}
+            height={parseFloat(patientData?.height || "0")}
+            age={parseFloat(patientData?.age || "0")}
+            sex={patientData?.sex || ""}
+            creatinineClearance={patientData?.creatinineClearance || 0}
+            onExport={handleExport}
+          />
+        </SafeComponentWrapper>
+      </WizardStep>
+
+      <div className="mt-8 p-4 bg-muted/30 rounded-lg border border-muted">
+        <div className="flex items-start gap-3">
+          <div className="p-1 bg-warning/20 rounded">
+            <Info className="h-4 w-4 text-warning-foreground" />
+          </div>
+          <div className="text-sm">
+            <h4 className="font-medium text-foreground mb-1">{t('index.disclaimer.title')}</h4>
+            <p className="text-muted-foreground">{t('index.disclaimer.body')}</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+};
+
+const Index = () => {
+  const { t } = useTranslation();
+  const steps = [
+    { id: 'patient', title: t('wizard.steps.patient', { defaultValue: 'Patient data' }) },
+    { id: 'regimen', title: t('wizard.steps.regimen', { defaultValue: 'Regimen selection' }) },
+    { id: 'doses', title: t('wizard.steps.doses', { defaultValue: 'Dose calculation' }) },
+  ];
+
   return (
     <div className="min-h-screen bg-background">
       <SafeComponentWrapper componentName="App Header" fallbackMessage={t('errors.headerFailed')}>
         <AppHeader />
       </SafeComponentWrapper>
-      
-      <main className="container mx-auto px-4 py-6 space-y-6">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="space-y-6">
-            <SafeComponentWrapper componentName="Patient Form" fallbackMessage={t('errors.patientFormFailed')}>
-              <PatientForm onPatientDataChange={handlePatientDataChange} />
-            </SafeComponentWrapper>
-            <SafeComponentWrapper componentName="Cancer Type Selector" fallbackMessage={t('errors.cancerSelectorFailed')}>
-              <CancerTypeSelector onRegimenSelect={handleRegimenSelect} />
-            </SafeComponentWrapper>
-          </div>
-          
-          <div>
-            <SafeComponentWrapper componentName="Dose Calculator" fallbackMessage={t('errors.doseCalculatorFailed')}>
-              <DoseCalculator
-                regimen={selectedRegimen}
-                bsa={patientData?.bsa || 0}
-                weight={parseFloat(patientData?.weight || "0")}
-                height={parseFloat(patientData?.height || "0")}
-                age={parseFloat(patientData?.age || "0")}
-                sex={patientData?.sex || ""}
-                creatinineClearance={patientData?.creatinineClearance || 0}
-                onExport={handleExport}
-              />
-            </SafeComponentWrapper>
-          </div>
-        </div>
 
-        <div className="mt-8 p-4 bg-muted/30 rounded-lg border border-muted">
-          <div className="flex items-start gap-3">
-            <div className="p-1 bg-warning/20 rounded">
-              <Info className="h-4 w-4 text-warning-foreground" />
-            </div>
-            <div className="text-sm">
-              <h4 className="font-medium text-foreground mb-1">{t('index.disclaimer.title')}</h4>
-              <p className="text-muted-foreground">
-                {t('index.disclaimer.body')}
-              </p>
-            </div>
-          </div>
-        </div>
-      </main>
+      <WizardProvider steps={steps} initialStepId="patient">
+        <IndexContent />
+      </WizardProvider>
     </div>
   );
 };

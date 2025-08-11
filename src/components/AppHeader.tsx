@@ -2,7 +2,7 @@ import { Stethoscope, Shield, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "react-i18next";
 import { LanguageToggle } from "./LanguageToggle";
-
+import { SmartNavSettings } from "@/components/SmartNavSettings";
 export const AppHeader = () => {
   const { t } = useTranslation();
   return (
@@ -29,6 +29,7 @@ export const AppHeader = () => {
               {t('header.clinicalUseOnly')}
             </Badge>
             <LanguageToggle />
+            <SmartNavSettings />
           </div>
         </div>
       </div>
