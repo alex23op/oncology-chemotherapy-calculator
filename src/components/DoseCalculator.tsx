@@ -249,6 +249,7 @@ useEffect(() => {
     setNextCycleDate(toISODate(next));
   }
 }, [regimen, treatmentDate, autoNextCycle]);
+  const performSafetyChecks = (regimen: Regimen, newCalculations: DoseCalculation[]) => {
     const patient: PatientInfo = {
       cnp: cnp || 'temp-cnp',
       foNumber: foNumber || undefined,
@@ -262,7 +263,7 @@ useEffect(() => {
       treatmentDate,
     };
 
-    const calculatedDoses = calculations.reduce((acc, calc) => {
+    const calculatedDoses = newCalculations.reduce((acc, calc) => {
       acc[calc.drug.name] = calc.calculatedDose;
       return acc;
     }, {} as Record<string, number>);
