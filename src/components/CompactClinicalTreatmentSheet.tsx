@@ -32,6 +32,14 @@ export const CompactClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Co
       }
     };
 
+    const categoryMap: Record<string, string> = {
+      'Antiemetics': t('clinicalSheet.antiemeticTherapy'),
+      'Infusion Reaction Prevention': t('clinicalSheet.infusionProphylaxis'),
+      'GI Protection': t('clinicalSheet.giProtection'),
+      'Organ Protection': t('clinicalSheet.organProtection'),
+      'Other': t('printableProtocol.otherCategory'),
+    };
+
     const allMedications = [
       ...premedications.antiemetics.map(med => ({ ...med, category: 'Antiemetics' })),
       ...premedications.infusionReactionProphylaxis.map(med => ({ ...med, category: 'Infusion Reaction Prevention' })),
@@ -160,7 +168,7 @@ export const CompactClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Co
                     <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5">{med.dosage}</td>
                     <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5">{med.route}</td>
                     <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5">{med.timing}</td>
-                    <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5 print:text-xs">{med.category}</td>
+                    <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5 print:text-xs">{categoryMap[med.category] ?? med.category}</td>
                     <td className="border-t border-gray-300 print:border-black print:px-1 print:py-0.5 text-center">☐</td>
                   </tr>
                 ))}

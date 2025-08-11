@@ -380,6 +380,40 @@
     "applyAll": "Apply All Recommendations ({{count}})",
     "emptySelected": "No agents selected. Choose from recommendations or browse categories to build your protocol.",
     "selectedHeader": "Selected protocol for {{drugs}} - {{count}} agents",
-    "specificFor": "Specific for"
+    "specificFor": "Specific for",
+    "categories": {
+      "cinv": {
+        "name": "Antiemetic Agents for CINV",
+        "description": "5-HT3 RAs, NK1 RAs, corticosteroids, olanzapine for chemotherapy-induced nausea/vomiting"
+      },
+      "cholinergic": {
+        "name": "Cholinergic Syndrome Management",
+        "description": "Agents for managing cholinergic symptoms from specific chemotherapy agents"
+      },
+      "diarrhea": {
+        "name": "Diarrhea Control Agents",
+        "description": "Management of delayed diarrhea from specific chemotherapy regimens"
+      },
+      "infusion_reaction": {
+        "name": "Infusion Reaction Prophylaxis",
+        "description": "Prevention of hypersensitivity and infusion reactions"
+      },
+      "gastroprotection": {
+        "name": "Gastroprotection",
+        "description": "Gastric protection when using steroids or gastric irritant chemotherapy"
+      },
+      "organ_protection": {
+        "name": "Organ-Protective Agents",
+        "description": "Nephroprotection, cardioprotection, and uroprotection agents"
+      },
+      "tumor_lysis": {
+        "name": "Tumor Lysis Syndrome Prophylaxis",
+        "description": "Prevention of tumor lysis syndrome in high-risk patients"
+      },
+      "growth_factors": {
+        "name": "Hematologic Growth Factors",
+        "description": "Support for bone marrow function and blood cell recovery"
+      }
+    }
   }
 }

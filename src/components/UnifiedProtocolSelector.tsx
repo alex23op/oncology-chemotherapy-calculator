@@ -615,9 +615,9 @@ export const UnifiedProtocolSelector = ({
                           <Icon className="h-4 w-4" />
                         </div>
                         <div>
-                          <h3 className="text-lg">{category.name}</h3>
+                          <h3 className="text-lg">{t(`unifiedSelector.categories.${category.id}.name`, { defaultValue: category.name })}</h3>
                           <p className="text-sm text-muted-foreground font-normal">
-                            {category.description}
+                            {t(`unifiedSelector.categories.${category.id}.description`, { defaultValue: category.description })}
                           </p>
                         </div>
                       </div>
@@ -713,7 +713,7 @@ export const UnifiedProtocolSelector = ({
                             <div className={`p-2 rounded ${category.color}`}>
                               <Icon className="h-4 w-4" />
                             </div>
-                            {category.name} ({categoryAgents.length})
+                            {t(`unifiedSelector.categories.${category.id}.name`, { defaultValue: category.name })} ({categoryAgents.length})
                           </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-3">

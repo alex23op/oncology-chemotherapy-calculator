@@ -358,6 +358,40 @@
     "applyAll": "Aplică toate ({{count}})",
     "specificFor": "Specific pentru",
     "emptySelected": "Nu ați selectat încă agenți.",
-    "selectedHeader": "Agenți selectați pentru {{drugs}} ({{count}})"
+    "selectedHeader": "Agenți selectați pentru {{drugs}} ({{count}})",
+    "categories": {
+      "cinv": {
+        "name": "Agenți antiemetici pentru CINV",
+        "description": "Antagoniști 5-HT3, antagoniști NK1, corticosteroizi, olanzapină pentru greață/vărsături induse de chimioterapie"
+      },
+      "cholinergic": {
+        "name": "Management sindrom colinergic",
+        "description": "Agenți pentru simptome colinergice produse de anumite chimioterapice"
+      },
+      "diarrhea": {
+        "name": "Agenți pentru controlul diareei",
+        "description": "Managementul diareei întârziate în anumite regimuri"
+      },
+      "infusion_reaction": {
+        "name": "Profilaxia reacțiilor la perfuzie",
+        "description": "Prevenirea reacțiilor de hipersensibilitate și la perfuzie"
+      },
+      "gastroprotection": {
+        "name": "Gastroprotecție",
+        "description": "Protecție gastrică în utilizarea steroizilor sau chimioterapii iritante gastric"
+      },
+      "organ_protection": {
+        "name": "Agenți protectori de organ",
+        "description": "Nefroprotecție, cardioprotecție și uroprotecție"
+      },
+      "tumor_lysis": {
+        "name": "Profilaxia sindromului de liza tumorală",
+        "description": "Prevenirea sindromului de liza tumorală la pacienți cu risc crescut"
+      },
+      "growth_factors": {
+        "name": "Factori de creștere hematologici",
+        "description": "Suport pentru funcția măduvei și recuperarea celulelor sanguine"
+      }
+    }
   }
 }
