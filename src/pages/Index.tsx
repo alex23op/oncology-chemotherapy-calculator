@@ -12,7 +12,8 @@ import { WizardProvider, useWizard } from "@/components/wizard/WizardProvider";
 import { WizardStep } from "@/components/wizard/WizardStep";
 import { ProgressBar } from "@/components/wizard/ProgressBar";
 import { useSmartNav } from "@/context/SmartNavContext";
-
+import { EmetogenicRiskClassifier } from "@/components/EmetogenicRiskClassifier";
+import { CompactClinicalTreatmentSheet } from "@/components/CompactClinicalTreatmentSheet";
 interface PatientData {
   weight: string;
   height: string;
@@ -91,11 +92,7 @@ const IndexContent = () => {
       <WizardStep id="support" title={t('wizard.steps.support', { defaultValue: 'Supportive care' })}>
         <SafeComponentWrapper componentName="Emetogenic Risk" fallbackMessage={t('errors.emetogenicRiskFailed')}>
           {selectedRegimen ? (
-            <>
-              {/* Simple preview of emetogenic risk based on regimen drugs */}
-              {/* Avoid duplicating state with DoseCalculator; this step is informative */}
-              {React.createElement(require('@/components/EmetogenicRiskClassifier').EmetogenicRiskClassifier, { drugs: selectedRegimen.drugs })}
-            </>
+            <EmetogenicRiskClassifier drugs={selectedRegimen.drugs} />
           ) : (
             <div className="text-sm text-muted-foreground">{t('doseCalculator.emptyState')}</div>
           )}
@@ -123,7 +120,7 @@ const IndexContent = () => {
         <SafeComponentWrapper componentName="Review & Print" fallbackMessage={t('errors.reviewFailed')}>
           {treatmentData ? (
             <div className="space-y-4">
-              {React.createElement(require('@/components/CompactClinicalTreatmentSheet').CompactClinicalTreatmentSheet, { treatmentData, className: 'compact-treatment-sheet' })}
+              <CompactClinicalTreatmentSheet treatmentData={treatmentData} className="compact-treatment-sheet" />
               <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
                 <button
                   className="inline-flex items-center gap-2 px-3 py-2 rounded border bg-background hover-scale"
