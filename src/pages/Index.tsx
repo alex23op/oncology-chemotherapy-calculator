@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, Suspense, lazy } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { PatientForm } from "@/components/PatientForm";
 import { CancerTypeSelector } from "@/components/CancerTypeSelector";
@@ -13,7 +13,12 @@ import { WizardStep } from "@/components/wizard/WizardStep";
 import { ProgressBar } from "@/components/wizard/ProgressBar";
 import { useSmartNav } from "@/context/SmartNavContext";
 import { EmetogenicRiskClassifier } from "@/components/EmetogenicRiskClassifier";
-import { CompactClinicalTreatmentSheet } from "@/components/CompactClinicalTreatmentSheet";
+import { PatientSummaryPanel } from "@/components/PatientSummaryPanel";
+
+const CompactClinicalTreatmentSheetLazy = lazy(() =>
+  import("@/components/CompactClinicalTreatmentSheet").then((m) => ({ default: m.CompactClinicalTreatmentSheet }))
+);
+
 interface PatientData {
   weight: string;
   height: string;
@@ -76,6 +81,7 @@ const IndexContent = () => {
   return (
     <main className="container mx-auto px-4 py-6 space-y-6">
       <ProgressBar />
+      <PatientSummaryPanel patientData={patientData} selectedRegimen={selectedRegimen} className="hidden lg:block" />
 
       <WizardStep id="patient" title={t('wizard.steps.patient', { defaultValue: 'Patient data' })}>
         <SafeComponentWrapper componentName="Patient Form" fallbackMessage={t('errors.patientFormFailed')}>
@@ -120,7 +126,9 @@ const IndexContent = () => {
         <SafeComponentWrapper componentName="Review & Print" fallbackMessage={t('errors.reviewFailed')}>
           {treatmentData ? (
             <div className="space-y-4">
-              <CompactClinicalTreatmentSheet treatmentData={treatmentData} className="compact-treatment-sheet" />
+              <Suspense fallback={<div className="rounded-lg border bg-muted/30 h-32 animate-pulse" aria-busy="true" />}>
+                <CompactClinicalTreatmentSheetLazy treatmentData={treatmentData} className="compact-treatment-sheet" />
+              </Suspense>
               <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
                 <button
                   className="inline-flex items-center gap-2 px-3 py-2 rounded border bg-background hover-scale"
