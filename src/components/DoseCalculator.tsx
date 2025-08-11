@@ -77,8 +77,9 @@ export const DoseCalculator = ({
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
   const [bsaCap, setBsaCap] = useState<number>(2.0);
   const [useBsaCap, setUseBsaCap] = useState<boolean>(false);
+  const [printOrientation, setPrintOrientation] = useState<'portrait' | 'landscape'>('portrait');
 
-const { componentRef, printTreatmentSheet } = usePrint();
+const { componentRef, printTreatmentSheet } = usePrint(undefined, { orientation: printOrientation });
 const { t } = useTranslation();
 
 // Additional patient details
@@ -419,7 +420,8 @@ try {
   const treatmentData = prepareTreatmentData();
   await generateClinicalTreatmentPDF({
     ...treatmentData,
-    elementId: 'clinical-treatment-sheet'
+    elementId: 'clinical-treatment-sheet',
+    orientation: printOrientation,
   });
   toast.success(t('doseCalculator.toasts.exportSuccess'));
 } catch (error) {
@@ -891,7 +893,16 @@ toast.success(t('doseCalculator.toasts.dataExported'));
             <Separator />
             <div className="flex justify-between items-center">
 <h3 className="text-lg font-semibold">{t('doseCalculator.treatmentSheetTitle')}</h3>
-<div className="flex gap-2">
+<div className="flex items-center gap-2">
+  <Select value={printOrientation} onValueChange={(v) => setPrintOrientation(v as 'portrait' | 'landscape')}>
+    <SelectTrigger className="w-[140px]">
+      <SelectValue placeholder={t('doseCalculator.orientation')} />
+    </SelectTrigger>
+    <SelectContent>
+      <SelectItem value="portrait">{t('doseCalculator.portrait')}</SelectItem>
+      <SelectItem value="landscape">{t('doseCalculator.landscape')}</SelectItem>
+    </SelectContent>
+  </Select>
   <Button
     variant="outline"
     size="sm"
@@ -901,16 +912,16 @@ toast.success(t('doseCalculator.toasts.dataExported'));
     <Download className="h-4 w-4" />
     {t('doseCalculator.exportPdf')}
   </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handlePrintTreatmentSheet}
-                  disabled={!patientId.trim()}
-                >
-<Printer className="h-4 w-4" />
-{t('doseCalculator.print')}
-                </Button>
-              </div>
+  <Button
+    variant="outline"
+    size="sm"
+    onClick={handlePrintTreatmentSheet}
+    disabled={!patientId.trim()}
+  >
+    <Printer className="h-4 w-4" />
+    {t('doseCalculator.print')}
+  </Button>
+</div>
             </div>
             
             {/* Digital view - full layout */}

@@ -12,6 +12,7 @@ interface ProtocolData {
 
 interface ClinicalTreatmentExportData extends TreatmentData {
   elementId: string;
+  orientation?: 'portrait' | 'landscape';
 }
 
 export const generateClinicalTreatmentPDF = async (
@@ -21,7 +22,7 @@ export const generateClinicalTreatmentPDF = async (
     // Create a temporary compact view for PDF export
     const compactElement = document.createElement('div');
     compactElement.innerHTML = `
-      <div class="compact-treatment-sheet" style="font-family: Arial, sans-serif; font-size: 9px; line-height: 1.2; color: #000; background: #fff; padding: 0; margin: 0;">
+      <div class="compact-treatment-sheet" style="font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.2; color: #000; background: #fff; padding: 0; margin: 0;">
         ${document.querySelector('.compact-treatment-sheet')?.innerHTML || 'Treatment data not available'}
       </div>
     `;
@@ -37,7 +38,7 @@ export const generateClinicalTreatmentPDF = async (
     });
 
     const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdf = new jsPDF(treatmentData.orientation === 'landscape' ? 'l' : 'p', 'mm', 'a4');
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
     const imgWidth = pdfWidth - 20;
@@ -47,12 +48,12 @@ export const generateClinicalTreatmentPDF = async (
     let position = 15;
 
     // Add header
-    pdf.setFontSize(14);
+    pdf.setFontSize(16);
     pdf.setFont('helvetica', 'bold');
     pdf.text(i18n.t('pdf.headerTitle'), pdfWidth / 2, 10, { align: 'center' });
     
     // Add patient info
-    pdf.setFontSize(10);
+    pdf.setFontSize(12);
     pdf.setFont('helvetica', 'normal');
     pdf.text(`${i18n.t('pdf.patientName')} ${treatmentData.patient.fullName || i18n.t('compactSheet.na')}`, 10, 20);
     pdf.text(`${i18n.t('pdf.patientId')} ${treatmentData.patient.patientId}`, 80, 20);
@@ -81,7 +82,7 @@ export const generateClinicalTreatmentPDF = async (
     const pageCount = pdf.getNumberOfPages();
     for (let i = 1; i <= pageCount; i++) {
       pdf.setPage(i);
-      pdf.setFontSize(8);
+      pdf.setFontSize(10);
       pdf.setFont('helvetica', 'normal');
       const timestamp = new Date().toLocaleString(i18n.language);
       pdf.text(`${i18n.t('pdf.generated')} ${timestamp}`, 10, pdfHeight - 5);

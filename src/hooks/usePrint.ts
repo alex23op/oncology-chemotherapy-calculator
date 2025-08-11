@@ -1,15 +1,16 @@
 import { useRef, useCallback } from 'react';
 import { useReactToPrint } from 'react-to-print';
 
-export const usePrint = (documentTitle?: string) => {
+export const usePrint = (documentTitle?: string, options?: { orientation?: 'portrait' | 'landscape' }) => {
   const componentRef = useRef<HTMLDivElement>(null);
+  const orientation = options?.orientation ?? 'portrait';
 
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
     documentTitle: documentTitle || `Clinical Treatment Protocol - ${new Date().toISOString().split('T')[0]}`,
     pageStyle: `
       @page {
-        size: A4;
+        size: A4 ${orientation === 'landscape' ? 'landscape' : 'portrait'};
         margin: 12mm 10mm;
       }
       @media print {
@@ -21,7 +22,7 @@ export const usePrint = (documentTitle?: string) => {
         
         body {
           font-family: 'Arial', 'Helvetica', sans-serif !important;
-          font-size: 9px !important;
+          font-size: 11pt !important;
           line-height: 1.2 !important;
           color: #000 !important;
           background: #fff !important;
@@ -74,16 +75,16 @@ export const usePrint = (documentTitle?: string) => {
         }
         
         /* Typography */
-        .print\\:text-xs {
-          font-size: 8px !important;
+        .print\:text-xs {
+          font-size: 10pt !important;
           line-height: 1.1 !important;
         }
-        .print\\:text-sm {
-          font-size: 9px !important;
+        .print\:text-sm {
+          font-size: 11pt !important;
           line-height: 1.2 !important;
         }
-        .print\\:text-base {
-          font-size: 10px !important;
+        .print\:text-base {
+          font-size: 12pt !important;
           line-height: 1.2 !important;
         }
         .print\\:leading-tight {
