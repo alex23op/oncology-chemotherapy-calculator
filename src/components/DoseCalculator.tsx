@@ -566,16 +566,6 @@ const handleExportData = () => {
   {regimen.name}
 </p>
 </div>
-<div className="flex gap-2">
-  <Button
-    variant={isEditing ? "default" : "outline"}
-    size="sm"
-    onClick={() => setIsEditing(!isEditing)}
-  >
-    {isEditing ? <Save className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
-    {isEditing ? t('doseCalculator.save') : t('doseCalculator.edit')}
-  </Button>
-</div>
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -772,7 +762,19 @@ const handleExportData = () => {
         <Separator />
 
         <div>
-          <h3 className="font-semibold text-foreground mb-3">{t('doseCalculator.chemoDrugs')}</h3>
+<div className="flex items-center justify-between gap-2 mb-3 flex-wrap">
+  <h3 className="font-semibold text-foreground">{t('doseCalculator.chemoDrugs')}</h3>
+  <Button
+    variant={isEditing ? "default" : "outline"}
+    size="sm"
+    onClick={() => setIsEditing(!isEditing)}
+    aria-pressed={isEditing}
+    aria-label={isEditing ? t('doseCalculator.save') : t('doseCalculator.edit')}
+  >
+    {isEditing ? <Save className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
+    {isEditing ? t('doseCalculator.save') : t('doseCalculator.edit')}
+  </Button>
+</div>
           <div className="space-y-4">
              {calculations.map((calc, index) => (
                <div key={index} className={`border-2 rounded-lg p-5 space-y-4 transition-all ${
