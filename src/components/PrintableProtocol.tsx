@@ -59,7 +59,7 @@ export const PrintableProtocol = React.forwardRef<HTMLDivElement, PrintableProto
           {Object.entries(agentsByCategory).map(([category, agents]) => (
             <Card key={category} className="print:border print:border-gray-300 print:shadow-none">
               <CardHeader className="pb-3 print:pb-2">
-                <CardTitle className="text-lg print:text-base">{category}</CardTitle>
+                <CardTitle className="text-lg print:text-base">{category === 'Other' ? t('printableProtocol.otherCategory') : category}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 print:space-y-2">
                 {(agents as any[]).map((agent, index) => (

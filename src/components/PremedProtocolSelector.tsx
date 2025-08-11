@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Shield, AlertTriangle, Clock, Pill } from "lucide-react";
 import { PremedProtocol, standardPremedProtocols, getRecommendedProtocols } from "@/utils/premedProtocols";
 import { Premedication } from "@/types/regimens";
+import { useTranslation } from 'react-i18next';
 
 interface PremedProtocolSelectorProps {
   drugNames: string[];
@@ -22,9 +23,9 @@ export const PremedProtocolSelector = ({
   onPremedSelectionsChange,
   weight
 }: PremedProtocolSelectorProps) => {
+  const { t } = useTranslation();
   const [selectedProtocols, setSelectedProtocols] = useState<string[]>([]);
   const recommendedProtocols = getRecommendedProtocols(drugNames);
-
   const handleProtocolSelect = (protocol: PremedProtocol) => {
     const newSelections = [...selectedPremedications];
     
@@ -97,7 +98,7 @@ export const PremedProtocolSelector = ({
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-primary">
           <Shield className="h-5 w-5" />
-          Premedication Protocols
+          {t('premedSelector.title')}
         </CardTitle>
         <div className="flex gap-2 flex-wrap">
           {drugNames.map(drug => (
@@ -111,18 +112,18 @@ export const PremedProtocolSelector = ({
       <CardContent>
         <Tabs defaultValue="protocols" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="protocols">Recommended Protocols</TabsTrigger>
-            <TabsTrigger value="individual">Individual Selection</TabsTrigger>
-            <TabsTrigger value="selected">Selected ({selectedPremedications.length})</TabsTrigger>
+            <TabsTrigger value="protocols">{t('premedSelector.tabs.protocols')}</TabsTrigger>
+            <TabsTrigger value="individual">{t('premedSelector.tabs.individual')}</TabsTrigger>
+            <TabsTrigger value="selected">{t('premedSelector.tabs.selected', { count: selectedPremedications.length })}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="protocols" className="space-y-4">
             <div className="flex justify-between items-center">
               <p className="text-sm text-muted-foreground">
-                Quick-select standard protocols based on your chemotherapy drugs
+                {t('premedSelector.quickTip')}
               </p>
               <Button variant="outline" size="sm" onClick={clearAllSelections}>
-                Clear All
+                {t('premedSelector.clearAll')}
               </Button>
             </div>
             
@@ -140,7 +141,7 @@ export const PremedProtocolSelector = ({
                         size="sm"
                         disabled={selectedProtocols.includes(protocol.id)}
                       >
-                        {selectedProtocols.includes(protocol.id) ? "Added" : "Add Protocol"}
+                        {selectedProtocols.includes(protocol.id) ? t('premedSelector.added') : t('premedSelector.addProtocol')}
                       </Button>
                     </div>
                   </CardHeader>
@@ -161,10 +162,10 @@ export const PremedProtocolSelector = ({
                           </div>
                           <div className="flex gap-1">
                             {premed.isRequired && (
-                              <Badge variant="destructive" className="text-xs">Required</Badge>
+                              <Badge variant="destructive" className="text-xs">{t('premedSelector.required')}</Badge>
                             )}
                             {premed.isStandard && (
-                              <Badge variant="secondary" className="text-xs">Standard</Badge>
+                              <Badge variant="secondary" className="text-xs">{t('premedSelector.standard')}</Badge>
                             )}
                           </div>
                         </div>
@@ -178,7 +179,7 @@ export const PremedProtocolSelector = ({
 
           <TabsContent value="individual" className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              Select individual premedications by category
+              {t('premedSelector.selectByCategory')}
             </p>
             
             {Object.entries(groupedPremedications).map(([category, premedications]) => (
@@ -188,7 +189,7 @@ export const PremedProtocolSelector = ({
                     <div className={`p-2 rounded ${getCategoryColor(category)}`}>
                       {getCategoryIcon(category)}
                     </div>
-                    {category.replace('_', ' ')}
+                    {t(`premedSelector.categories.${category}`, { defaultValue: category.replace('_', ' ') })}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
@@ -217,31 +218,31 @@ export const PremedProtocolSelector = ({
                             </div>
                             <div className="flex gap-1 mb-2">
                               {premed.isRequired && (
-                                <Badge variant="destructive" className="text-xs">Required</Badge>
+                                <Badge variant="destructive" className="text-xs">{t('premedSelector.required')}</Badge>
                               )}
                               {premed.isStandard && (
-                                <Badge variant="secondary" className="text-xs">Standard</Badge>
+                                <Badge variant="secondary" className="text-xs">{t('premedSelector.standard')}</Badge>
                               )}
                             </div>
                             <p className="text-xs text-muted-foreground">
                               <Clock className="h-3 w-3 inline mr-1" />
                               {premed.timing}
                             </p>
-                            {premed.dilution && (
-                              <p className="text-xs text-muted-foreground mt-1">
-                                <strong>Dilution:</strong> {premed.dilution}
-                              </p>
-                            )}
-                            {premed.administrationDuration && (
-                              <p className="text-xs text-muted-foreground">
-                                <strong>Duration:</strong> {premed.administrationDuration}
-                              </p>
-                            )}
-                            {premed.notes && (
-                              <p className="text-xs text-info mt-1">
-                                <strong>Note:</strong> {premed.notes}
-                              </p>
-                            )}
+                              {premed.dilution && (
+                                <p className="text-xs text-muted-foreground mt-1">
+                                  <strong>{t('premedSelector.dilution')}:</strong> {premed.dilution}
+                                </p>
+                              )}
+                              {premed.administrationDuration && (
+                                <p className="text-xs text-muted-foreground">
+                                  <strong>{t('premedSelector.duration')}:</strong> {premed.administrationDuration}
+                                </p>
+                              )}
+                              {premed.notes && (
+                                <p className="text-xs text-info mt-1">
+                                  <strong>{t('premedSelector.note')}:</strong> {premed.notes}
+                                </p>
+                              )}
                           </div>
                         </div>
                       </div>
@@ -255,16 +256,16 @@ export const PremedProtocolSelector = ({
           <TabsContent value="selected" className="space-y-4">
             {selectedPremedications.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
-                No premedications selected. Use the other tabs to select protocols or individual medications.
+                {t('premedSelector.noneSelected')}
               </div>
             ) : (
               <div className="space-y-3">
                 <div className="flex justify-between items-center">
                   <p className="text-sm text-muted-foreground">
-                    Review your selected premedications
+                    {t('premedSelector.reviewSelected')}
                   </p>
                   <Button variant="outline" size="sm" onClick={clearAllSelections}>
-                    Clear All
+                    {t('premedSelector.clearAll')}
                   </Button>
                 </div>
                 
@@ -288,13 +289,13 @@ export const PremedProtocolSelector = ({
                           </div>
                           <div className="flex gap-1 mb-2">
                             {premed.isRequired && (
-                              <Badge variant="destructive" className="text-xs">Required</Badge>
+                              <Badge variant="destructive" className="text-xs">{t('premedSelector.required')}</Badge>
                             )}
                             {premed.isStandard && (
-                              <Badge variant="secondary" className="text-xs">Standard</Badge>
+                              <Badge variant="secondary" className="text-xs">{t('premedSelector.standard')}</Badge>
                             )}
                             <Badge variant="outline" className="text-xs capitalize">
-                              {premed.category.replace('_', ' ')}
+                              {t(`premedSelector.categories.${premed.category}`, { defaultValue: premed.category.replace('_', ' ') })}
                             </Badge>
                           </div>
                           <p className="text-sm text-muted-foreground mb-2">
@@ -303,17 +304,17 @@ export const PremedProtocolSelector = ({
                           </p>
                           {(premed.dilution || premed.administrationDuration) && (
                             <div className="bg-background/80 border rounded p-3 mt-2">
-                              {premed.dilution && (
-                                <p className="text-sm"><strong>Dilution:</strong> {premed.dilution}</p>
-                              )}
-                              {premed.administrationDuration && (
-                                <p className="text-sm"><strong>Duration:</strong> {premed.administrationDuration}</p>
-                              )}
+                                {premed.dilution && (
+                                  <p className="text-sm"><strong>{t('premedSelector.dilution')}:</strong> {premed.dilution}</p>
+                                )}
+                                {premed.administrationDuration && (
+                                  <p className="text-sm"><strong>{t('premedSelector.duration')}:</strong> {premed.administrationDuration}</p>
+                                )}
                             </div>
                           )}
                           {premed.notes && (
                             <div className="bg-info/10 border border-info/20 rounded p-2 mt-2">
-                              <p className="text-sm text-info"><strong>Note:</strong> {premed.notes}</p>
+                                <p className="text-sm text-info"><strong>{t('premedSelector.note')}:</strong> {premed.notes}</p>
                             </div>
                           )}
                         </div>
@@ -323,7 +324,7 @@ export const PremedProtocolSelector = ({
                           onClick={() => handleIndividualPremedToggle(premed, false)}
                           className="text-muted-foreground hover:text-destructive"
                         >
-                          Remove
+                          {t('premedSelector.remove')}
                         </Button>
                       </div>
                     </CardContent>

@@ -73,7 +73,8 @@
     "generated": "Generat",
     "totalAgents": "Număr total agenți",
     "noAgents": "Nu au fost selectați agenți pentru protocol",
-    "footerNote": "Acest protocol este generat automat și trebuie revizuit de un profesionist din domeniul sănătății înainte de utilizare."
+    "footerNote": "Acest protocol este generat automat și trebuie revizuit de un profesionist din domeniul sănătății înainte de utilizare.",
+    "otherCategory": "Altele"
   },
   "clinicalSheet": {
     "mainTitle": "PROTOCOL TRATAMENT CHIMIOTERAPIC",
@@ -339,5 +340,6 @@
     "detectedRo": "Am detectat limba română în browser. Doriți să treceți la română?",
     "yes": "Da",
     "no": "Nu"
-  }
+  },
+  **PREMED_UNIFIED_PLACEHOLDER**
 }

@@ -9,6 +9,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Shield, AlertTriangle, Clock, Pill, ChevronDown, BookOpen, Edit, Heart, Activity, Zap, Droplet, Users, FileText } from "lucide-react";
 import { Drug } from "@/types/regimens";
+import { useTranslation } from 'react-i18next';
 
 interface UnifiedProtocolSelectorProps {
   drugNames: string[];
@@ -432,6 +433,7 @@ export const UnifiedProtocolSelector = ({
 }: UnifiedProtocolSelectorProps) => {
   const [selectedAgents, setSelectedAgents] = useState<PremedAgent[]>([]);
   const [expandedCategories, setExpandedCategories] = useState<string[]>(["cinv"]);
+  const { t } = useTranslation();
 
   // Notify parent component when selected agents change
   useEffect(() => {
@@ -498,11 +500,11 @@ export const UnifiedProtocolSelector = ({
         <CardTitle className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-primary">
             <Shield className="h-5 w-5" />
-            Premedication & Supportive Care Protocol
+            {t('unifiedSelector.title')}
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={clearSelections}>
-              Clear All
+              {t('premedSelector.clearAll')}
             </Button>
           </div>
         </CardTitle>
@@ -513,10 +515,10 @@ export const UnifiedProtocolSelector = ({
             </Badge>
           ))}
           <Badge variant="secondary" className="text-xs">
-            {emetogenicRiskLevel.toUpperCase()} Risk
+            {t('unifiedSelector.riskBadge', { level: emetogenicRiskLevel.toUpperCase() })}
           </Badge>
           <Badge variant="default" className="text-xs">
-            {selectedAgents.length} Selected
+            {t('unifiedSelector.selectedCount', { count: selectedAgents.length })}
           </Badge>
         </div>
       </CardHeader>
@@ -524,22 +526,22 @@ export const UnifiedProtocolSelector = ({
       <CardContent>
         <Tabs defaultValue="recommendations" className="w-full">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
-            <TabsTrigger value="categories">All Categories</TabsTrigger>
-            <TabsTrigger value="selected">Selected Protocol</TabsTrigger>
+            <TabsTrigger value="recommendations">{t('unifiedSelector.tabs.recommendations')}</TabsTrigger>
+            <TabsTrigger value="categories">{t('unifiedSelector.tabs.categories')}</TabsTrigger>
+            <TabsTrigger value="selected">{t('unifiedSelector.tabs.selected')}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="recommendations" className="space-y-4">
             <Alert>
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
-                Evidence-based recommendations for {drugNames.join(", ")} with {emetogenicRiskLevel} emetogenic risk.
+                {t('unifiedSelector.recommendationsDesc', { drugs: drugNames.join(", "), risk: emetogenicRiskLevel })}
               </AlertDescription>
             </Alert>
 
             <div className="flex gap-2 mb-4">
               <Button onClick={applyRecommendations} className="flex-1">
-                Apply All Recommendations ({recommendations.length})
+                {t('unifiedSelector.applyAll', { count: recommendations.length })}
               </Button>
             </div>
 
@@ -574,14 +576,14 @@ export const UnifiedProtocolSelector = ({
                             )}
                             {agent.isRequired && (
                               <Badge variant="destructive" className="text-xs">
-                                Required
+                                {t('premedSelector.required')}
                               </Badge>
                             )}
                           </div>
                           <div className="text-sm space-y-1">
-                            <p><strong>Dose:</strong> {agent.dosage} {agent.unit} {agent.route}</p>
-                            <p><strong>Timing:</strong> {agent.timing}</p>
-                            <p><strong>Indication:</strong> {agent.indication}</p>
+                            <p><strong>{t('clinicalSheet.dose')}:</strong> {agent.dosage} {agent.unit} {agent.route}</p>
+                            <p><strong>{t('printableProtocol.timing')}:</strong> {agent.timing}</p>
+                            <p><strong>{t('clinicalSheet.indication')}:</strong> {agent.indication}</p>
                             <p className="text-muted-foreground">{agent.rationale}</p>
                             {agent.notes && (
                               <p className="text-xs text-orange-600 font-medium">{agent.notes}</p>
@@ -654,12 +656,12 @@ export const UnifiedProtocolSelector = ({
                                     )}
                                   </div>
                                   <div className="text-sm space-y-1">
-                                    <p><strong>Dose:</strong> {agent.dosage} {agent.unit} {agent.route}</p>
-                                    <p><strong>Timing:</strong> {agent.timing}</p>
-                                    <p><strong>Indication:</strong> {agent.indication}</p>
+                                    <p><strong>{t('clinicalSheet.dose')}:</strong> {agent.dosage} {agent.unit} {agent.route}</p>
+                                    <p><strong>{t('printableProtocol.timing')}:</strong> {agent.timing}</p>
+                                    <p><strong>{t('clinicalSheet.indication')}:</strong> {agent.indication}</p>
                                     <p className="text-muted-foreground">{agent.rationale}</p>
                                     {agent.drugSpecific && (
-                                      <p className="text-xs"><strong>Specific for:</strong> {agent.drugSpecific.join(", ")}</p>
+                                      <p className="text-xs"><strong>{t('unifiedSelector.specificFor')}:</strong> {agent.drugSpecific.join(", ")}</p>
                                     )}
                                     {agent.notes && (
                                       <p className="text-xs text-orange-600 font-medium">{agent.notes}</p>
@@ -682,15 +684,17 @@ export const UnifiedProtocolSelector = ({
             {selectedAgents.length === 0 ? (
               <Alert>
                 <AlertDescription>
-                  No agents selected. Choose from recommendations or browse categories to build your protocol.
+                  {t('unifiedSelector.emptySelected')}
+                </AlertDescription>
                 </AlertDescription>
               </Alert>
             ) : (
               <>
-                <Alert className="mb-4">
-                  <FileText className="h-4 w-4" />
-                  <AlertDescription>
-                    Selected protocol for {drugNames.join(", ")} - {selectedAgents.length} agents
+              <Alert className="mb-4">
+                <FileText className="h-4 w-4" />
+                <AlertDescription>
+                  {t('unifiedSelector.selectedHeader', { drugs: drugNames.join(", "), count: selectedAgents.length })}
+                </AlertDescription>
                   </AlertDescription>
                 </Alert>
 
@@ -729,9 +733,9 @@ export const UnifiedProtocolSelector = ({
                                 </Button>
                               </div>
                               <div className="text-sm space-y-1">
-                                <p><strong>Dose:</strong> {agent.dosage} {agent.unit} {agent.route}</p>
-                                <p><strong>Timing:</strong> {agent.timing}</p>
-                                <p><strong>Indication:</strong> {agent.indication}</p>
+                                <p><strong>{t('clinicalSheet.dose')}:</strong> {agent.dosage} {agent.unit} {agent.route}</p>
+                                <p><strong>{t('printableProtocol.timing')}:</strong> {agent.timing}</p>
+                                <p><strong>{t('clinicalSheet.indication')}:</strong> {agent.indication}</p>
                                 {agent.notes && (
                                   <p className="text-xs text-orange-600 font-medium">{agent.notes}</p>
                                 )}

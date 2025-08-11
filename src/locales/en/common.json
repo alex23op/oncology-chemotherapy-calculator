@@ -74,7 +74,8 @@
     "generated": "Generated",
     "totalAgents": "Total Agents",
     "noAgents": "No agents selected for protocol",
-    "footerNote": "This protocol is computer-generated and should be reviewed by a qualified healthcare professional before use."
+    "footerNote": "This protocol is computer-generated and should be reviewed by a qualified healthcare professional before use.",
+    "otherCategory": "Other"
   },
   "clinicalSheet": {
     "mainTitle": "CHEMOTHERAPY TREATMENT PROTOCOL",
@@ -337,5 +338,48 @@
     "detectedRo": "We detected Romanian as your browser language. Switch to Romanian?",
     "yes": "Yes",
     "no": "No"
+  },
+  "premedSelector": {
+    "title": "Premedication Protocols",
+    "tabs": {
+      "protocols": "Recommended Protocols",
+      "individual": "Individual Selection",
+      "selected": "Selected ({{count}})"
+    },
+    "quickTip": "Quick-select standard protocols based on your chemotherapy drugs",
+    "clearAll": "Clear All",
+    "addProtocol": "Add Protocol",
+    "added": "Added",
+    "selectByCategory": "Select individual premedications by category",
+    "required": "Required",
+    "standard": "Standard",
+    "dilution": "Dilution",
+    "duration": "Duration",
+    "note": "Note",
+    "noneSelected": "No premedications selected. Use the other tabs to select protocols or individual medications.",
+    "reviewSelected": "Review your selected premedications",
+    "remove": "Remove",
+    "categories": {
+      "antiemetic": "Antiemetic",
+      "corticosteroid": "Corticosteroid",
+      "antihistamine": "Antihistamine",
+      "h2_blocker": "H2 blocker",
+      "other": "Other"
+    }
+  },
+  "unifiedSelector": {
+    "title": "Premedication & Supportive Care Protocol",
+    "tabs": {
+      "recommendations": "Recommendations",
+      "categories": "All Categories",
+      "selected": "Selected Protocol"
+    },
+    "riskBadge": "{{level}} Risk",
+    "selectedCount": "{{count}} Selected",
+    "recommendationsDesc": "Evidence-based recommendations for {{drugs}} with {{risk}} emetogenic risk.",
+    "applyAll": "Apply All Recommendations ({{count}})",
+    "emptySelected": "No agents selected. Choose from recommendations or browse categories to build your protocol.",
+    "selectedHeader": "Selected protocol for {{drugs}} - {{count}} agents",
+    "specificFor": "Specific for"
   }
 }
