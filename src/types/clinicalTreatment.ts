@@ -1,7 +1,8 @@
 import { Drug, Regimen } from './regimens';
 
 export interface PatientInfo {
-  patientId: string;
+  cnp: string;
+  foNumber?: string;
   fullName?: string;
   weight: number;
   height: number;
@@ -13,6 +14,7 @@ export interface PatientInfo {
   treatmentDate: string;
   nextCycleDate?: string;
 }
+
 
 export interface CalculatedDrug extends Drug {
   calculatedDose: string;

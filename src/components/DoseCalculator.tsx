@@ -67,7 +67,8 @@ export const DoseCalculator = ({
   const [emetogenicRiskLevel, setEmetogenicRiskLevel] = useState<"high" | "moderate" | "low" | "minimal">("minimal");
   const [selectedAntiemetics, setSelectedAntiemetics] = useState<AntiemeticAgent[]>([]);
   const [isEditing, setIsEditing] = useState(false);
-  const [patientId, setPatientId] = useState<string>('');
+  const [cnp, setCnp] = useState<string>('');
+  const [foNumber, setFoNumber] = useState<string>('');
   const [cycleNumber, setCycleNumber] = useState<number>(1);
   const [treatmentDate, setTreatmentDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [clinicalNotes, setClinicalNotes] = useState<string>('');
@@ -203,7 +204,8 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
 
   const performSafetyChecks = (regimen: Regimen, calculations: DoseCalculation[]) => {
     const patient: PatientInfo = {
-      patientId: patientId || 'temp-id',
+      cnp: cnp || 'temp-cnp',
+      foNumber: foNumber || undefined,
       weight,
       height,
       age,
@@ -299,7 +301,8 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
     if (!regimen) throw new Error('No regimen selected');
 
     const patient: PatientInfo = {
-      patientId,
+      cnp,
+      foNumber: foNumber || undefined,
       fullName: patientFullName || undefined,
       weight,
       height,
@@ -407,9 +410,15 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
 
   const handleExportTreatmentPDF = async () => {
 try {
-  console.log('Export PDF clicked', { patientId, calculations: calculations.length });
-  if (!patientId.trim()) {
-    toast.error(t('doseCalculator.toasts.enterPatientIdBeforeExport'));
+  console.log('Export PDF clicked', { cnp, calculations: calculations.length });
+  if (!cnp.trim()) {
+    toast.error(t('doseCalculator.toasts.enterCnpBeforeExport'));
+    return;
+  }
+  // Validate CNP format
+  const { validateCNP } = await import('@/utils/cnp');
+  if (!validateCNP(cnp).isValid) {
+    toast.error(t('validation.cnpInvalid'));
     return;
   }
   if (calculations.length === 0) {
@@ -431,8 +440,8 @@ try {
   };
 
   const handlePrintTreatmentSheet = () => {
-if (!patientId.trim()) {
-  toast.error(t('doseCalculator.toasts.enterPatientIdBeforePrint'));
+if (!cnp.trim()) {
+  toast.error(t('doseCalculator.toasts.enterCnpBeforePrint'));
   return;
 }
 printTreatmentSheet();
@@ -440,7 +449,7 @@ printTreatmentSheet();
 
   const handleGenerateTreatmentSheet = () => {
     console.log('=== Generate Sheet Button Clicked ===');
-    console.log('patientId:', patientId);
+    console.log('cnp:', cnp);
     console.log('calculations length:', calculations.length);
     console.log('calculations:', calculations);
     console.log('regimen:', regimen);
@@ -448,19 +457,26 @@ printTreatmentSheet();
     console.log('weight:', weight);
     console.log('creatinineClearance:', creatinineClearance);
     
-if (!patientId.trim()) {
-  console.log('ERROR: No patient ID');
-  toast.error(t('doseCalculator.toasts.generateSheetNeedId'));
+if (!cnp.trim()) {
+  console.log('ERROR: No CNP');
+  toast.error(t('doseCalculator.toasts.generateSheetNeedCnp'));
   return;
 }
-if (calculations.length === 0) {
-  console.log('ERROR: No calculations available');
-  toast.error(t('doseCalculator.toasts.generateSheetNeedCalcs'));
-  return;
-}
-console.log('Setting showTreatmentSheet to true');
-setShowTreatmentSheet(true);
-toast.success(t('doseCalculator.toasts.sheetGenerated'));
+// Validate CNP
+import('@/utils/cnp').then(({ validateCNP }) => {
+  if (!validateCNP(cnp).isValid) {
+    toast.error(t('validation.cnpInvalid'));
+    return;
+  }
+  if (calculations.length === 0) {
+    console.log('ERROR: No calculations available');
+    toast.error(t('doseCalculator.toasts.generateSheetNeedCalcs'));
+    return;
+  }
+  console.log('Setting showTreatmentSheet to true');
+  setShowTreatmentSheet(true);
+  toast.success(t('doseCalculator.toasts.sheetGenerated'));
+});
   };
 
   console.log("DoseCalculator rendering - regimen:", regimen?.name, "calculations:", calculations.length);
@@ -504,7 +520,7 @@ toast.success(t('doseCalculator.toasts.sheetGenerated'));
               variant="secondary"
               size="sm"
               onClick={handleGenerateTreatmentSheet}
-              disabled={!patientId.trim() || calculations.length === 0}
+              disabled={!cnp.trim() || calculations.length === 0}
             >
 <FileCheck className="h-4 w-4" />
 {t('doseCalculator.generateSheet')}
@@ -547,12 +563,22 @@ toast.success(t('doseCalculator.toasts.dataExported'));
   />
 </div>
 <div>
-  <Label htmlFor="patientId">{t('doseCalculator.patientIdLabel')}</Label>
+  <Label htmlFor="cnp">{t('doseCalculator.cnpLabel')}</Label>
   <Input
-    id="patientId"
-    value={patientId}
-    onChange={(e) => setPatientId(e.target.value)}
-    placeholder={t('doseCalculator.patientIdPlaceholder')}
+    id="cnp"
+    value={cnp}
+    onChange={(e) => setCnp((e.target as HTMLInputElement).value.replace(/\D/g, '').slice(0,13))}
+    placeholder={t('doseCalculator.cnpPlaceholder')}
+    className="mt-1"
+  />
+</div>
+<div>
+  <Label htmlFor="foNumber">{t('doseCalculator.foNumberLabel')}</Label>
+  <Input
+    id="foNumber"
+    value={foNumber}
+    onChange={(e) => setFoNumber(e.target.value)}
+    placeholder={t('doseCalculator.foNumberPlaceholder')}
     className="mt-1"
   />
 </div>
@@ -888,7 +914,7 @@ toast.success(t('doseCalculator.toasts.dataExported'));
         </div>
 
         {/* Treatment Sheet Section */}
-        {showTreatmentSheet && patientId.trim() && (
+        {showTreatmentSheet && cnp.trim() && (
           <div className="space-y-4">
             <Separator />
             <div className="flex justify-between items-center">
@@ -907,7 +933,7 @@ toast.success(t('doseCalculator.toasts.dataExported'));
     variant="outline"
     size="sm"
     onClick={handleExportTreatmentPDF}
-    disabled={!patientId.trim()}
+    disabled={!cnp.trim()}
   >
     <Download className="h-4 w-4" />
     {t('doseCalculator.exportPdf')}
@@ -916,7 +942,7 @@ toast.success(t('doseCalculator.toasts.dataExported'));
     variant="outline"
     size="sm"
     onClick={handlePrintTreatmentSheet}
-    disabled={!patientId.trim()}
+    disabled={!cnp.trim()}
   >
     <Printer className="h-4 w-4" />
     {t('doseCalculator.print')}
