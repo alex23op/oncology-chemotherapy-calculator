@@ -16,10 +16,12 @@ import { ClinicalTreatmentSheet } from "./ClinicalTreatmentSheet";
 import { CompactClinicalTreatmentSheet } from "./CompactClinicalTreatmentSheet";
 import { SafetyAlertsPanel } from "./SafetyAlertsPanel";
 import { TreatmentCalendar } from "./TreatmentCalendar";
+import { DatePickerField } from "./DatePickerField";
 import { AntiemeticAgent } from "@/types/emetogenicRisk";
 import { TreatmentData, PatientInfo, CalculatedDrug } from "@/types/clinicalTreatment";
 import { generateClinicalTreatmentPDF } from "@/utils/pdfExport";
 import { usePrint } from "@/hooks/usePrint";
+import { toISODate, parseISODate } from "@/utils/dateFormat";
 import { ClinicalSafetyEngine, SafetyAlert } from "@/utils/clinicalSafetyEngine";
 import { getMonitoringParametersForRegimen } from "@/data/monitoringProtocols";
 import { toast } from "sonner";
@@ -70,7 +72,7 @@ export const DoseCalculator = ({
   const [cnp, setCnp] = useState<string>('');
   const [foNumber, setFoNumber] = useState<string>('');
   const [cycleNumber, setCycleNumber] = useState<number>(1);
-  const [treatmentDate, setTreatmentDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [treatmentDate, setTreatmentDate] = useState<string>(toISODate(new Date()));
   const [clinicalNotes, setClinicalNotes] = useState<string>('');
   const [showTreatmentSheet, setShowTreatmentSheet] = useState<boolean>(false);
   const [safetyAlerts, setSafetyAlerts] = useState<SafetyAlert[]>([]);
@@ -198,7 +200,7 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
       const days = getCycleLengthDays(regimen.schedule);
       const next = new Date(base);
       next.setDate(base.getDate() + days);
-      setNextCycleDate(next.toISOString().split('T')[0]);
+      setNextCycleDate(toISODate(next));
     }
   }, [regimen, treatmentDate, autoNextCycle]);
 
@@ -595,21 +597,19 @@ toast.success(t('doseCalculator.toasts.dataExported'));
 </div>
 <div>
   <Label htmlFor="treatmentDate">{t('doseCalculator.treatmentDateLabel')}</Label>
-  <Input
+  <DatePickerField
     id="treatmentDate"
-    type="date"
     value={treatmentDate}
-    onChange={(e) => setTreatmentDate(e.target.value)}
+    onChange={(iso) => setTreatmentDate(iso)}
     className="mt-1"
   />
 </div>
 <div>
   <Label htmlFor="nextCycleDate">{t('doseCalculator.nextCycleDateLabel')}</Label>
-  <Input
+  <DatePickerField
     id="nextCycleDate"
-    type="date"
     value={nextCycleDate}
-    onChange={(e) => { setAutoNextCycle(false); setNextCycleDate(e.target.value); }}
+    onChange={(iso) => { setAutoNextCycle(false); setNextCycleDate(iso); }}
     className="mt-1"
   />
   <div className="flex items-center gap-2 mt-2">
@@ -722,7 +722,7 @@ toast.success(t('doseCalculator.toasts.dataExported'));
         {showCalendar && (
           <TreatmentCalendar
             regimen={regimen}
-            startDate={new Date(treatmentDate)}
+            startDate={parseISODate(treatmentDate) || new Date()}
             cycleNumber={cycleNumber}
           />
         )}
