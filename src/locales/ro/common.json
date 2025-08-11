@@ -391,7 +391,8 @@
       "growth_factors": {
         "name": "Factori de creștere hematologici",
         "description": "Suport pentru funcția măduvei și recuperarea celulelor sanguine"
-    }
+      }
+    },
   },
   "calendar": {
     "title": "Calendar tratament",

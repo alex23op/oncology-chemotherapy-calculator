@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { AlertCircle, CheckCircle, Clock } from 'lucide-react';
 import { getBiomarkerPanel } from '@/data/biomarkerTesting';
 import { Biomarker } from '@/types/regimens';
-
+import { useTranslation } from 'react-i18next';
 interface BiomarkerProfilerProps {
   cancerType: string;
   stage: string;
@@ -76,7 +76,7 @@ export const BiomarkerProfiler: React.FC<BiomarkerProfilerProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <AlertCircle className="h-5 w-5" />
-            Biomarker Testing Panel
+            {t('biomarker.panelTitle')}
           </CardTitle>
           <CardDescription>
             {biomarkerPanel.testingGuidelines}
@@ -85,10 +85,10 @@ export const BiomarkerProfiler: React.FC<BiomarkerProfilerProps> = ({
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
-              <strong>Turnaround Time:</strong> {biomarkerPanel.turnaroundTime}
+              <strong>{t('biomarker.turnaround')}:</strong> {biomarkerPanel.turnaroundTime}
             </div>
             <div>
-              <strong>Tissue Requirements:</strong> {biomarkerPanel.tissueRequirements}
+              <strong>{t('biomarker.tissueReq')}:</strong> {biomarkerPanel.tissueRequirements}
             </div>
           </div>
         </CardContent>
