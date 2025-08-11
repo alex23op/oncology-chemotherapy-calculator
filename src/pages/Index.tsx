@@ -1,4 +1,4 @@
-import { useState, Suspense, lazy } from "react";
+import { useState, useEffect, Suspense, lazy } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { PatientForm } from "@/components/PatientForm";
 import { CancerTypeSelector } from "@/components/CancerTypeSelector";

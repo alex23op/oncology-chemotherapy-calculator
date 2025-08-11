@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense, lazy } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,11 +12,14 @@ import { Calculator, Edit, Save, FileText, Download, Printer, FileCheck, Shield,
 import { Regimen, Drug, Premedication } from "@/types/regimens";
 import { UnifiedProtocolSelector } from "./UnifiedProtocolSelector";
 import { EmetogenicRiskClassifier } from "./EmetogenicRiskClassifier";
-import { ClinicalTreatmentSheet } from "./ClinicalTreatmentSheet";
-import { CompactClinicalTreatmentSheet } from "./CompactClinicalTreatmentSheet";
 import { SafetyAlertsPanel } from "./SafetyAlertsPanel";
-import { TreatmentCalendar } from "./TreatmentCalendar";
 import { DatePickerField } from "./DatePickerField";
+import { MobileActionBar } from "./MobileActionBar";
+
+const TreatmentCalendarLazy = lazy(() => import("./TreatmentCalendar").then(m => ({ default: m.TreatmentCalendar })));
+const ClinicalTreatmentSheetLazy = lazy(() => import("./ClinicalTreatmentSheet").then(m => ({ default: m.ClinicalTreatmentSheet })));
+const CompactClinicalTreatmentSheetLazy = lazy(() => import("./CompactClinicalTreatmentSheet").then(m => ({ default: m.CompactClinicalTreatmentSheet })));
+
 import { AntiemeticAgent } from "@/types/emetogenicRisk";
 import { TreatmentData, PatientInfo, CalculatedDrug } from "@/types/clinicalTreatment";
 import { generateClinicalTreatmentPDF } from "@/utils/pdfExport";
@@ -26,6 +29,7 @@ import { ClinicalSafetyEngine, SafetyAlert } from "@/utils/clinicalSafetyEngine"
 import { getMonitoringParametersForRegimen } from "@/data/monitoringProtocols";
 import { toast } from "sonner";
 import { useTranslation } from 'react-i18next';
+import { useSmartNav } from '@/context/SmartNavContext';
 
 interface DoseCalculatorProps {
   regimen: Regimen | null;
@@ -195,20 +199,59 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
       setCalculations([]);
       setSafetyAlerts([]);
     }
-  }, [regimen, bsa, weight, creatinineClearance, age, useBsaCap, bsaCap, biomarkerStatus]);
+}, [regimen, bsa, weight, creatinineClearance, age, useBsaCap, bsaCap, biomarkerStatus]);
+
+// Respect SmartNav setting for calendar-first experience
+useEffect(() => {
+  setShowCalendar(calendarFirst);
+}, [calendarFirst]);
+
+// Load draft for this regimen if available
+useEffect(() => {
+  if (!regimen) return;
+  try {
+    const raw = localStorage.getItem(`draft:doseCalc:${regimen.id}`);
+    if (raw) {
+      const draft = JSON.parse(raw);
+      setCnp(draft.cnp || '');
+      setFoNumber(draft.foNumber || '');
+      setCycleNumber(draft.cycleNumber || 1);
+      setTreatmentDate(draft.treatmentDate || toISODate(new Date()));
+      setClinicalNotes(draft.clinicalNotes || '');
+      setSelectedPremedications(draft.selectedPremedications || []);
+      setSelectedAntiemetics(draft.selectedAntiemetics || []);
+      if (Array.isArray(draft.calculations)) setCalculations(draft.calculations);
+    }
+  } catch {}
+}, [regimen?.id]);
+
+// Autosave draft when key fields change
+useEffect(() => {
+  if (!regimen) return;
+  const payload = {
+    cnp, foNumber, cycleNumber, treatmentDate, clinicalNotes,
+    selectedPremedications, selectedAntiemetics, calculations
+  };
+  try {
+    localStorage.setItem(`draft:doseCalc:${regimen.id}`, JSON.stringify(payload));
+  } catch {}
+}, [regimen?.id, cnp, foNumber, cycleNumber, treatmentDate, clinicalNotes, selectedPremedications, selectedAntiemetics, calculations]);
+
 
   // Auto-calculate next cycle date based on regimen schedule and treatment date
-  useEffect(() => {
-    if (regimen && treatmentDate && autoNextCycle) {
-      const base = new Date(treatmentDate);
-      const days = getCycleLengthDays(regimen.schedule);
-      const next = new Date(base);
-      next.setDate(base.getDate() + days);
-      setNextCycleDate(toISODate(next));
-    }
-  }, [regimen, treatmentDate, autoNextCycle]);
-
-  const performSafetyChecks = (regimen: Regimen, calculations: DoseCalculation[]) => {
+useEffect(() => {
+  setShowCalendar(calendarFirst);
+}, [calendarFirst]);
+// Auto-calculate next cycle date based on regimen schedule and treatment date
+useEffect(() => {
+  if (regimen && treatmentDate && autoNextCycle) {
+    const base = new Date(treatmentDate);
+    const days = getCycleLengthDays(regimen.schedule);
+    const next = new Date(base);
+    next.setDate(base.getDate() + days);
+    setNextCycleDate(toISODate(next));
+  }
+}, [regimen, treatmentDate, autoNextCycle]);
     const patient: PatientInfo = {
       cnp: cnp || 'temp-cnp',
       foNumber: foNumber || undefined,
@@ -414,80 +457,89 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
     };
   };
 
-  const handleExportTreatmentPDF = async () => {
-try {
-  console.log('Export PDF clicked', { cnp, calculations: calculations.length });
+const handleExportTreatmentPDF = async () => {
+  try {
+    console.log('Export PDF clicked', { cnp, calculations: calculations.length });
+    if (!cnp.trim()) {
+      toast.error(t('doseCalculator.toasts.enterCnpBeforeExport'));
+      return;
+    }
+    // Validate CNP format
+    const { validateCNP } = await import('@/utils/cnp');
+    if (!validateCNP(cnp).isValid) {
+      toast.error(t('validation.cnpInvalid'));
+      return;
+    }
+    if (calculations.length === 0) {
+      toast.error(t('doseCalculator.toasts.noCalcsToExport'));
+      return;
+    }
+
+    const treatmentData = prepareTreatmentData();
+    await generateClinicalTreatmentPDF({
+      ...treatmentData,
+      elementId: 'clinical-treatment-sheet',
+      orientation: printOrientation,
+    });
+    toast.success(t('doseCalculator.toasts.exportSuccess'));
+  } catch (error) {
+    console.error('Export error:', error);
+    toast.error(t('doseCalculator.toasts.exportFailed'));
+  }
+};
+
+const handlePrintTreatmentSheet = () => {
   if (!cnp.trim()) {
-    toast.error(t('doseCalculator.toasts.enterCnpBeforeExport'));
+    toast.error(t('doseCalculator.toasts.enterCnpBeforePrint'));
     return;
   }
-  // Validate CNP format
-  const { validateCNP } = await import('@/utils/cnp');
-  if (!validateCNP(cnp).isValid) {
-    toast.error(t('validation.cnpInvalid'));
+  printTreatmentSheet();
+};
+
+const handleGenerateTreatmentSheet = () => {
+  console.log('=== Generate Sheet Button Clicked ===');
+  console.log('cnp:', cnp);
+  console.log('calculations length:', calculations.length);
+  console.log('calculations:', calculations);
+  console.log('regimen:', regimen);
+  console.log('bsa:', bsa);
+  console.log('weight:', weight);
+  console.log('creatinineClearance:', creatinineClearance);
+  
+  if (!cnp.trim()) {
+    console.log('ERROR: No CNP');
+    toast.error(t('doseCalculator.toasts.generateSheetNeedCnp'));
     return;
   }
+  // Validate CNP
+  import('@/utils/cnp').then(({ validateCNP }) => {
+    if (!validateCNP(cnp).isValid) {
+      toast.error(t('validation.cnpInvalid'));
+      return;
+    }
+    if (calculations.length === 0) {
+      console.log('ERROR: No calculations available');
+      toast.error(t('doseCalculator.toasts.generateSheetNeedCalcs'));
+      return;
+    }
+    console.log('Setting showTreatmentSheet to true');
+    setShowTreatmentSheet(true);
+    const data = prepareTreatmentData();
+    try { onFinalize?.(data); } catch {}
+    try { onGoToReview?.(); } catch {}
+    try { if (regimen) localStorage.removeItem(`draft:doseCalc:${regimen.id}`); } catch {}
+    toast.success(t('doseCalculator.toasts.sheetGenerated'));
+  });
+};
+
+const handleExportData = () => {
   if (calculations.length === 0) {
     toast.error(t('doseCalculator.toasts.noCalcsToExport'));
     return;
   }
-
-  const treatmentData = prepareTreatmentData();
-  await generateClinicalTreatmentPDF({
-    ...treatmentData,
-    elementId: 'clinical-treatment-sheet',
-    orientation: printOrientation,
-  });
-  toast.success(t('doseCalculator.toasts.exportSuccess'));
-} catch (error) {
-  console.error('Export error:', error);
-  toast.error(t('doseCalculator.toasts.exportFailed'));
-}
-  };
-
-  const handlePrintTreatmentSheet = () => {
-if (!cnp.trim()) {
-  toast.error(t('doseCalculator.toasts.enterCnpBeforePrint'));
-  return;
-}
-printTreatmentSheet();
-  };
-
-  const handleGenerateTreatmentSheet = () => {
-    console.log('=== Generate Sheet Button Clicked ===');
-    console.log('cnp:', cnp);
-    console.log('calculations length:', calculations.length);
-    console.log('calculations:', calculations);
-    console.log('regimen:', regimen);
-    console.log('bsa:', bsa);
-    console.log('weight:', weight);
-    console.log('creatinineClearance:', creatinineClearance);
-    
-if (!cnp.trim()) {
-  console.log('ERROR: No CNP');
-  toast.error(t('doseCalculator.toasts.generateSheetNeedCnp'));
-  return;
-}
-// Validate CNP
-import('@/utils/cnp').then(({ validateCNP }) => {
-  if (!validateCNP(cnp).isValid) {
-    toast.error(t('validation.cnpInvalid'));
-    return;
-  }
-  if (calculations.length === 0) {
-    console.log('ERROR: No calculations available');
-    toast.error(t('doseCalculator.toasts.generateSheetNeedCalcs'));
-    return;
-  }
-  console.log('Setting showTreatmentSheet to true');
-  setShowTreatmentSheet(true);
-  const data = prepareTreatmentData();
-  try { onFinalize?.(data); } catch {}
-  try { onGoToReview?.(); } catch {}
-  toast.success(t('doseCalculator.toasts.sheetGenerated'));
-});
-  };
-
+  onExport?.(calculations);
+  toast.success(t('doseCalculator.toasts.dataExported'));
+};
   console.log("DoseCalculator rendering - regimen:", regimen?.name, "calculations:", calculations.length);
 
   if (!regimen) {
@@ -695,13 +747,15 @@ import('@/utils/cnp').then(({ validateCNP }) => {
         )}
 
         {/* Treatment Calendar */}
-        {showCalendar && (
-          <TreatmentCalendar
-            regimen={regimen}
-            startDate={parseISODate(treatmentDate) || new Date()}
-            cycleNumber={cycleNumber}
-          />
-        )}
+{showCalendar && (
+  <Suspense fallback={<div className="rounded-lg border bg-muted/30 h-40 animate-pulse" aria-busy="true" />}>
+    <TreatmentCalendarLazy
+      regimen={regimen}
+      startDate={parseISODate(treatmentDate) || new Date()}
+      cycleNumber={cycleNumber}
+    />
+  </Suspense>
+)}
 
         <Separator />
 
@@ -889,40 +943,35 @@ import('@/utils/cnp').then(({ validateCNP }) => {
 />
         </div>
 
-        {/* Primary actions moved below chemo drugs and notes */}
-        <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={handleGenerateTreatmentSheet}
-            disabled={!cnp.trim() || calculations.length === 0}
-          >
-            <FileCheck className="h-4 w-4" />
-            {t('doseCalculator.generateSheet')}
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              console.log('=== Export Data Button Clicked ===');
-              console.log('calculations length:', calculations.length);
-              console.log('calculations:', calculations);
-              console.log('onExport function exists:', !!onExport);
-              
-              if (calculations.length === 0) {
-                console.log('ERROR: No calculations to export');
-                toast.error(t('doseCalculator.toasts.noCalcsToExport'));
-                return;
-              }
-              console.log('Calling onExport with calculations');
-              onExport?.(calculations);
-              toast.success(t('doseCalculator.toasts.dataExported'));
-            }}
-          >
-            <FileText className="h-4 w-4" />
-            {t('doseCalculator.exportData')}
-          </Button>
-        </div>
+{/* Primary actions moved below chemo drugs and notes */}
+<div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
+  <Button
+    variant="secondary"
+    size="sm"
+    onClick={handleGenerateTreatmentSheet}
+    disabled={!cnp.trim() || calculations.length === 0}
+  >
+    <FileCheck className="h-4 w-4" />
+    {t('doseCalculator.generateSheet')}
+  </Button>
+  <Button
+    variant="outline"
+    size="sm"
+    onClick={handleExportData}
+  >
+    <FileText className="h-4 w-4" />
+    {t('doseCalculator.exportData')}
+  </Button>
+</div>
+
+{/* Mobile sticky action bar */}
+<MobileActionBar
+  onGenerate={handleGenerateTreatmentSheet}
+  onExport={handleExportData}
+  disableGenerate={!cnp.trim() || calculations.length === 0}
+  disableExport={calculations.length === 0}
+/>
+
 
         {/* Treatment Sheet Section */}
         {showTreatmentSheet && cnp.trim() && (
@@ -961,20 +1010,24 @@ import('@/utils/cnp').then(({ validateCNP }) => {
 </div>
             </div>
             
-            {/* Digital view - full layout */}
-            <div className="print:hidden">
-              <ClinicalTreatmentSheet 
-                treatmentData={prepareTreatmentData()}
-                className="bg-background border rounded-lg p-6"
-              />
-            </div>
-            {/* Print view - compact layout */}
-            <div className="hidden print:block" id="clinical-treatment-sheet" ref={componentRef}>
-              <CompactClinicalTreatmentSheet 
-                treatmentData={prepareTreatmentData()}
-                className=""
-              />
-            </div>
+{/* Digital view - full layout */}
+<div className="print:hidden">
+  <Suspense fallback={<div className="rounded-lg border bg-muted/30 h-64 animate-pulse" aria-busy="true" />}>
+    <ClinicalTreatmentSheetLazy 
+      treatmentData={prepareTreatmentData()}
+      className="bg-background border rounded-lg p-6"
+    />
+  </Suspense>
+</div>
+{/* Print view - compact layout */}
+<div className="hidden print:block" id="clinical-treatment-sheet" ref={componentRef}>
+  <Suspense fallback={<div />}>
+    <CompactClinicalTreatmentSheetLazy 
+      treatmentData={prepareTreatmentData()}
+      className=""
+    />
+  </Suspense>
+</div>
           </div>
         )}
 
