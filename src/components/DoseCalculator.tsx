@@ -213,6 +213,29 @@ useEffect(() => {
   setShowCalendar(calendarFirst);
 }, [calendarFirst]);
 
+// One-time migration to sanitize legacy drafts in localStorage
+useEffect(() => {
+  try {
+    Object.keys(localStorage)
+      .filter((k) => k.startsWith('draft:doseCalc:'))
+      .forEach((k) => {
+        const raw = localStorage.getItem(k);
+        if (!raw) return;
+        const draft = JSON.parse(raw);
+        if (Array.isArray(draft.calculations)) {
+          draft.calculations = draft.calculations.map((c: any) => ({
+            ...c,
+            solvent: typeof c?.solvent === 'string' ? c.solvent : undefined,
+            administrationDuration: typeof c?.administrationDuration === 'string' ? c.administrationDuration : undefined,
+            notes: typeof c?.notes === 'string' ? c.notes : '',
+          }));
+          localStorage.setItem(k, JSON.stringify(draft));
+        }
+      });
+  } catch {}
+}, []);
+
+
 // Load draft for this regimen if available
 useEffect(() => {
   if (!regimen) return;
@@ -224,10 +247,20 @@ useEffect(() => {
       setFoNumber(draft.foNumber || '');
       setCycleNumber(draft.cycleNumber || 1);
       setTreatmentDate(draft.treatmentDate || toISODate(new Date()));
-      setClinicalNotes(draft.clinicalNotes || '');
+      setClinicalNotes(typeof draft.clinicalNotes === 'string' ? draft.clinicalNotes : '');
       setSelectedPremedications(draft.selectedPremedications || []);
       setSelectedAntiemetics(draft.selectedAntiemetics || []);
-      if (Array.isArray(draft.calculations)) setCalculations(draft.calculations);
+      if (Array.isArray(draft.calculations)) {
+        const sanitized = draft.calculations.map((c: any) => ({
+          ...c,
+          solvent: typeof c?.solvent === 'string' ? c.solvent : undefined,
+          administrationDuration: typeof c?.administrationDuration === 'string' ? c.administrationDuration : undefined,
+          notes: typeof c?.notes === 'string' ? c.notes : '',
+        }));
+        setCalculations(sanitized);
+        // persist sanitized draft back to storage
+        try { localStorage.setItem(`draft:doseCalc:${regimen.id}`, JSON.stringify({ ...draft, calculations: sanitized })); } catch {}
+      }
     }
   } catch {}
 }, [regimen?.id]);
@@ -901,9 +934,9 @@ const handleExportData = () => {
 
                     {isEditing && (
                       <div>
-                        <Label className="text-muted-foreground">Notes</Label>
+                        <Label className="text-muted-foreground">{t('doseCalculator.notes', { defaultValue: 'Notes' })}</Label>
                         <Input
-                          placeholder="Add notes for dose adjustment..."
+                          placeholder={t('doseCalculator.addNotesPlaceholder', { defaultValue: 'Add notes for dose adjustment...' })}
                           value={calc.notes}
                           onChange={(e) => handleNotesChange(index, e.target.value)}
                           className="mt-1"
@@ -913,7 +946,7 @@ const handleExportData = () => {
 
                     {calc.notes && !isEditing && (
                       <div className="bg-muted/50 p-2 rounded text-sm">
-                        <strong>Notes:</strong> {calc.notes}
+                        <strong>{t('doseCalculator.notes', { defaultValue: 'Notes' })}:</strong> {calc.notes}
                       </div>
                     )}
                   </div>

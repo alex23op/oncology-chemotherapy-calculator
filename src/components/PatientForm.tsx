@@ -10,6 +10,7 @@ import { Calculator, User, AlertTriangle, CheckCircle } from "lucide-react";
 import { validatePatientData, sanitizeInput, showValidationToast, ValidationResult } from "@/utils/inputValidation";
 import { ClinicalErrorBoundary } from "@/components/ClinicalErrorBoundary";
 import { useDebouncedCalculation, usePerformanceMonitoring } from "@/hooks/usePerformanceOptimization";
+import { toKg } from "@/utils/units";
 
 interface PatientData {
   weight: string;
@@ -128,7 +129,7 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
           }
           
           const weightNum = parseFloat(data.weight);
-          const normalizedWeightKg = data.weightUnit === "lbs" ? weightNum * 0.453592 : weightNum;
+          const normalizedWeightKg = toKg(weightNum, data.weightUnit as 'kg' | 'lbs');
           onPatientDataChange({ ...data, weight: String(normalizedWeightKg), weightUnit: "kg", bsa, creatinineClearance });
         }
       }

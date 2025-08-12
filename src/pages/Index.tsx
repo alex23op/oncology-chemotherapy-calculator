@@ -18,6 +18,7 @@ import { UnifiedProtocolSelector } from "@/components/UnifiedProtocolSelector";
 import { CompactClinicalTreatmentSheet } from "@/components/CompactClinicalTreatmentSheet";
 import { AntiemeticAgent } from "@/types/emetogenicRisk";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { toKg } from "@/utils/units";
 
 
 interface PatientData {
@@ -90,11 +91,7 @@ const IndexContent = () => {
     });
   };
 
-  const weightKg = patientData
-    ? (patientData.weightUnit === 'lbs'
-        ? parseFloat(patientData.weight) * 0.453592
-        : parseFloat(patientData.weight))
-    : 0;
+  const weightKg = patientData ? toKg(parseFloat(patientData.weight), (patientData.weightUnit as 'kg' | 'lbs')) : 0;
 
   return (
     <main className="container mx-auto px-4 py-6 space-y-6">

@@ -20,22 +20,22 @@ export const generateClinicalTreatmentPDF = async (
   treatmentData: ClinicalTreatmentExportData
 ): Promise<void> => {
   try {
-    // Create a temporary compact view for PDF export
-    const compactElement = document.createElement('div');
-    compactElement.innerHTML = `
-      <div class="compact-treatment-sheet" style="font-family: Arial, sans-serif; font-size: 11pt; line-height: 1.2; color: #000; background: #fff; padding: 0; margin: 0;">
-        ${document.querySelector('.compact-treatment-sheet')?.innerHTML || 'Treatment data not available'}
-      </div>
-    `;
-    document.body.appendChild(compactElement);
+    // Prefer the provided elementId; fallback to first .compact-treatment-sheet
+    const targetElement = treatmentData.elementId
+      ? document.getElementById(treatmentData.elementId)
+      : (document.querySelector('.compact-treatment-sheet') as HTMLElement | null);
 
-    const canvas = await html2canvas(compactElement, {
+    if (!targetElement) {
+      throw new Error('Protocol element not found for PDF export. Please generate the sheet first.');
+    }
+
+    const canvas = await html2canvas(targetElement as HTMLElement, {
       scale: 2,
       useCORS: true,
       allowTaint: true,
       backgroundColor: '#ffffff',
-      width: 800,
-      height: compactElement.scrollHeight,
+      width: (targetElement as HTMLElement).scrollWidth,
+      height: (targetElement as HTMLElement).scrollHeight,
     });
 
     const imgData = canvas.toDataURL('image/png');
@@ -94,8 +94,7 @@ export const generateClinicalTreatmentPDF = async (
       pdf.text(i18n.t('pdf.confidential'), pdfWidth / 2, pdfHeight - 5, { align: 'center' });
     }
 
-    // Clean up temporary element
-    document.body.removeChild(compactElement);
+    // No temporary element to clean up when using direct element capture
 
     // Save the PDF with clinical naming convention
     const filename = `treatment-protocol-${treatmentData.patient.cnp}-${treatmentData.regimen.name.toLowerCase().replace(/\s+/g, '-')}-cycle${treatmentData.patient.cycleNumber}-${new Date().toISOString().split('T')[0]}.pdf`;
