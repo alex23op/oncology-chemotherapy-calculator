@@ -4,7 +4,7 @@ import { useWizard } from "./WizardProvider";
 import { useEffect, useRef } from "react";
 
 export const WizardStep = ({ id, title, children }: { id: string; title: string; children: React.ReactNode }) => {
-  const { activeStepId } = useWizard();
+  const { activeStepId, goTo } = useWizard();
   const { autoCollapseEnabled, autoJumpEnabled } = useSmartNav();
   const open = autoCollapseEnabled ? activeStepId === id : true;
   const contentRef = useRef<HTMLDivElement>(null);
@@ -28,7 +28,7 @@ export const WizardStep = ({ id, title, children }: { id: string; title: string;
   return (
     <Accordion type="single" collapsible value={open ? id : ""} className="w-full">
       <AccordionItem value={id}>
-        <AccordionTrigger>{title}</AccordionTrigger>
+        <AccordionTrigger onClick={() => goTo(id)}>{title}</AccordionTrigger>
         <AccordionContent>
           <span className="sr-only" aria-live="polite">{open ? `${title} expanded` : `${title} collapsed`}</span>
           <div ref={contentRef} className="animate-fade-in">

@@ -10,8 +10,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calculator, Edit, Save, FileText, Download, Printer, FileCheck, Shield, AlertTriangle, Calendar } from "lucide-react";
 import { Regimen, Drug, Premedication } from "@/types/regimens";
-import { UnifiedProtocolSelector } from "./UnifiedProtocolSelector";
-import { EmetogenicRiskClassifier } from "./EmetogenicRiskClassifier";
+
+
 import { SafetyAlertsPanel } from "./SafetyAlertsPanel";
 import { DatePickerField } from "./DatePickerField";
 import { MobileActionBar } from "./MobileActionBar";
@@ -44,6 +44,11 @@ interface DoseCalculatorProps {
   onExport?: (calculations: DoseCalculation[]) => void;
   onFinalize?: (data: TreatmentData) => void;
   onGoToReview?: () => void;
+  supportiveCare?: {
+    emetogenicRiskLevel: "high" | "moderate" | "low" | "minimal";
+    selectedPremedications: Premedication[];
+    selectedAntiemetics: AntiemeticAgent[];
+  };
 }
 
 interface DoseCalculation {
@@ -70,7 +75,8 @@ export const DoseCalculator = ({
   currentMedications = [],
   onExport,
   onFinalize,
-  onGoToReview
+  onGoToReview,
+  supportiveCare
 }: DoseCalculatorProps) => {
   const [calculations, setCalculations] = useState<DoseCalculation[]>([]);
   const [selectedPremedications, setSelectedPremedications] = useState<Premedication[]>([]);
@@ -398,36 +404,39 @@ useEffect(() => {
       return 'other';
     };
 
+    const effectiveAntiemetics = (supportiveCare?.selectedAntiemetics ?? selectedAntiemetics);
+    const riskLevel = (supportiveCare?.emetogenicRiskLevel ?? emetogenicRiskLevel);
+
     const premedications = {
-      antiemetics: selectedAntiemetics.filter(agent => categorizeAgent(agent) === 'antiemetics').map(agent => ({
+      antiemetics: effectiveAntiemetics.filter(agent => categorizeAgent(agent) === 'antiemetics').map(agent => ({
         ...agent,
         category: agent.category || 'antiemetic',
         dosage: toDoseWithUnit(agent.dosage, agent.unit),
         route: agent.route || '',
         timing: agent.timing || '',
       })),
-      infusionReactionProphylaxis: selectedAntiemetics.filter(agent => categorizeAgent(agent) === 'infusionReactionProphylaxis').map(agent => ({
+      infusionReactionProphylaxis: effectiveAntiemetics.filter(agent => categorizeAgent(agent) === 'infusionReactionProphylaxis').map(agent => ({
         ...agent,
         category: agent.category || 'infusion',
         dosage: toDoseWithUnit(agent.dosage, agent.unit),
         route: agent.route || '',
         timing: agent.timing || '',
       })),
-      gastroprotection: selectedAntiemetics.filter(agent => categorizeAgent(agent) === 'gastroprotection').map(agent => ({
+      gastroprotection: effectiveAntiemetics.filter(agent => categorizeAgent(agent) === 'gastroprotection').map(agent => ({
         ...agent,
         category: agent.category || 'gastro',
         dosage: toDoseWithUnit(agent.dosage, agent.unit),
         route: agent.route || '',
         timing: agent.timing || '',
       })),
-      organProtection: selectedAntiemetics.filter(agent => categorizeAgent(agent) === 'organProtection').map(agent => ({
+      organProtection: effectiveAntiemetics.filter(agent => categorizeAgent(agent) === 'organProtection').map(agent => ({
         ...agent,
         category: agent.category || 'organ',
         dosage: toDoseWithUnit(agent.dosage, agent.unit),
         route: agent.route || '',
         timing: agent.timing || '',
       })),
-      other: selectedAntiemetics.filter(agent => categorizeAgent(agent) === 'other').map(agent => ({
+      other: effectiveAntiemetics.filter(agent => categorizeAgent(agent) === 'other').map(agent => ({
         ...agent,
         category: agent.category || 'other',
         dosage: toDoseWithUnit(agent.dosage, agent.unit),
@@ -441,14 +450,14 @@ useEffect(() => {
       regimen,
       calculatedDrugs,
       emetogenicRisk: {
-        level: emetogenicRiskLevel,
+        level: riskLevel,
         justification: `Based on ${regimen.name} regimen classification`,
-        acuteRisk: emetogenicRiskLevel === 'high' ? '>90% risk of emesis' : 
-                   emetogenicRiskLevel === 'moderate' ? '30-90% risk of emesis' : 
-                   emetogenicRiskLevel === 'low' ? '10-30% risk of emesis' : '<10% risk of emesis',
-        delayedRisk: emetogenicRiskLevel === 'high' ? '>90% risk of delayed emesis' : 
-                     emetogenicRiskLevel === 'moderate' ? '30-90% risk of delayed emesis' : 
-                     emetogenicRiskLevel === 'low' ? '10-30% risk of delayed emesis' : '<10% risk of delayed emesis',
+        acuteRisk: riskLevel === 'high' ? '>90% risk of emesis' : 
+                   riskLevel === 'moderate' ? '30-90% risk of emesis' : 
+                   riskLevel === 'low' ? '10-30% risk of emesis' : '<10% risk of emesis',
+        delayedRisk: riskLevel === 'high' ? '>90% risk of delayed emesis' : 
+                     riskLevel === 'moderate' ? '30-90% risk of delayed emesis' : 
+                     riskLevel === 'low' ? '10-30% risk of delayed emesis' : '<10% risk of delayed emesis',
       },
       premedications,
       clinicalNotes,
@@ -711,13 +720,7 @@ const handleExportData = () => {
 </div>
         </div>
 
-        {/* Emetogenic Risk Assessment */}
-        <EmetogenicRiskClassifier
-          drugs={regimen.drugs}
-          onRiskLevelChange={handleEmetogenicRiskChange}
-        />
-
-        <Separator />
+        {/* Emetogenic Risk Assessment moved to Supportive Care step */}
 
         {/* Safety Alerts Panel */}
         {showSafetyPanel && safetyAlerts.length > 0 && (
@@ -747,17 +750,7 @@ const handleExportData = () => {
 
         <Separator />
 
-        {/* Unified Protocol Selection */}
-        <UnifiedProtocolSelector
-          drugNames={regimen.drugs.map(drug => drug.name)}
-          drugs={regimen.drugs}
-          emetogenicRiskLevel={emetogenicRiskLevel}
-          selectedPremedications={selectedPremedications}
-          selectedAntiemetics={selectedAntiemetics}
-          onPremedSelectionsChange={handlePremedSelectionsChange}
-          onAntiemeticProtocolChange={handleAntiemeticProtocolChange}
-          weight={weight}
-        />
+        {/* Supportive Protocol Selection moved to Supportive Care step */}
 
         <Separator />
 

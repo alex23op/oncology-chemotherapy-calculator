@@ -6,7 +6,7 @@ import { DoseCalculator } from "@/components/DoseCalculator";
 import { SafeComponentWrapper } from "@/components/SafeComponentWrapper";
 import { toast } from "@/hooks/use-toast";
 import { Info } from "lucide-react";
-import { Regimen } from "@/types/regimens";
+import { Regimen, Premedication } from "@/types/regimens";
 import { useTranslation } from "react-i18next";
 import { WizardProvider, useWizard } from "@/components/wizard/WizardProvider";
 import { WizardStep } from "@/components/wizard/WizardStep";
