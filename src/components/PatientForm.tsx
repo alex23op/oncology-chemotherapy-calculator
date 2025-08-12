@@ -127,7 +127,9 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
             );
           }
           
-          onPatientDataChange({ ...data, bsa, creatinineClearance });
+          const weightNum = parseFloat(data.weight);
+          const normalizedWeightKg = data.weightUnit === "lbs" ? weightNum * 0.453592 : weightNum;
+          onPatientDataChange({ ...data, weight: String(normalizedWeightKg), weightUnit: "kg", bsa, creatinineClearance });
         }
       }
     } catch (error) {

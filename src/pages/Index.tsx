@@ -17,7 +17,7 @@ import { PatientSummaryPanel } from "@/components/PatientSummaryPanel";
 import { UnifiedProtocolSelector } from "@/components/UnifiedProtocolSelector";
 import { CompactClinicalTreatmentSheet } from "@/components/CompactClinicalTreatmentSheet";
 import { AntiemeticAgent } from "@/types/emetogenicRisk";
-
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 
 interface PatientData {
@@ -46,6 +46,12 @@ const IndexContent = () => {
   const [emetogenicRiskLevel, setEmetogenicRiskLevel] = useState<"high" | "moderate" | "low" | "minimal">("minimal");
   const [selectedPremedications, setSelectedPremedications] = useState<Premedication[]>([]);
   const [selectedAntiemetics, setSelectedAntiemetics] = useState<AntiemeticAgent[]>([]);
+  const [reviewOrientation, setReviewOrientation] = useState<'portrait' | 'landscape'>(
+    () => (localStorage.getItem('pdfOrientation') as 'portrait' | 'landscape') || 'portrait'
+  );
+  useEffect(() => {
+    try { localStorage.setItem('pdfOrientation', reviewOrientation); } catch {}
+  }, [reviewOrientation]);
 
   const handlePatientDataChange = (data: PatientData) => {
     setPatientData(data);
@@ -84,6 +90,12 @@ const IndexContent = () => {
     });
   };
 
+  const weightKg = patientData
+    ? (patientData.weightUnit === 'lbs'
+        ? parseFloat(patientData.weight) * 0.453592
+        : parseFloat(patientData.weight))
+    : 0;
+
   return (
     <main className="container mx-auto px-4 py-6 space-y-6">
       <ProgressBar />
@@ -114,7 +126,7 @@ const IndexContent = () => {
                 selectedAntiemetics={selectedAntiemetics}
                 onPremedSelectionsChange={setSelectedPremedications}
                 onAntiemeticProtocolChange={setSelectedAntiemetics}
-                weight={parseFloat(patientData?.weight || "0")}
+                weight={weightKg}
               />
             </div>
           ) : (
@@ -128,7 +140,7 @@ const IndexContent = () => {
           <DoseCalculator
             regimen={selectedRegimen}
             bsa={patientData?.bsa || 0}
-            weight={parseFloat(patientData?.weight || "0")}
+            weight={weightKg}
             height={parseFloat(patientData?.height || "0")}
             age={parseFloat(patientData?.age || "0")}
             sex={patientData?.sex || ""}
@@ -153,6 +165,15 @@ const IndexContent = () => {
                 <CompactClinicalTreatmentSheet treatmentData={treatmentData} />
               </div>
               <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
+                <Select value={reviewOrientation} onValueChange={(v) => setReviewOrientation(v as 'portrait' | 'landscape')}>
+                  <SelectTrigger className="w-[140px]">
+                    <SelectValue placeholder={t('doseCalculator.orientation')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="portrait">{t('doseCalculator.portrait')}</SelectItem>
+                    <SelectItem value="landscape">{t('doseCalculator.landscape')}</SelectItem>
+                  </SelectContent>
+                </Select>
                 <button
                   className="inline-flex items-center gap-2 px-3 py-2 rounded border bg-background hover-scale"
                   onClick={async () => {
@@ -160,7 +181,7 @@ const IndexContent = () => {
                     await generateClinicalTreatmentPDF({
                       ...treatmentData,
                       elementId: 'protocol-print',
-                      orientation: 'portrait',
+                      orientation: reviewOrientation,
                     });
                   }}
                 >
