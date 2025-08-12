@@ -15,10 +15,10 @@ import { useSmartNav } from "@/context/SmartNavContext";
 import { EmetogenicRiskClassifier } from "@/components/EmetogenicRiskClassifier";
 import { PatientSummaryPanel } from "@/components/PatientSummaryPanel";
 import { UnifiedProtocolSelector } from "@/components/UnifiedProtocolSelector";
-import { PrintableProtocol } from "@/components/PrintableProtocol";
+import { CompactClinicalTreatmentSheet } from "@/components/CompactClinicalTreatmentSheet";
 import { AntiemeticAgent } from "@/types/emetogenicRisk";
 
-// CompactClinicalTreatmentSheet removed from review in favor of PrintableProtocol
+
 
 interface PatientData {
   weight: string;
@@ -149,39 +149,19 @@ const IndexContent = () => {
         <SafeComponentWrapper componentName="Review & Print" fallbackMessage={t('errors.reviewFailed')}>
           {treatmentData ? (
             <div className="space-y-4">
-              <div id="protocol-print" className="compact-treatment-sheet">
-                <PrintableProtocol
-                  selectedAgents={(treatmentData?.calculatedDrugs || []).map((d: any) => ({
-                    name: d.name,
-                    indication: d.drugClass || '',
-                    dosage: d.finalDose,
-                    route: d.route || '',
-                    timing: d.day ? `Day ${d.day}` : '',
-                    duration: d.administrationDuration || '',
-                    rationale: d.adjustmentNotes || '',
-                    category: t('compactSheet.chemoAgents', { defaultValue: 'Chemotherapy Agents' }),
-                  }))}
-                  regimenName={treatmentData?.regimen?.name}
-                  patientWeight={treatmentData?.patient?.weight}
-                  emetogenicRisk={treatmentData?.emetogenicRisk?.level}
-                />
+              <div id="protocol-print">
+                <CompactClinicalTreatmentSheet treatmentData={treatmentData} />
               </div>
               <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
                 <button
                   className="inline-flex items-center gap-2 px-3 py-2 rounded border bg-background hover-scale"
                   onClick={async () => {
-                    const agents = (treatmentData?.calculatedDrugs || []).map((d: any) => ({
-                      name: d.name,
-                      indication: d.drugClass || '',
-                      dosage: d.finalDose,
-                      route: d.route || '',
-                      timing: d.day ? `Day ${d.day}` : '',
-                      duration: d.administrationDuration || '',
-                      rationale: d.adjustmentNotes || '',
-                      category: t('compactSheet.chemoAgents', { defaultValue: 'Chemotherapy Agents' }),
-                    }));
-                    const { generateProtocolPDF } = await import('@/utils/pdfExport');
-                    await generateProtocolPDF({ selectedAgents: agents, regimenName: treatmentData?.regimen?.name, patientWeight: treatmentData?.patient?.weight, emetogenicRisk: treatmentData?.emetogenicRisk?.level }, 'protocol-print');
+                    const { generateClinicalTreatmentPDF } = await import('@/utils/pdfExport');
+                    await generateClinicalTreatmentPDF({
+                      ...treatmentData,
+                      elementId: 'protocol-print',
+                      orientation: 'portrait',
+                    });
                   }}
                 >
                   {t('doseCalculator.exportPdf')}
