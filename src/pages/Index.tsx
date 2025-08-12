@@ -14,10 +14,11 @@ import { ProgressBar } from "@/components/wizard/ProgressBar";
 import { useSmartNav } from "@/context/SmartNavContext";
 import { EmetogenicRiskClassifier } from "@/components/EmetogenicRiskClassifier";
 import { PatientSummaryPanel } from "@/components/PatientSummaryPanel";
+import { UnifiedProtocolSelector } from "@/components/UnifiedProtocolSelector";
+import { PrintableProtocol } from "@/components/PrintableProtocol";
+import { AntiemeticAgent } from "@/types/emetogenicRisk";
 
-const CompactClinicalTreatmentSheetLazy = lazy(() =>
-  import("@/components/CompactClinicalTreatmentSheet").then((m) => ({ default: m.CompactClinicalTreatmentSheet }))
-);
+// CompactClinicalTreatmentSheet removed from review in favor of PrintableProtocol
 
 interface PatientData {
   weight: string;
@@ -40,6 +41,11 @@ const IndexContent = () => {
   const [patientData, setPatientData] = useState<PatientData | null>(null);
   const [selectedRegimen, setSelectedRegimen] = useState<Regimen | null>(null);
   const [treatmentData, setTreatmentData] = useState<any | null>(null);
+
+  // Supportive care state (Tab 3)
+  const [emetogenicRiskLevel, setEmetogenicRiskLevel] = useState<"high" | "moderate" | "low" | "minimal">("minimal");
+  const [selectedPremedications, setSelectedPremedications] = useState<Premedication[]>([]);
+  const [selectedAntiemetics, setSelectedAntiemetics] = useState<AntiemeticAgent[]>([]);
 
   const handlePatientDataChange = (data: PatientData) => {
     setPatientData(data);
@@ -98,7 +104,19 @@ const IndexContent = () => {
       <WizardStep id="support" title={t('wizard.steps.support', { defaultValue: 'Supportive care' })}>
         <SafeComponentWrapper componentName="Emetogenic Risk" fallbackMessage={t('errors.emetogenicRiskFailed')}>
           {selectedRegimen ? (
-            <EmetogenicRiskClassifier drugs={selectedRegimen.drugs} />
+            <div className="space-y-6">
+              <EmetogenicRiskClassifier drugs={selectedRegimen.drugs} onRiskLevelChange={setEmetogenicRiskLevel} />
+              <UnifiedProtocolSelector
+                drugNames={selectedRegimen.drugs.map(drug => drug.name)}
+                drugs={selectedRegimen.drugs}
+                emetogenicRiskLevel={emetogenicRiskLevel}
+                selectedPremedications={selectedPremedications}
+                selectedAntiemetics={selectedAntiemetics}
+                onPremedSelectionsChange={setSelectedPremedications}
+                onAntiemeticProtocolChange={setSelectedAntiemetics}
+                weight={parseFloat(patientData?.weight || "0")}
+              />
+            </div>
           ) : (
             <div className="text-sm text-muted-foreground">{t('doseCalculator.emptyState')}</div>
           )}
@@ -118,6 +136,11 @@ const IndexContent = () => {
             onExport={handleExport}
             onFinalize={(data: any) => setTreatmentData(data)}
             onGoToReview={() => goTo('review')}
+            supportiveCare={{
+              emetogenicRiskLevel,
+              selectedPremedications,
+              selectedAntiemetics,
+            }}
           />
         </SafeComponentWrapper>
       </WizardStep>
@@ -126,20 +149,51 @@ const IndexContent = () => {
         <SafeComponentWrapper componentName="Review & Print" fallbackMessage={t('errors.reviewFailed')}>
           {treatmentData ? (
             <div className="space-y-4">
-              <Suspense fallback={<div className="rounded-lg border bg-muted/30 h-32 animate-pulse" aria-busy="true" />}>
-                <CompactClinicalTreatmentSheetLazy treatmentData={treatmentData} className="compact-treatment-sheet" />
-              </Suspense>
+              <div id="protocol-print" className="compact-treatment-sheet">
+                <PrintableProtocol
+                  selectedAgents={(treatmentData?.calculatedDrugs || []).map((d: any) => ({
+                    name: d.name,
+                    indication: d.drugClass || '',
+                    dosage: d.finalDose,
+                    route: d.route || '',
+                    timing: d.day ? `Day ${d.day}` : '',
+                    duration: d.administrationDuration || '',
+                    rationale: d.adjustmentNotes || '',
+                    category: t('compactSheet.chemoAgents', { defaultValue: 'Chemotherapy Agents' }),
+                  }))}
+                  regimenName={treatmentData?.regimen?.name}
+                  patientWeight={treatmentData?.patient?.weight}
+                  emetogenicRisk={treatmentData?.emetogenicRisk?.level}
+                />
+              </div>
               <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
                 <button
                   className="inline-flex items-center gap-2 px-3 py-2 rounded border bg-background hover-scale"
                   onClick={async () => {
-                    const { generateClinicalTreatmentPDF } = await import('@/utils/pdfExport');
-                    await generateClinicalTreatmentPDF({ ...treatmentData, elementId: 'clinical-treatment-sheet', orientation: 'portrait' });
+                    const agents = (treatmentData?.calculatedDrugs || []).map((d: any) => ({
+                      name: d.name,
+                      indication: d.drugClass || '',
+                      dosage: d.finalDose,
+                      route: d.route || '',
+                      timing: d.day ? `Day ${d.day}` : '',
+                      duration: d.administrationDuration || '',
+                      rationale: d.adjustmentNotes || '',
+                      category: t('compactSheet.chemoAgents', { defaultValue: 'Chemotherapy Agents' }),
+                    }));
+                    const { generateProtocolPDF } = await import('@/utils/pdfExport');
+                    await generateProtocolPDF({ selectedAgents: agents, regimenName: treatmentData?.regimen?.name, patientWeight: treatmentData?.patient?.weight, emetogenicRisk: treatmentData?.emetogenicRisk?.level }, 'protocol-print');
                   }}
                 >
                   {t('doseCalculator.exportPdf')}
                 </button>
-                <button className="inline-flex items-center gap-2 px-3 py-2 rounded border bg-background hover-scale" onClick={() => window.print()}>
+                <button
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded border bg-background hover-scale"
+                  onClick={() => {
+                    document.body.classList.add('printing-protocol');
+                    window.print();
+                    setTimeout(() => document.body.classList.remove('printing-protocol'), 100);
+                  }}
+                >
                   {t('doseCalculator.print')}
                 </button>
               </div>

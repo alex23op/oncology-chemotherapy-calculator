@@ -110,7 +110,6 @@ All colors MUST be HSL.
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
-
 @layer base {
   * {
     @apply border-border;
@@ -118,5 +117,22 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+/* Print: show only the protocol container when printing from Review tab */
+@media print {
+  .printing-protocol * {
+    visibility: hidden !important;
+  }
+  .printing-protocol #protocol-print,
+  .printing-protocol #protocol-print * {
+    visibility: visible !important;
+  }
+  .printing-protocol #protocol-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
   }
 }
