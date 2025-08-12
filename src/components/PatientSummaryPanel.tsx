@@ -22,7 +22,7 @@ export const PatientSummaryPanel = ({ patientData, selectedRegimen, className }:
   const { t } = useTranslation();
 
   return (
-    <aside className={`w-full lg:sticky lg:top-4 ${className || ""}`} aria-label={t('summary.title', { defaultValue: 'Patient & Regimen Summary' })}>
+    <aside className={`w-full ${className || ""}`} aria-label={t('summary.title', { defaultValue: 'Patient & Regimen Summary' })}>
       <Card>
         <CardHeader>
           <CardTitle className="text-primary">

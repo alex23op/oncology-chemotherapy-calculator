@@ -17,6 +17,18 @@
     "english": "Engleză",
     "romanian": "Română"
   },
+  "summary": {
+    "title": "Sumar pacient și regim",
+    "patient": "Pacient",
+    "unknown": "Necunoscut",
+    "weight": "Greutate",
+    "height": "Înălțime",
+    "bsa": "ASC",
+    "crcl": "ClCr",
+    "regimen": "Regim",
+    "selected": "Selectat",
+    "notSelected": "Neselectat"
+  },
   "index": {
     "toasts": {
       "patientDataRequired": {
