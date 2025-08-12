@@ -164,11 +164,11 @@ const IndexContent = () => {
               <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
                 <Select value={reviewOrientation} onValueChange={(v) => setReviewOrientation(v as 'portrait' | 'landscape')}>
                   <SelectTrigger className="w-[140px]">
-                    <SelectValue placeholder={t('doseCalculator.orientation')} />
+                    <SelectValue placeholder={t('doseCalculator.orientation', { defaultValue: 'Orientation' })} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="portrait">{t('doseCalculator.portrait')}</SelectItem>
-                    <SelectItem value="landscape">{t('doseCalculator.landscape')}</SelectItem>
+                    <SelectItem value="portrait">{t('doseCalculator.portrait', { defaultValue: 'Portrait' })}</SelectItem>
+                    <SelectItem value="landscape">{t('doseCalculator.landscape', { defaultValue: 'Landscape' })}</SelectItem>
                   </SelectContent>
                 </Select>
                 <button
