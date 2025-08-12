@@ -939,6 +939,16 @@ const handleExportData = () => {
 {/* Primary actions moved below chemo drugs and notes */}
 <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
   <Button
+    variant={isEditing ? "default" : "outline"}
+    size="sm"
+    onClick={() => setIsEditing(!isEditing)}
+    aria-pressed={isEditing}
+    aria-label={isEditing ? t('doseCalculator.save') : t('doseCalculator.edit')}
+  >
+    {isEditing ? <Save className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
+    {isEditing ? t('doseCalculator.save') : t('doseCalculator.edit')}
+  </Button>
+  <Button
     variant="secondary"
     size="sm"
     onClick={handleGenerateTreatmentSheet}
