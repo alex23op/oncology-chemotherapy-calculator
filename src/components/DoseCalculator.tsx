@@ -94,7 +94,9 @@ export const DoseCalculator = ({
   const [showCalendar, setShowCalendar] = useState<boolean>(false);
   const [bsaCap, setBsaCap] = useState<number>(2.0);
   const [useBsaCap, setUseBsaCap] = useState<boolean>(false);
-  const [printOrientation, setPrintOrientation] = useState<'portrait' | 'landscape'>('portrait');
+  const [printOrientation, setPrintOrientation] = useState<'portrait' | 'landscape'>(() =>
+    (localStorage.getItem('pdfOrientation') as 'portrait' | 'landscape') || 'portrait'
+  );
 
 const { componentRef, printTreatmentSheet } = usePrint(undefined, { orientation: printOrientation });
 const { t } = useTranslation();
@@ -212,6 +214,11 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
 useEffect(() => {
   setShowCalendar(calendarFirst);
 }, [calendarFirst]);
+
+// Persist orientation preference
+useEffect(() => {
+  try { localStorage.setItem('pdfOrientation', printOrientation); } catch {}
+}, [printOrientation]);
 
 // One-time migration to sanitize legacy drafts in localStorage
 useEffect(() => {
@@ -512,6 +519,11 @@ const handleExportTreatmentPDF = async () => {
     }
     if (calculations.length === 0) {
       toast.error(t('doseCalculator.toasts.noCalcsToExport'));
+      return;
+    }
+    const hasInvalid = calculations.some(c => c.selected && (!isFinite(c.finalDose) || c.finalDose <= 0));
+    if (hasInvalid) {
+      toast.error(t('doseCalculator.toasts.invalidDoseValues', { defaultValue: 'One or more doses are invalid (<= 0).' }));
       return;
     }
 
