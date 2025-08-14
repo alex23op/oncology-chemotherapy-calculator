@@ -110,7 +110,7 @@ export const CompactClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Co
                   <th className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 text-left font-semibold">{t('compactSheet.dose')}</th>
                   <th className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 text-left font-semibold">{t('compactSheet.route')}</th>
                   <th className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 text-left font-semibold">{t('printableProtocol.timing')}</th>
-                  <th className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 text-left font-semibold">{t('compactSheet.category')}</th>
+                  <th className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 text-left font-semibold">{t('compactSheet.solvent')}</th>
                   <th className="print:px-1 print:py-0.5 text-left font-semibold">{t('compactSheet.given')}</th>
                 </tr>
               </thead>
@@ -121,7 +121,7 @@ export const CompactClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Co
                     <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5">{med.dosage}</td>
                     <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5">{med.route}</td>
                     <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5">{med.timing}</td>
-                    <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5 print:text-xs">{categoryMap[med.category] ?? med.category}</td>
+                    <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5 print:text-xs">{med.solvent || t('compactSheet.na')}</td>
                     <td className="border-t border-gray-300 print:border-black print:px-1 print:py-0.5 text-center">☐</td>
                   </tr>
                 ))}

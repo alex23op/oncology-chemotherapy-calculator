@@ -34,6 +34,7 @@ export interface PremedAgent {
   indication: string;
   rationale?: string;
   administrationDuration?: string;
+  solvent?: string;
 }
 
 export interface TreatmentData {

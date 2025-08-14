@@ -226,14 +226,17 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
                           {med.indication}
                         </Badge>
                       </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm print:text-xs">
-                        <div><span className="font-medium">{t('clinicalSheet.dose')}:</span> {med.dosage}</div>
-                        <div><span className="font-medium">{t('printableProtocol.route')}:</span> {med.route}</div>
-                        <div><span className="font-medium">{t('printableProtocol.timing')}:</span> {med.timing}</div>
-                        {med.administrationDuration && (
-                          <div><span className="font-medium">{t('printableProtocol.duration')}:</span> {med.administrationDuration}</div>
-                        )}
-                      </div>
+                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm print:text-xs">
+                         <div><span className="font-medium">{t('clinicalSheet.dose')}:</span> {med.dosage}</div>
+                         <div><span className="font-medium">{t('printableProtocol.route')}:</span> {med.route}</div>
+                         <div><span className="font-medium">{t('printableProtocol.timing')}:</span> {med.timing}</div>
+                         {med.administrationDuration && (
+                           <div><span className="font-medium">{t('printableProtocol.duration')}:</span> {med.administrationDuration}</div>
+                         )}
+                         {med.solvent && (
+                           <div><span className="font-medium">{t('premedSelector.solvent')}:</span> {med.solvent}</div>
+                         )}
+                       </div>
                       {med.rationale && (
                         <div className="mt-1 text-xs text-muted-foreground print:text-foreground">
                           <span className="font-medium">{t('clinicalSheet.rationale')}:</span> {med.rationale}
@@ -259,14 +262,17 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
                           {med.indication}
                         </Badge>
                       </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm print:text-xs">
-                        <div><span className="font-medium">{t('clinicalSheet.dose')}:</span> {med.dosage}</div>
-                        <div><span className="font-medium">{t('printableProtocol.route')}:</span> {med.route}</div>
-                        <div><span className="font-medium">{t('printableProtocol.timing')}:</span> {med.timing}</div>
-                        {med.administrationDuration && (
-                          <div><span className="font-medium">{t('printableProtocol.duration')}:</span> {med.administrationDuration}</div>
-                        )}
-                      </div>
+                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm print:text-xs">
+                         <div><span className="font-medium">{t('clinicalSheet.dose')}:</span> {med.dosage}</div>
+                         <div><span className="font-medium">{t('printableProtocol.route')}:</span> {med.route}</div>
+                         <div><span className="font-medium">{t('printableProtocol.timing')}:</span> {med.timing}</div>
+                         {med.administrationDuration && (
+                           <div><span className="font-medium">{t('printableProtocol.duration')}:</span> {med.administrationDuration}</div>
+                         )}
+                         {med.solvent && (
+                           <div><span className="font-medium">{t('premedSelector.solvent')}:</span> {med.solvent}</div>
+                         )}
+                       </div>
                     </div>
                   ))}
                 </div>
@@ -287,14 +293,17 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
                           {med.indication}
                         </Badge>
                       </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm print:text-xs">
-                        <div><span className="font-medium">{t('clinicalSheet.dose')}:</span> {med.dosage}</div>
-                        <div><span className="font-medium">{t('printableProtocol.route')}:</span> {med.route}</div>
-                        <div><span className="font-medium">{t('printableProtocol.timing')}:</span> {med.timing}</div>
-                        {med.administrationDuration && (
-                          <div><span className="font-medium">{t('printableProtocol.duration')}:</span> {med.administrationDuration}</div>
-                        )}
-                      </div>
+                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm print:text-xs">
+                         <div><span className="font-medium">{t('clinicalSheet.dose')}:</span> {med.dosage}</div>
+                         <div><span className="font-medium">{t('printableProtocol.route')}:</span> {med.route}</div>
+                         <div><span className="font-medium">{t('printableProtocol.timing')}:</span> {med.timing}</div>
+                         {med.administrationDuration && (
+                           <div><span className="font-medium">{t('printableProtocol.duration')}:</span> {med.administrationDuration}</div>
+                         )}
+                         {med.solvent && (
+                           <div><span className="font-medium">{t('premedSelector.solvent')}:</span> {med.solvent}</div>
+                         )}
+                       </div>
                     </div>
                   ))}
                 </div>
@@ -315,14 +324,17 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
                           {med.indication}
                         </Badge>
                       </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm print:text-xs">
-                         <div><span className="font-medium">{t('clinicalSheet.dose')}:</span> {med.dosage}</div>
-                        <div><span className="font-medium">{t('printableProtocol.route')}:</span> {med.route}</div>
-                        <div><span className="font-medium">{t('printableProtocol.timing')}:</span> {med.timing}</div>
-                        {med.administrationDuration && (
-                          <div><span className="font-medium">{t('printableProtocol.duration')}:</span> {med.administrationDuration}</div>
-                        )}
-                      </div>
+                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm print:text-xs">
+                          <div><span className="font-medium">{t('clinicalSheet.dose')}:</span> {med.dosage}</div>
+                         <div><span className="font-medium">{t('printableProtocol.route')}:</span> {med.route}</div>
+                         <div><span className="font-medium">{t('printableProtocol.timing')}:</span> {med.timing}</div>
+                         {med.administrationDuration && (
+                           <div><span className="font-medium">{t('printableProtocol.duration')}:</span> {med.administrationDuration}</div>
+                         )}
+                         {med.solvent && (
+                           <div><span className="font-medium">{t('premedSelector.solvent')}:</span> {med.solvent}</div>
+                         )}
+                       </div>
                     </div>
                   ))}
                 </div>
@@ -343,14 +355,17 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
                           {med.indication}
                         </Badge>
                       </div>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm print:text-xs">
-                        <div><span className="font-medium">{t('clinicalSheet.dose')}:</span> {med.dosage}</div>
-                        <div><span className="font-medium">{t('printableProtocol.route')}:</span> {med.route}</div>
-                        <div><span className="font-medium">{t('printableProtocol.timing')}:</span> {med.timing}</div>
-                        {med.administrationDuration && (
-                          <div><span className="font-medium">{t('printableProtocol.duration')}:</span> {med.administrationDuration}</div>
-                        )}
-                      </div>
+                       <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm print:text-xs">
+                         <div><span className="font-medium">{t('clinicalSheet.dose')}:</span> {med.dosage}</div>
+                         <div><span className="font-medium">{t('printableProtocol.route')}:</span> {med.route}</div>
+                         <div><span className="font-medium">{t('printableProtocol.timing')}:</span> {med.timing}</div>
+                         {med.administrationDuration && (
+                           <div><span className="font-medium">{t('printableProtocol.duration')}:</span> {med.administrationDuration}</div>
+                         )}
+                         {med.solvent && (
+                           <div><span className="font-medium">{t('premedSelector.solvent')}:</span> {med.solvent}</div>
+                         )}
+                       </div>
                     </div>
                   ))}
                 </div>

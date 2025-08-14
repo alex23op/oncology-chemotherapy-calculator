@@ -5,6 +5,8 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { Shield, AlertTriangle, Clock, Pill } from "lucide-react";
 import { PremedProtocol, standardPremedProtocols, getRecommendedProtocols } from "@/utils/premedProtocols";
 import { Premedication } from "@/types/regimens";
@@ -17,6 +19,10 @@ interface PremedProtocolSelectorProps {
   weight: number;
 }
 
+interface PremedWithSolvent extends Premedication {
+  solvent?: string;
+}
+
 export const PremedProtocolSelector = ({
   drugNames,
   selectedPremedications,
@@ -25,6 +31,7 @@ export const PremedProtocolSelector = ({
 }: PremedProtocolSelectorProps) => {
   const { t } = useTranslation();
   const [selectedProtocols, setSelectedProtocols] = useState<string[]>([]);
+  const [solventSelections, setSolventSelections] = useState<Record<string, string>>({});
   const recommendedProtocols = getRecommendedProtocols(drugNames);
   const handleProtocolSelect = (protocol: PremedProtocol) => {
     const newSelections = [...selectedPremedications];
@@ -58,6 +65,23 @@ export const PremedProtocolSelector = ({
   const clearAllSelections = () => {
     onPremedSelectionsChange([]);
     setSelectedProtocols([]);
+    setSolventSelections({});
+  };
+
+  const handleSolventChange = (premedName: string, solvent: string) => {
+    const newSolventSelections = {
+      ...solventSelections,
+      [premedName]: solvent
+    };
+    setSolventSelections(newSolventSelections);
+
+    // Update the selected premedications with solvent
+    const updatedPremedications = selectedPremedications.map(premed => 
+      premed.name === premedName 
+        ? { ...premed, solvent: solvent || undefined } as PremedWithSolvent
+        : premed
+    );
+    onPremedSelectionsChange(updatedPremedications);
   };
 
   const getCategoryIcon = (category: string) => {
@@ -111,9 +135,10 @@ export const PremedProtocolSelector = ({
       
       <CardContent>
         <Tabs defaultValue="protocols" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="protocols">{t('premedSelector.tabs.protocols')}</TabsTrigger>
             <TabsTrigger value="individual">{t('premedSelector.tabs.individual')}</TabsTrigger>
+            <TabsTrigger value="solvents">{t('premedSelector.tabs.solvents')}</TabsTrigger>
             <TabsTrigger value="selected">{t('premedSelector.tabs.selected', { count: selectedPremedications.length })}</TabsTrigger>
           </TabsList>
 
@@ -251,6 +276,64 @@ export const PremedProtocolSelector = ({
                 </CardContent>
               </Card>
             ))}
+          </TabsContent>
+
+          <TabsContent value="solvents" className="space-y-4">
+            {selectedPremedications.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                {t('premedSelector.noneSelected')}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  {t('premedSelector.selectSolvent')} each selected premedication:
+                </p>
+                
+                {selectedPremedications.map((premed, idx) => (
+                  <Card key={idx} className="border border-muted">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className={`p-2 rounded ${getCategoryColor(premed.category)}`}>
+                            {getCategoryIcon(premed.category)}
+                          </div>
+                          <div>
+                            <h4 className="font-semibold">{premed.name}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {premed.dosage} {premed.unit} {premed.route}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="min-w-[200px]">
+                          <Label className="text-muted-foreground font-semibold text-sm">
+                            {t('premedSelector.solvent')}
+                          </Label>
+                          <Select 
+                            value={solventSelections[premed.name] || ''} 
+                            onValueChange={(value) => handleSolventChange(premed.name, value)}
+                          >
+                            <SelectTrigger className="mt-1">
+                              <SelectValue placeholder={t('doseCalculator.selectSolvent')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Normal Saline 0.9%">{t('doseCalculator.solvents.normalSaline')}</SelectItem>
+                              <SelectItem value="Dextrose 5%">{t('doseCalculator.solvents.dextrose5')}</SelectItem>
+                              <SelectItem value="Ringer Solution">{t('doseCalculator.solvents.ringer')}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          {premed.dilution && (
+                            <p className="text-xs text-muted-foreground mt-1">
+                              {t('doseCalculator.protocolSuggest')}: {premed.dilution}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="selected" className="space-y-4">

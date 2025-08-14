@@ -160,7 +160,7 @@
     "na": "N/A",
     "medication": "Medication",
     "dose": "Dose",
-    "category": "Category",
+    "solvent": "Solvent",
     "given": "Given ☐",
     "acutePhase": "Acute Phase (0-24h)",
     "delayedPhase": "Delayed Phase (24-120h)",
@@ -389,6 +389,7 @@
     "tabs": {
       "protocols": "Recommended Protocols",
       "individual": "Individual Selection",
+      "solvents": "Solvents",
       "selected": "Selected ({{count}})"
     },
     "quickTip": "Quick-select standard protocols based on your chemotherapy drugs",
@@ -401,6 +402,8 @@
     "dilution": "Dilution",
     "duration": "Duration",
     "note": "Note",
+    "selectSolvent": "Select solvent for",
+    "solvent": "Solvent",
     "noneSelected": "No premedications selected. Use the other tabs to select protocols or individual medications.",
     "reviewSelected": "Review your selected premedications",
     "remove": "Remove",

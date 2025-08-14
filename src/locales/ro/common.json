@@ -160,7 +160,7 @@
     "na": "N/A",
     "medication": "Medicație",
     "dose": "Doză",
-    "category": "Categorie",
+    "solvent": "Solvent",
     "given": "Administrat ☐",
     "acutePhase": "Fază acută (0-24h)",
     "delayedPhase": "Fază întârziată (24-120h)",
@@ -389,8 +389,35 @@
     "no": "Nu"
   },
   "premedSelector": {
+    "title": "Selector protocol premedicație",
+    "tabs": {
+      "protocols": "Protocoale",
+      "individual": "Individual",
+      "solvents": "Solvenți",
+      "selected": "Selectate ({{count}})"
+    },
+    "quickTip": "Selectare rapidă protocoale standard pe baza medicamentelor chimioterapice",
     "clearAll": "Șterge tot",
-    "required": "Necesar"
+    "addProtocol": "Adaugă protocol",
+    "added": "Adăugat",
+    "selectByCategory": "Selectați premedicații individuale pe categorie",
+    "required": "Necesar",
+    "standard": "Standard",
+    "dilution": "Diluție",
+    "duration": "Durată",
+    "note": "Notă",
+    "selectSolvent": "Selectați solventul pentru",
+    "solvent": "Solvent",
+    "noneSelected": "Nu ați selectat premedicații. Folosiți alte tab-uri pentru a selecta protocoale sau medicamente individuale.",
+    "reviewSelected": "Revizuiți premedicațiile selectate",
+    "remove": "Elimină",
+    "categories": {
+      "antiemetic": "Antiemetic",
+      "corticosteroid": "Corticosteroid",
+      "antihistamine": "Antihistamin",
+      "h2_blocker": "Blocant H2",
+      "other": "Altele"
+    }
   },
   "unifiedSelector": {
     "title": "Premedicație și profilaxie suportivă",
