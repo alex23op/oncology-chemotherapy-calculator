@@ -7,6 +7,8 @@ import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { Shield, AlertTriangle, Clock, Pill, ChevronDown, BookOpen, Edit, Heart, Activity, Zap, Droplet, Users, FileText } from "lucide-react";
 import { Drug } from "@/types/regimens";
 import { useTranslation } from 'react-i18next';
@@ -39,6 +41,7 @@ interface PremedAgent {
   notes?: string;
   evidenceLevel?: string;
   drugSpecific?: string[];
+  solvent?: string;
 }
 
 interface CategoryData {
@@ -540,6 +543,7 @@ export const UnifiedProtocolSelector = ({
 }: UnifiedProtocolSelectorProps) => {
   const [selectedAgents, setSelectedAgents] = useState<PremedAgent[]>([]);
   const [expandedCategories, setExpandedCategories] = useState<string[]>(["cinv"]);
+  const [solventSelections, setSolventSelections] = useState<Record<string, string>>({});
   const { t } = useTranslation();
 
   // Notify parent component when selected agents change
@@ -578,10 +582,28 @@ export const UnifiedProtocolSelector = ({
 
   const handleAgentToggle = (agent: PremedAgent, isSelected: boolean) => {
     if (isSelected) {
-      setSelectedAgents(prev => [...prev, agent]);
+      const agentWithSolvent = { ...agent, solvent: solventSelections[agent.name] };
+      setSelectedAgents(prev => [...prev, agentWithSolvent]);
     } else {
       setSelectedAgents(prev => prev.filter(a => a.name !== agent.name));
     }
+  };
+
+  const handleSolventChange = (agentName: string, solvent: string) => {
+    const newSolventSelections = {
+      ...solventSelections,
+      [agentName]: solvent
+    };
+    setSolventSelections(newSolventSelections);
+
+    // Update the selected agents with solvent
+    setSelectedAgents(prev => 
+      prev.map(agent => 
+        agent.name === agentName 
+          ? { ...agent, solvent: solvent || undefined }
+          : agent
+      )
+    );
   };
 
   const applyRecommendations = () => {
@@ -590,6 +612,7 @@ export const UnifiedProtocolSelector = ({
 
   const clearSelections = () => {
     setSelectedAgents([]);
+    setSolventSelections({});
   };
 
   const toggleCategory = (categoryId: string) => {
@@ -632,9 +655,10 @@ export const UnifiedProtocolSelector = ({
 
       <CardContent>
         <Tabs defaultValue="recommendations" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="recommendations">{t('unifiedSelector.tabs.recommendations')}</TabsTrigger>
             <TabsTrigger value="categories">{t('unifiedSelector.tabs.categories')}</TabsTrigger>
+            <TabsTrigger value="solvents">{t('unifiedSelector.tabs.solvents')}</TabsTrigger>
             <TabsTrigger value="selected">{t('unifiedSelector.tabs.selected')}</TabsTrigger>
           </TabsList>
 
@@ -785,6 +809,59 @@ export const UnifiedProtocolSelector = ({
                 </Card>
               );
             })}
+          </TabsContent>
+
+          <TabsContent value="solvents" className="space-y-4">
+            {selectedAgents.length === 0 ? (
+              <Alert>
+                <AlertDescription>
+                  {t('unifiedSelector.noAgentsForSolvents')}
+                </AlertDescription>
+              </Alert>
+            ) : (
+              <div className="space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  {t('unifiedSelector.selectSolventDesc')}
+                </p>
+                
+                {selectedAgents.map((agent, idx) => (
+                  <Card key={idx} className="border border-muted">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex-1">
+                            <h4 className="font-semibold">{agent.name}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              {agent.dosage} {agent.unit} {agent.route}
+                            </p>
+                          </div>
+                        </div>
+                        
+                        <div className="min-w-[200px]">
+                          <Label className="text-muted-foreground font-semibold text-sm">
+                            {t('unifiedSelector.solvent')}
+                          </Label>
+                          <Select 
+                            value={solventSelections[agent.name] || ''} 
+                            onValueChange={(value) => handleSolventChange(agent.name, value)}
+                          >
+                            <SelectTrigger className="mt-1">
+                              <SelectValue placeholder={t('doseCalculator.selectSolvent')} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="Normal Saline 0.9%">{t('doseCalculator.solvents.normalSaline')}</SelectItem>
+                              <SelectItem value="Dextrose 5%">{t('doseCalculator.solvents.dextrose5')}</SelectItem>
+                              <SelectItem value="Ringer Solution">{t('doseCalculator.solvents.ringer')}</SelectItem>
+                              <SelectItem value="Water for Injection">{t('doseCalculator.solvents.waterForInjection')}</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="selected" className="space-y-4">

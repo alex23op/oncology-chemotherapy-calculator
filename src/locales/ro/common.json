@@ -426,6 +426,7 @@
     "tabs": {
       "recommendations": "Recomandări",
       "categories": "Categorii",
+      "solvents": "Solvenți",
       "selected": "Selectate"
     },
     "recommendationsDesc": "Recomandări pe baza medicamentelor ({{drugs}}) și a riscului {{risk}}.",
