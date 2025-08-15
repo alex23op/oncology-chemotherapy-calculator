@@ -251,7 +251,7 @@
     "prepAndAdmin": "Pregătire și administrare",
     "diluent": "Diluant",
     "selectSolvent": "Selectați solventul",
-    "solvents": {"normalSaline": "Ser fiziologic 0,9%","dextrose5": "Glucoză 5%","ringer": "Soluție Ringer"},
+    "solvents": {"normalSaline": "Ser fiziologic 0,9%","dextrose5": "Glucoză 5%","ringer": "Soluție Ringer","waterForInjection": "Apă pentru preparate injectabile"},
     "protocolSuggest": "Sugestie din protocol",
     "adminDuration": "Durata administrării",
     "calculatedDose": "Doză calculată",
@@ -434,6 +434,9 @@
     "specificFor": "Specific pentru",
     "emptySelected": "Nu ați selectat încă agenți.",
     "selectedHeader": "Agenți selectați pentru {{drugs}} ({{count}})",
+    "selectSolventDesc": "Selectează un solvent pentru fiecare agent de premedicație.",
+    "solvent": "Solvent",
+    "noAgentsForSolvents": "Nu ați selectat agenți. Selectați mai întâi agenți din tab-urile de recomandări sau categorii.",
     "categories": {
       "cinv": {
         "name": "Agenți antiemetici pentru CINV",

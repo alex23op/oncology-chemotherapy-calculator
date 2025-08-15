@@ -249,7 +249,7 @@
     "prepAndAdmin": "Preparation & Administration",
     "diluent": "Diluent",
     "selectSolvent": "Select solvent",
-    "solvents": {"normalSaline": "Normal Saline 0.9%","dextrose5": "Dextrose 5%","ringer": "Ringer Solution"},
+    "solvents": {"normalSaline": "Normal Saline 0.9%","dextrose5": "Dextrose 5%","ringer": "Ringer Solution","waterForInjection": "Water for injection"},
     "protocolSuggest": "Protocol suggestion",
     "adminDuration": "Administration Duration",
     "calculatedDose": "Calculated Dose",
@@ -420,6 +420,7 @@
     "tabs": {
       "recommendations": "Recommendations",
       "categories": "All Categories",
+      "solvents": "Solvents",
       "selected": "Selected Protocol"
     },
     "riskBadge": "{{level}} Risk",
@@ -429,6 +430,9 @@
     "emptySelected": "No agents selected. Choose from recommendations or browse categories to build your protocol.",
     "selectedHeader": "Selected protocol for {{drugs}} - {{count}} agents",
     "specificFor": "Specific for",
+    "selectSolventDesc": "Select a solvent for each premedication agent.",
+    "solvent": "Solvent",
+    "noAgentsForSolvents": "No agents selected. Please select agents from the recommendations or categories tabs first.",
     "categories": {
       "cinv": {
         "name": "Antiemetic Agents for CINV",

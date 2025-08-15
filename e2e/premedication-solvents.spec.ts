@@ -37,16 +37,22 @@ test.describe('Premedication Solvents E2E Tests', () => {
     // Navigate to solvents tab
     await page.getByRole('tab', { name: /solvents/i }).click();
     
-    // Should see the selected agent
-    await expect(page.getByText(/Select solvents/i)).toBeVisible();
+    // Should see translated description text, not literal keys
+    await expect(page.getByText(/Select a solvent|Selectează un solvent/i)).toBeVisible();
+    await expect(page.getByText('unifiedSelector.selectSolventDesc')).not.toBeVisible();
     
     // Select a solvent
     const solventSelect = page.getByRole('combobox').first();
     await solventSelect.click();
-    await page.getByRole('option', { name: /normal saline/i }).click();
     
-    // Verify selection
-    await expect(solventSelect).toHaveValue('Normal Saline 0.9%');
+    // Check for translated solvent names, not literal keys
+    await expect(page.getByRole('option', { name: /normal saline|ser fiziologic/i })).toBeVisible();
+    await expect(page.getByText('doseCalculator.solvents.normalSaline')).not.toBeVisible();
+    
+    await page.getByRole('option', { name: /normal saline|ser fiziologic/i }).click();
+    
+    // Verify selection shows translated text
+    await expect(solventSelect).toHaveValue(/Normal Saline 0.9%|Ser fiziologic 0,9%/);
   });
 
   test('should display solvent in treatment sheet', async ({ page }) => {

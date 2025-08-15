@@ -3,9 +3,28 @@ import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { UnifiedProtocolSelector } from './UnifiedProtocolSelector';
 
-// Mock i18next
+// Mock i18next with proper translations
 vi.mock('react-i18next', () => ({
-  useTranslation: () => ({ t: (key: string, params?: any) => params ? `${key}_${JSON.stringify(params)}` : key })
+  useTranslation: () => ({ 
+    t: (key: string, params?: any) => {
+      const translations: Record<string, string> = {
+        'unifiedSelector.tabs.solvents': 'Solvents',
+        'unifiedSelector.noAgentsForSolvents': 'No agents selected. Please select agents from the recommendations or categories tabs first.',
+        'unifiedSelector.selectSolventDesc': 'Select a solvent for each premedication agent.',
+        'unifiedSelector.solvent': 'Solvent',
+        'doseCalculator.selectSolvent': 'Select solvent',
+        'doseCalculator.solvents.normalSaline': 'Normal Saline 0.9%',
+        'doseCalculator.solvents.dextrose5': 'Dextrose 5%',
+        'doseCalculator.solvents.ringer': 'Ringer Solution',
+        'doseCalculator.solvents.waterForInjection': 'Water for injection',
+        'premedSelector.clearAll': 'Clear All'
+      };
+      
+      if (translations[key]) return translations[key];
+      if (params) return `${key}_${JSON.stringify(params)}`;
+      return key;
+    }
+  })
 }));
 
 const mockProps = {
@@ -36,7 +55,7 @@ describe('UnifiedProtocolSelector - Solvent Functionality', () => {
     // Click on solvents tab
     await user.click(getByRole('tab', { name: /solvents/i }));
     
-    expect(getByText(/unifiedSelector\.noAgentsForSolvents/)).toBeInTheDocument();
+    expect(getByText('No agents selected. Please select agents from the recommendations or categories tabs first.')).toBeInTheDocument();
   });
 
   it('allows selecting agents and then solvents', async () => {
@@ -115,6 +134,6 @@ describe('UnifiedProtocolSelector - Solvent Functionality', () => {
     await user.click(clearButton);
     
     // Should go back to empty state in solvents
-    expect(getByText(/unifiedSelector\.noAgentsForSolvents/)).toBeInTheDocument();
+    expect(getByText('No agents selected. Please select agents from the recommendations or categories tabs first.')).toBeInTheDocument();
   });
 });
