@@ -243,14 +243,14 @@ useEffect(() => {
 }, []);
 
 
-// Load draft for this regimen if available
+// Load draft for this regimen if available (excluding CNP)
 useEffect(() => {
   if (!regimen) return;
   try {
     const raw = localStorage.getItem(`draft:doseCalc:${regimen.id}`);
     if (raw) {
       const draft = JSON.parse(raw);
-      setCnp(draft.cnp || '');
+      // CNP is deliberately excluded from draft loading to prevent persistence between patients
       setFoNumber(draft.foNumber || '');
       setCycleNumber(draft.cycleNumber || 1);
       setTreatmentDate(draft.treatmentDate || toISODate(new Date()));
@@ -265,24 +265,29 @@ useEffect(() => {
           notes: typeof c?.notes === 'string' ? c.notes : '',
         }));
         setCalculations(sanitized);
-        // persist sanitized draft back to storage
-        try { localStorage.setItem(`draft:doseCalc:${regimen.id}`, JSON.stringify({ ...draft, calculations: sanitized })); } catch {}
+        // persist sanitized draft back to storage (without CNP)
+        try { 
+          const draftToSave = { ...draft, calculations: sanitized };
+          delete draftToSave.cnp; // Remove CNP from saved draft
+          localStorage.setItem(`draft:doseCalc:${regimen.id}`, JSON.stringify(draftToSave)); 
+        } catch {}
       }
     }
   } catch {}
 }, [regimen?.id]);
 
-// Autosave draft when key fields change
+// Autosave draft when key fields change (excluding CNP to prevent persistence between patients)
 useEffect(() => {
   if (!regimen) return;
   const payload = {
-    cnp, foNumber, cycleNumber, treatmentDate, clinicalNotes,
+    // CNP is deliberately excluded from autosave to prevent persistence between patients
+    foNumber, cycleNumber, treatmentDate, clinicalNotes,
     selectedPremedications, selectedAntiemetics, calculations
   };
   try {
     localStorage.setItem(`draft:doseCalc:${regimen.id}`, JSON.stringify(payload));
   } catch {}
-}, [regimen?.id, cnp, foNumber, cycleNumber, treatmentDate, clinicalNotes, selectedPremedications, selectedAntiemetics, calculations]);
+}, [regimen?.id, foNumber, cycleNumber, treatmentDate, clinicalNotes, selectedPremedications, selectedAntiemetics, calculations]);
 
 
 // Auto-calculate next cycle date based on regimen schedule and treatment date
