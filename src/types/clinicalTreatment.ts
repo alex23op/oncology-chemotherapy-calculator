@@ -37,6 +37,17 @@ export interface PremedAgent {
   solvent?: string;
 }
 
+export interface PremedSolventGroup {
+  id: string;
+  solvent: string;
+  medications: PremedAgent[];
+}
+
+export interface GroupedPremedications {
+  groups: PremedSolventGroup[];
+  individual: PremedAgent[];
+}
+
 export interface TreatmentData {
   patient: PatientInfo;
   regimen: Regimen;
@@ -54,6 +65,7 @@ export interface TreatmentData {
     organProtection: PremedAgent[];
     other: PremedAgent[];
   };
+  solventGroups?: GroupedPremedications;
   clinicalNotes?: string;
   preparingPharmacist?: string;
   verifyingNurse?: string;

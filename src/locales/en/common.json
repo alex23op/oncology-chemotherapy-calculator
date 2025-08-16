@@ -421,6 +421,7 @@
       "recommendations": "Recommendations",
       "categories": "All Categories",
       "solvents": "Solvents",
+      "grouping": "Grouping",
       "selected": "Selected Protocol"
     },
     "riskBadge": "{{level}} Risk",
@@ -471,6 +472,17 @@
         "description": "Adjunctive amino acids and vitamins for supportive care"
       }
     }
+  },
+  "solventGroups": {
+    "description": "Group medications that can share the same solvent to reduce preparation time and complexity. Drag medications between groups or individual administration.",
+    "groups": "Solvent Groups",
+    "individual": "Individual Administration", 
+    "unassigned": "Unassigned Medications",
+    "createGroup": "Create Group",
+    "groupTitle": "Solvent Group",
+    "dropHere": "Drop medications here to group them",
+    "noIndividual": "No medications for individual administration",
+    "unassignedHelp": "These medications need to be assigned to a group or individual administration"
   },
   "calendar": {
     "title": "Treatment Calendar",

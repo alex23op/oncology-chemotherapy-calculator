@@ -11,7 +11,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Label } from "@/components/ui/label";
 import { Shield, AlertTriangle, Clock, Pill, ChevronDown, BookOpen, Edit, Heart, Activity, Zap, Droplet, Users, FileText } from "lucide-react";
 import { Drug } from "@/types/regimens";
+import { PremedAgent, GroupedPremedications } from "@/types/clinicalTreatment";
 import { useTranslation } from 'react-i18next';
+import { SolventGroupManager } from './SolventGroupManager';
 
 interface UnifiedProtocolSelectorProps {
   drugNames: string[];
@@ -21,10 +23,11 @@ interface UnifiedProtocolSelectorProps {
   selectedAntiemetics: any[];
   onPremedSelectionsChange: (premedications: any[]) => void;
   onAntiemeticProtocolChange: (agents: any[]) => void;
+  onGroupingChange?: (grouping: GroupedPremedications) => void;
   weight: number;
 }
 
-interface PremedAgent {
+interface LocalPremedAgent {
   name: string;
   category: string;
   class: string;
@@ -50,7 +53,7 @@ interface CategoryData {
   description: string;
   icon: any;
   color: string;
-  agents: PremedAgent[];
+  agents: LocalPremedAgent[];
 }
 
 const premedCategories: CategoryData[] = [
@@ -539,11 +542,16 @@ export const UnifiedProtocolSelector = ({
   selectedAntiemetics,
   onPremedSelectionsChange,
   onAntiemeticProtocolChange,
+  onGroupingChange,
   weight
 }: UnifiedProtocolSelectorProps) => {
   const [selectedAgents, setSelectedAgents] = useState<PremedAgent[]>([]);
   const [expandedCategories, setExpandedCategories] = useState<string[]>(["cinv"]);
   const [solventSelections, setSolventSelections] = useState<Record<string, string>>({});
+  const [groupedPremedications, setGroupedPremedications] = useState<GroupedPremedications>({
+    groups: [],
+    individual: []
+  });
   const { t } = useTranslation();
 
   // Notify parent component when selected agents change
@@ -553,7 +561,7 @@ export const UnifiedProtocolSelector = ({
 
   // Get recommendations based on drugs and emetogenic risk
   const recommendations = useMemo(() => {
-    const recs: PremedAgent[] = [];
+    const recs: LocalPremedAgent[] = [];
     
     premedCategories.forEach(category => {
       category.agents.forEach(agent => {
@@ -580,7 +588,35 @@ export const UnifiedProtocolSelector = ({
     return recs;
   }, [drugNames, emetogenicRiskLevel]);
 
-  const handleAgentToggle = (agent: PremedAgent, isSelected: boolean) => {
+  // Handle grouping changes
+  const handleGroupingChange = (grouping: GroupedPremedications) => {
+    setGroupedPremedications(grouping);
+    if (onGroupingChange) {
+      onGroupingChange(grouping);
+    }
+  };
+
+  // Update grouped medications when selected agents change
+  useEffect(() => {
+    // Auto-assign new agents to individual category
+    const allGroupedMedications = [
+      ...groupedPremedications.individual,
+      ...groupedPremedications.groups.flatMap(group => group.medications)
+    ];
+    
+    const newMedications = selectedAgents.filter(agent => 
+      !allGroupedMedications.some(grouped => grouped.name === agent.name)
+    );
+    
+    if (newMedications.length > 0) {
+      setGroupedPremedications(prev => ({
+        ...prev,
+        individual: [...prev.individual, ...newMedications]
+      }));
+    }
+  }, [selectedAgents, groupedPremedications]);
+
+  const handleAgentToggle = (agent: LocalPremedAgent, isSelected: boolean) => {
     if (isSelected) {
       const agentWithSolvent = { ...agent, solvent: solventSelections[agent.name] };
       setSelectedAgents(prev => [...prev, agentWithSolvent]);
@@ -623,7 +659,6 @@ export const UnifiedProtocolSelector = ({
     );
   };
 
-
   return (
     <Card className="w-full">
       <CardHeader>
@@ -655,10 +690,11 @@ export const UnifiedProtocolSelector = ({
 
       <CardContent>
         <Tabs defaultValue="recommendations" className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="recommendations">{t('unifiedSelector.tabs.recommendations')}</TabsTrigger>
             <TabsTrigger value="categories">{t('unifiedSelector.tabs.categories')}</TabsTrigger>
             <TabsTrigger value="solvents">{t('unifiedSelector.tabs.solvents')}</TabsTrigger>
+            <TabsTrigger value="grouping">{t('unifiedSelector.tabs.grouping')}</TabsTrigger>
             <TabsTrigger value="selected">{t('unifiedSelector.tabs.selected')}</TabsTrigger>
           </TabsList>
 
@@ -861,6 +897,22 @@ export const UnifiedProtocolSelector = ({
                   </Card>
                 ))}
               </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="grouping" className="space-y-4">
+            {selectedAgents.length === 0 ? (
+              <Alert>
+                <AlertDescription>
+                  {t('unifiedSelector.noAgentsForSolvents')}
+                </AlertDescription>
+              </Alert>
+            ) : (
+              <SolventGroupManager
+                selectedAgents={selectedAgents}
+                groupedPremedications={groupedPremedications}
+                onGroupingChange={handleGroupingChange}
+              />
             )}
           </TabsContent>
 

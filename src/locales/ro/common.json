@@ -427,6 +427,7 @@
       "recommendations": "Recomandări",
       "categories": "Categorii",
       "solvents": "Solvenți",
+      "grouping": "Grupare",
       "selected": "Selectate"
     },
     "recommendationsDesc": "Recomandări pe baza medicamentelor ({{drugs}}) și a riscului {{risk}}.",
@@ -475,6 +476,17 @@
         "description": "Aminoacizi și vitamine adjuvante pentru îngrijire suportivă"
       }
     }
+  },
+  "solventGroups": {
+    "description": "Grupează medicamentele care pot împărți același solvent pentru a reduce timpul de preparare și complexitatea. Trage medicamentele între grupuri sau administrare individuală.",
+    "groups": "Grupuri de Solvent",
+    "individual": "Administrare Individuală",
+    "unassigned": "Medicamente Neasignate", 
+    "createGroup": "Creează Grup",
+    "groupTitle": "Grup de Solvent",
+    "dropHere": "Lasă medicamentele aici pentru a le grupa",
+    "noIndividual": "Niciun medicament pentru administrare individuală",
+    "unassignedHelp": "Aceste medicamente trebuie asignate la un grup sau administrare individuală"
   },
   "calendar": {
     "title": "Calendar tratament",

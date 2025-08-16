@@ -1,0 +1,325 @@
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { PremedAgent, PremedSolventGroup, GroupedPremedications } from '@/types/clinicalTreatment';
+import { Trash2, Plus, GripVertical, Beaker, Droplets } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+
+interface SolventGroupManagerProps {
+  selectedAgents: PremedAgent[];
+  groupedPremedications: GroupedPremedications;
+  onGroupingChange: (grouping: GroupedPremedications) => void;
+}
+
+const SOLVENT_OPTIONS = [
+  { value: 'Normal Saline 0.9%', key: 'normalSaline' },
+  { value: 'Dextrose 5%', key: 'dextrose5' },
+  { value: 'Ringer Solution', key: 'ringer' },
+  { value: 'Water for Injection', key: 'waterForInjection' }
+];
+
+export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
+  selectedAgents,
+  groupedPremedications,
+  onGroupingChange
+}) => {
+  const { t } = useTranslation();
+  const [localGrouping, setLocalGrouping] = useState<GroupedPremedications>(groupedPremedications);
+
+  useEffect(() => {
+    setLocalGrouping(groupedPremedications);
+  }, [groupedPremedications]);
+
+  const updateGrouping = (newGrouping: GroupedPremedications) => {
+    setLocalGrouping(newGrouping);
+    onGroupingChange(newGrouping);
+  };
+
+  const createNewGroup = () => {
+    const newGroup: PremedSolventGroup = {
+      id: `group-${Date.now()}`,
+      solvent: '',
+      medications: []
+    };
+    
+    updateGrouping({
+      ...localGrouping,
+      groups: [...localGrouping.groups, newGroup]
+    });
+  };
+
+  const deleteGroup = (groupId: string) => {
+    const group = localGrouping.groups.find(g => g.id === groupId);
+    if (!group) return;
+
+    updateGrouping({
+      groups: localGrouping.groups.filter(g => g.id !== groupId),
+      individual: [...localGrouping.individual, ...group.medications]
+    });
+  };
+
+  const updateGroupSolvent = (groupId: string, solvent: string) => {
+    updateGrouping({
+      ...localGrouping,
+      groups: localGrouping.groups.map(group =>
+        group.id === groupId ? { ...group, solvent } : group
+      )
+    });
+  };
+
+  const onDragEnd = (result: DropResult) => {
+    const { destination, source, draggableId } = result;
+    
+    if (!destination) return;
+    
+    const sourceDroppableId = source.droppableId;
+    const destDroppableId = destination.droppableId;
+    
+    // Find the medication being moved
+    let medicationToMove: PremedAgent | null = null;
+    
+    if (sourceDroppableId === 'individual') {
+      medicationToMove = localGrouping.individual[source.index];
+    } else {
+      const sourceGroup = localGrouping.groups.find(g => g.id === sourceDroppableId);
+      if (sourceGroup) {
+        medicationToMove = sourceGroup.medications[source.index];
+      }
+    }
+    
+    if (!medicationToMove) return;
+    
+    // Remove from source
+    let newIndividual = [...localGrouping.individual];
+    let newGroups = [...localGrouping.groups];
+    
+    if (sourceDroppableId === 'individual') {
+      newIndividual.splice(source.index, 1);
+    } else {
+      newGroups = newGroups.map(group => {
+        if (group.id === sourceDroppableId) {
+          const newMedications = [...group.medications];
+          newMedications.splice(source.index, 1);
+          return { ...group, medications: newMedications };
+        }
+        return group;
+      });
+    }
+    
+    // Add to destination
+    if (destDroppableId === 'individual') {
+      newIndividual.splice(destination.index, 0, medicationToMove);
+    } else {
+      newGroups = newGroups.map(group => {
+        if (group.id === destDroppableId) {
+          const newMedications = [...group.medications];
+          newMedications.splice(destination.index, 0, medicationToMove);
+          return { ...group, medications: newMedications };
+        }
+        return group;
+      });
+    }
+    
+    updateGrouping({
+      groups: newGroups,
+      individual: newIndividual
+    });
+  };
+
+  const renderMedication = (medication: PremedAgent, index: number) => (
+    <Draggable key={medication.name} draggableId={medication.name} index={index}>
+      {(provided, snapshot) => (
+        <div
+          ref={provided.innerRef}
+          {...provided.draggableProps}
+          {...provided.dragHandleProps}
+          className={`flex items-center gap-2 p-2 bg-background border rounded-md transition-all ${
+            snapshot.isDragging ? 'shadow-lg border-primary' : 'border-border hover:bg-muted/50'
+          }`}
+        >
+          <GripVertical className="h-4 w-4 text-muted-foreground" />
+          <div className="flex-1">
+            <div className="font-medium text-sm">{medication.name}</div>
+            <div className="text-xs text-muted-foreground">
+              {medication.dosage} {medication.route}
+            </div>
+          </div>
+          <Badge variant="outline" className="text-xs">
+            {medication.category}
+          </Badge>
+        </div>
+      )}
+    </Draggable>
+  );
+
+  const unassignedMedications = selectedAgents.filter(agent => 
+    !localGrouping.individual.some(ind => ind.name === agent.name) &&
+    !localGrouping.groups.some(group => group.medications.some(med => med.name === agent.name))
+  );
+
+  return (
+    <div className="space-y-6">
+      <Alert>
+        <Beaker className="h-4 w-4" />
+        <AlertDescription>
+          {t('solventGroups.description')}
+        </AlertDescription>
+      </Alert>
+
+      <DragDropContext onDragEnd={onDragEnd}>
+        {/* Solvent Groups */}
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-semibold">{t('solventGroups.groups')}</h3>
+            <Button onClick={createNewGroup} variant="outline" size="sm">
+              <Plus className="h-4 w-4 mr-1" />
+              {t('solventGroups.createGroup')}
+            </Button>
+          </div>
+
+          {localGrouping.groups.map((group) => (
+            <Card key={group.id} className="border-2 border-primary/20">
+              <CardHeader className="pb-3">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="flex items-center gap-2 text-base">
+                    <Droplets className="h-4 w-4 text-primary" />
+                    {t('solventGroups.groupTitle')}
+                  </CardTitle>
+                  <Button
+                    onClick={() => deleteGroup(group.id)}
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">{t('unifiedSelector.solvent')}</Label>
+                  <Select
+                    value={group.solvent}
+                    onValueChange={(value) => updateGroupSolvent(group.id, value)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder={t('doseCalculator.selectSolvent')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {SOLVENT_OPTIONS.map((option) => (
+                        <SelectItem key={option.value} value={option.value}>
+                          {t(`doseCalculator.solvents.${option.key}`)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Droppable droppableId={group.id}>
+                  {(provided, snapshot) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.droppableProps}
+                      className={`min-h-[60px] p-3 border-2 border-dashed rounded-lg transition-colors ${
+                        snapshot.isDraggingOver
+                          ? 'border-primary bg-primary/5'
+                          : 'border-muted-foreground/25 bg-muted/25'
+                      }`}
+                    >
+                      {group.medications.length === 0 ? (
+                        <div className="text-center text-muted-foreground text-sm py-4">
+                          {t('solventGroups.dropHere')}
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          {group.medications.map((medication, index) =>
+                            renderMedication(medication, index)
+                          )}
+                        </div>
+                      )}
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Individual Medications */}
+        <Card className="border-2 border-muted">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base">
+              <Beaker className="h-4 w-4" />
+              {t('solventGroups.individual')} ({localGrouping.individual.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Droppable droppableId="individual">
+              {(provided, snapshot) => (
+                <div
+                  ref={provided.innerRef}
+                  {...provided.droppableProps}
+                  className={`min-h-[60px] p-3 border-2 border-dashed rounded-lg transition-colors ${
+                    snapshot.isDraggingOver
+                      ? 'border-primary bg-primary/5'
+                      : 'border-muted-foreground/25 bg-muted/25'
+                  }`}
+                >
+                  {localGrouping.individual.length === 0 ? (
+                    <div className="text-center text-muted-foreground text-sm py-4">
+                      {t('solventGroups.noIndividual')}
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {localGrouping.individual.map((medication, index) =>
+                        renderMedication(medication, index)
+                      )}
+                    </div>
+                  )}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </CardContent>
+        </Card>
+
+        {/* Unassigned Medications */}
+        {unassignedMedications.length > 0 && (
+          <Card className="border-2 border-warning/20">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-base text-warning">
+                <GripVertical className="h-4 w-4" />
+                {t('solventGroups.unassigned')} ({unassignedMedications.length})
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                {unassignedMedications.map((medication, index) => (
+                  <div key={medication.name} className="flex items-center gap-2 p-2 bg-warning/5 border border-warning/20 rounded-md">
+                    <div className="flex-1">
+                      <div className="font-medium text-sm">{medication.name}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {medication.dosage} {medication.route}
+                      </div>
+                    </div>
+                    <Badge variant="outline" className="text-xs border-warning/50">
+                      {medication.category}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-warning mt-2">
+                {t('solventGroups.unassignedHelp')}
+              </p>
+            </CardContent>
+          </Card>
+        )}
+      </DragDropContext>
+    </div>
+  );
+};
