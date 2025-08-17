@@ -17,12 +17,37 @@ const mockTreatmentData: TreatmentData = {
   regimen: { id: 'test', name: 'Test', description: 'Test', category: 'adjuvant', drugs: [], schedule: 'Q3W', cycles: 4 },
   calculatedDrugs: [],
   emetogenicRisk: { level: 'moderate', justification: 'Test', acuteRisk: 'Moderate', delayedRisk: 'Low' },
-  premedications: { antiemetics: [{ name: 'Ondansetron', dosage: '8 mg', route: 'IV', timing: '30 min', category: 'Antiemetics', indication: 'CINV', solvent: 'Normal Saline 0.9%', class: '5-HT3 Antagonist', unit: 'mg', isRequired: true, isStandard: true }], infusionReactionProphylaxis: [], gastroprotection: [], organProtection: [], other: [] }
+  premedications: { antiemetics: [{ name: 'Ondansetron', dosage: '8 mg', route: 'IV', timing: '30 min', category: 'Antiemetics', indication: 'CINV', solvent: 'Normal Saline 0.9%', class: '5-HT3 Antagonist', unit: 'mg', isRequired: true, isStandard: true }], infusionReactionProphylaxis: [], gastroprotection: [], organProtection: [], other: [] },
+  solventGroups: {
+    groups: [
+      {
+        id: 'group-1',
+        solvent: 'NaCl 100 ml',
+        medications: [
+          { name: 'Dexametazonă', dosage: '8 mg', route: 'IV', timing: '30 min', category: 'Antiemetics', indication: 'CINV', class: 'Corticosteroid', unit: 'mg', isRequired: true, isStandard: true }
+        ]
+      }
+    ],
+    individual: [
+      { name: 'Difenhidramină', dosage: '25 mg', route: 'IV', timing: '15 min', category: 'Antiemetics', indication: 'Allergy prophylaxis', solvent: 'Glucoză 250 ml', class: 'Antihistamine', unit: 'mg', isRequired: true, isStandard: true }
+    ]
+  }
 };
 
-describe('CompactClinicalTreatmentSheet - Solvent Display', () => {
-  it('displays solvent header instead of category header', () => {
+describe('CompactClinicalTreatmentSheet - PEV Display', () => {
+  it('displays PEV groups with sequential numbering', () => {
     const { getByText } = render(<CompactClinicalTreatmentSheet treatmentData={mockTreatmentData} />);
-    expect(getByText('compactSheet.solvent')).toBeInTheDocument();
+    expect(getByText('1 PEV')).toBeInTheDocument();
+    expect(getByText('2 PEV')).toBeInTheDocument();
+  });
+
+  it('displays individual medications as separate PEVs', () => {
+    const { getByText } = render(<CompactClinicalTreatmentSheet treatmentData={mockTreatmentData} />);
+    expect(getByText('Difenhidramină')).toBeInTheDocument();
+  });
+
+  it('displays PEV section header', () => {
+    const { getByText } = render(<CompactClinicalTreatmentSheet treatmentData={mockTreatmentData} />);
+    expect(getByText('compactSheet.pevGroups')).toBeInTheDocument();
   });
 });

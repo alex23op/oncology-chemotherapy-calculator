@@ -73,54 +73,67 @@ test('should show validation errors for incomplete PEV groups', async ({ page })
   await expect(page.getByText('1 PEV: No medications assigned')).toBeVisible();
 });
 
-test('should display PEV groups in treatment sheet', async ({ page }) => {
+test('should display PEV groups in treatment sheet with unified numbering', async ({ page }) => {
   // Navigate to grouping tab
   await page.click('[data-testid="grouping-tab"]');
 
-  // Add and configure a PEV group
+  // Add and configure multiple PEV groups
   await page.click('button:has-text("Add New PEV")');
-  
-  // Select solvent
   await page.click('[data-testid="group-solvent-select"]');
   await page.click('[data-testid="solvent-normal-saline"]');
+
+  await page.click('button:has-text("Add New PEV")');
+  await page.click('[data-testid="group-solvent-select"]:nth-of-type(2)');
+  await page.click('[data-testid="solvent-glucose-250"]');
 
   // Go to recommendations and select agents
   await page.click('[data-testid="recommendations-tab"]');
   await page.check('[data-testid="agent-dexamethasone"]');
   await page.check('[data-testid="agent-granisetron"]');
+  await page.check('[data-testid="agent-omeprazole"]');
 
   // Navigate to review and print
   await page.click('[data-testid="next-to-review"]');
 
-  // Verify PEV groups section exists in treatment sheet
+  // Verify unified PEV groups section
   await expect(page.getByText('Premedication and Supportive Prophylaxis - Solvent Administration')).toBeVisible();
+  
+  // Verify sequential PEV numbering (groups + individual medications)
   await expect(page.getByText('1 PEV')).toBeVisible();
+  await expect(page.getByText('2 PEV')).toBeVisible();
+  
+  // Verify medications are displayed
   await expect(page.getByText('Dexamethasone')).toBeVisible();
   await expect(page.getByText('Granisetron')).toBeVisible();
-  await expect(page.getByText('Normal Saline 0.9%')).toBeVisible();
+  
+  // Verify no separate individual medications section
+  await expect(page.getByText('Individual Medications')).not.toBeVisible();
 });
 
-test('should handle individual medications correctly', async ({ page }) => {
+test('should handle individual medications as separate PEVs', async ({ page }) => {
   // Go to recommendations and select an agent
   await page.click('[data-testid="recommendations-tab"]');
   await page.check('[data-testid="agent-dexamethasone"]');
 
-  // Navigate to grouping tab
+  // Navigate to grouping tab - leave medication unassigned to individual section
   await page.click('[data-testid="grouping-tab"]');
-
-  // Leave medication in individual section (don't create groups)
   await expect(page.getByText('Individual Medications')).toBeVisible();
 
   // Navigate to review
   await page.click('[data-testid="next-to-review"]');
 
-  // Verify individual medications section appears
-  await expect(page.getByText('Individual Medications')).toBeVisible();
+  // Verify individual medications appear as numbered PEVs in unified section
+  // (Since there are no groups, individual meds should start at 1 PEV)
+  await expect(page.getByText('Premedication and Supportive Prophylaxis - Solvent Administration')).toBeVisible();
+  await expect(page.getByText('1 PEV')).toBeVisible();
   await expect(page.getByText('Dexamethasone')).toBeVisible();
+  
+  // Verify no separate individual medications section exists
+  await expect(page.getByText('Individual Medications')).not.toBeVisible();
 });
 
-test('should generate PDF with PEV groups', async ({ page }) => {
-  // Set up PEV group
+test('should generate PDF with unified PEV groups', async ({ page }) => {
+  // Set up PEV groups
   await page.click('[data-testid="grouping-tab"]');
   await page.click('button:has-text("Add New PEV")');
   
@@ -135,6 +148,10 @@ test('should generate PDF with PEV groups', async ({ page }) => {
 
   // Navigate to review and generate PDF
   await page.click('[data-testid="next-to-review"]');
+  
+  // Verify unified PEV section is visible before PDF generation
+  await expect(page.getByText('Premedication and Supportive Prophylaxis - Solvent Administration')).toBeVisible();
+  await expect(page.getByText('1 PEV')).toBeVisible();
   
   // Set up PDF download listener
   const downloadPromise = page.waitForEvent('download');
