@@ -95,7 +95,8 @@
     "totalAgents": "Număr total agenți",
     "noAgents": "Nu au fost selectați agenți pentru protocol",
     "footerNote": "Acest protocol este generat automat și trebuie revizuit de un profesionist din domeniul sănătății înainte de utilizare.",
-    "otherCategory": "Altele"
+    "otherCategory": "Altele",
+    "premedSupport": "Premedicație și profilaxie suportivă"
   },
   "clinicalSheet": {
     "mainTitle": "PROTOCOL TRATAMENT CHIMIOTERAPIC",

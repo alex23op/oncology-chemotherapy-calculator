@@ -96,7 +96,8 @@
     "totalAgents": "Total Agents",
     "noAgents": "No agents selected for protocol",
     "footerNote": "This protocol is computer-generated and should be reviewed by a qualified healthcare professional before use.",
-    "otherCategory": "Other"
+    "otherCategory": "Other",
+    "premedSupport": "Premedication and Supportive Prophylaxis"
   },
   "clinicalSheet": {
     "mainTitle": "CHEMOTHERAPY TREATMENT PROTOCOL",
