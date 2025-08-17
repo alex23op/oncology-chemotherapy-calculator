@@ -98,7 +98,79 @@ export const CompactClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Co
           </table>
         </div>
 
-        {allMedications.length > 0 && (
+        {/* PEV Groups Section */}
+        {treatmentData.solventGroups && treatmentData.solventGroups.groups.length > 0 && (
+          <div className="print:mb-3">
+            <h3 className="font-bold print:text-sm print:mb-1 bg-gray-100 print:bg-gray-200 print:px-2 print:py-1 border-l-4 border-gray-800 print:border-black">
+              {t('compactSheet.pevGroups')}
+            </h3>
+            <table className="w-full print:text-xs border border-gray-300 print:border-black">
+              <thead>
+                <tr className="bg-gray-50 print:bg-gray-100">
+                  <th className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 text-left font-semibold">{t('compactSheet.pevNumber')}</th>
+                  <th className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 text-left font-semibold">{t('compactSheet.medications')}</th>
+                  <th className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 text-left font-semibold">{t('compactSheet.solvent')}</th>
+                  <th className="print:px-1 print:py-0.5 text-left font-semibold">{t('compactSheet.given')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {treatmentData.solventGroups.groups.map((group, index) => (
+                  <tr key={group.id} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-25 print:bg-gray-50'}>
+                    <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5 font-medium">
+                      {index + 1} PEV
+                    </td>
+                    <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5">
+                      {group.medications.map((med, medIndex) => (
+                        <div key={medIndex} className="mb-1 last:mb-0">
+                          <span className="font-medium">{med.name}</span>
+                          <span className="text-muted-foreground ml-1">({med.dosage} {med.route})</span>
+                        </div>
+                      ))}
+                    </td>
+                    <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5">{group.solvent}</td>
+                    <td className="border-t border-gray-300 print:border-black print:px-1 print:py-0.5 text-center">☐</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Individual Medications Section */}
+        {treatmentData.solventGroups && treatmentData.solventGroups.individual.length > 0 && (
+          <div className="print:mb-3">
+            <h3 className="font-bold print:text-sm print:mb-1 bg-gray-100 print:bg-gray-200 print:px-2 print:py-1 border-l-4 border-gray-800 print:border-black">
+              {t('compactSheet.individualMeds')}
+            </h3>
+            <table className="w-full print:text-xs border border-gray-300 print:border-black">
+              <thead>
+                <tr className="bg-gray-50 print:bg-gray-100">
+                  <th className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 text-left font-semibold">{t('compactSheet.medication')}</th>
+                  <th className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 text-left font-semibold">{t('compactSheet.dose')}</th>
+                  <th className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 text-left font-semibold">{t('compactSheet.route')}</th>
+                  <th className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 text-left font-semibold">{t('printableProtocol.timing')}</th>
+                  <th className="border-r border-gray-300 print:border-black print:px-1 print:py-0.5 text-left font-semibold">{t('compactSheet.solvent')}</th>
+                  <th className="print:px-1 print:py-0.5 text-left font-semibold">{t('compactSheet.given')}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {treatmentData.solventGroups.individual.map((med, index) => (
+                  <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-25 print:bg-gray-50'}>
+                    <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5 font-medium">{med.name}</td>
+                    <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5">{med.dosage}</td>
+                    <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5">{med.route}</td>
+                    <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5">{med.timing}</td>
+                    <td className="border-r border-t border-gray-300 print:border-black print:px-1 print:py-0.5 print:text-xs">{med.solvent || t('compactSheet.na')}</td>
+                    <td className="border-t border-gray-300 print:border-black print:px-1 print:py-0.5 text-center">☐</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Fallback for when no PEV grouping is used */}
+        {(!treatmentData.solventGroups || (treatmentData.solventGroups.groups.length === 0 && treatmentData.solventGroups.individual.length === 0)) && allMedications.length > 0 && (
           <div className="print:mb-3">
             <h3 className="font-bold print:text-sm print:mb-1 bg-gray-100 print:bg-gray-200 print:px-2 print:py-1 border-l-4 border-gray-800 print:border-black">
               {t('compactSheet.premedSupport')}

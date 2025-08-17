@@ -588,6 +588,21 @@ export const UnifiedProtocolSelector = ({
     return recs;
   }, [drugNames, emetogenicRiskLevel]);
 
+  const validateGrouping = (): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+    
+    groupedPremedications.groups.forEach((group, index) => {
+      if (!group.solvent.trim()) {
+        errors.push(t('solventGroups.validation.noSolvent', { pev: index + 1 }));
+      }
+      if (group.medications.length === 0) {
+        errors.push(t('solventGroups.validation.emptyPev', { pev: index + 1 }));
+      }
+    });
+    
+    return { isValid: errors.length === 0, errors };
+  };
+
   // Handle grouping changes
   const handleGroupingChange = (grouping: GroupedPremedications) => {
     setGroupedPremedications(grouping);

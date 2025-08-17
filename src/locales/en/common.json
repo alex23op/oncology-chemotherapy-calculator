@@ -145,6 +145,10 @@
     "mainTitle": "CHEMOTHERAPY TREATMENT PROTOCOL",
     "chemotherapyRegimen": "CHEMOTHERAPY REGIMEN",
     "premedSupport": "PREMEDICATION & SUPPORTIVE CARE",
+    "pevGroups": "Premedication and Supportive Prophylaxis - Solvent Administration",
+    "individualMeds": "Individual Medications",
+    "pevNumber": "PEV",
+    "medications": "Medications",
     "generated": "Generated",
     "patientName": "Patient Name",
     "foNumber": "F.O. No.",
@@ -474,15 +478,20 @@
     }
   },
   "solventGroups": {
-    "description": "Group medications that can share the same solvent to reduce preparation time and complexity. Drag medications between groups or individual administration.",
-    "groups": "Solvent Groups",
-    "individual": "Individual Administration", 
+    "description": "Group medications that can be administered in the same solvent bag for more efficient administration.",
+    "pevTitle": "Intravenous Infusions (PEV)",
+    "addNewPev": "Add New PEV",
+    "pevNumber": "{{number}} PEV",
+    "individual": "Individual Medications",
     "unassigned": "Unassigned Medications",
-    "createGroup": "Create Group",
-    "groupTitle": "Solvent Group",
     "dropHere": "Drop medications here to group them",
-    "noIndividual": "No medications for individual administration",
-    "unassignedHelp": "These medications need to be assigned to a group or individual administration"
+    "noIndividual": "No individual medications",
+    "unassignedHelp": "These medications need to be assigned to a group or moved to individual administration.",
+    "validation": {
+      "title": "Please fix the following issues:",
+      "noSolvent": "{{pev}} PEV: No solvent selected",
+      "emptyPev": "{{pev}} PEV: No medications assigned"
+    }
   },
   "calendar": {
     "title": "Treatment Calendar",

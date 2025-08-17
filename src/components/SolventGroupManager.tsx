@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { PremedAgent, PremedSolventGroup, GroupedPremedications } from '@/types/clinicalTreatment';
-import { Trash2, Plus, GripVertical, Beaker, Droplets } from 'lucide-react';
+import { Trash2, Plus, GripVertical, Beaker, Droplets, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 
@@ -38,6 +38,21 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
   const updateGrouping = (newGrouping: GroupedPremedications) => {
     setLocalGrouping(newGrouping);
     onGroupingChange(newGrouping);
+  };
+
+  const validateGrouping = (): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+    
+    localGrouping.groups.forEach((group, index) => {
+      if (!group.solvent.trim()) {
+        errors.push(t('solventGroups.validation.noSolvent', { pev: index + 1 }));
+      }
+      if (group.medications.length === 0) {
+        errors.push(t('solventGroups.validation.emptyPev', { pev: index + 1 }));
+      }
+    });
+    
+    return { isValid: errors.length === 0, errors };
   };
 
   const createNewGroup = () => {
@@ -175,20 +190,20 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
         {/* Solvent Groups */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">{t('solventGroups.groups')}</h3>
+            <h3 className="text-lg font-semibold">{t('solventGroups.pevTitle')}</h3>
             <Button onClick={createNewGroup} variant="outline" size="sm">
               <Plus className="h-4 w-4 mr-1" />
-              {t('solventGroups.createGroup')}
+              {t('solventGroups.addNewPev')}
             </Button>
           </div>
 
-          {localGrouping.groups.map((group) => (
+          {localGrouping.groups.map((group, index) => (
             <Card key={group.id} className="border-2 border-primary/20">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2 text-base">
                     <Droplets className="h-4 w-4 text-primary" />
-                    {t('solventGroups.groupTitle')}
+                    {t('solventGroups.pevNumber', { number: index + 1 })}
                   </CardTitle>
                   <Button
                     onClick={() => deleteGroup(group.id)}
@@ -320,6 +335,27 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
           </Card>
         )}
       </DragDropContext>
+
+      {/* Validation Errors */}
+      {(() => {
+        const validation = validateGrouping();
+        if (!validation.isValid) {
+          return (
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                <div className="space-y-1">
+                  <div className="font-medium">{t('solventGroups.validation.title')}</div>
+                  {validation.errors.map((error, index) => (
+                    <div key={index} className="text-sm">• {error}</div>
+                  ))}
+                </div>
+              </AlertDescription>
+            </Alert>
+          );
+        }
+        return null;
+      })()}
     </div>
   );
 };
