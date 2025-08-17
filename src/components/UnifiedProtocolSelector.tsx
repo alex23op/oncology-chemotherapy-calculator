@@ -36,7 +36,7 @@ interface LocalPremedAgent {
   route: string;
   timing: string;
   indication: string;
-  rationale: string;
+  rationale?: string;
   isRequired: boolean;
   isStandard: boolean;
   administrationDuration?: string;

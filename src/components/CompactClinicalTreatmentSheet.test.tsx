@@ -17,7 +17,7 @@ const mockTreatmentData: TreatmentData = {
   regimen: { id: 'test', name: 'Test', description: 'Test', category: 'adjuvant', drugs: [], schedule: 'Q3W', cycles: 4 },
   calculatedDrugs: [],
   emetogenicRisk: { level: 'moderate', justification: 'Test', acuteRisk: 'Moderate', delayedRisk: 'Low' },
-  premedications: { antiemetics: [{ name: 'Ondansetron', dosage: '8 mg', route: 'IV', timing: '30 min', category: 'Antiemetics', indication: 'CINV', solvent: 'Normal Saline 0.9%' }], infusionReactionProphylaxis: [], gastroprotection: [], organProtection: [], other: [] }
+  premedications: { antiemetics: [{ name: 'Ondansetron', dosage: '8 mg', route: 'IV', timing: '30 min', category: 'Antiemetics', indication: 'CINV', solvent: 'Normal Saline 0.9%', class: '5-HT3 Antagonist', unit: 'mg', isRequired: true, isStandard: true }], infusionReactionProphylaxis: [], gastroprotection: [], organProtection: [], other: [] }
 };
 
 describe('CompactClinicalTreatmentSheet - Solvent Display', () => {

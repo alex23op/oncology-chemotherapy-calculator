@@ -459,6 +459,8 @@ useEffect(() => {
         dosage: toDoseWithUnit(agent.dosage, agent.unit),
         route: agent.route || '',
         timing: agent.timing || '',
+        isRequired: false,
+        isStandard: true,
       })),
       infusionReactionProphylaxis: effectiveAntiemetics.filter(agent => categorizeAgent(agent) === 'infusionReactionProphylaxis').map(agent => ({
         ...agent,
@@ -466,6 +468,8 @@ useEffect(() => {
         dosage: toDoseWithUnit(agent.dosage, agent.unit),
         route: agent.route || '',
         timing: agent.timing || '',
+        isRequired: false,
+        isStandard: true,
       })),
       gastroprotection: effectiveAntiemetics.filter(agent => categorizeAgent(agent) === 'gastroprotection').map(agent => ({
         ...agent,
@@ -473,6 +477,8 @@ useEffect(() => {
         dosage: toDoseWithUnit(agent.dosage, agent.unit),
         route: agent.route || '',
         timing: agent.timing || '',
+        isRequired: false,
+        isStandard: true,
       })),
       organProtection: effectiveAntiemetics.filter(agent => categorizeAgent(agent) === 'organProtection').map(agent => ({
         ...agent,
@@ -480,6 +486,8 @@ useEffect(() => {
         dosage: toDoseWithUnit(agent.dosage, agent.unit),
         route: agent.route || '',
         timing: agent.timing || '',
+        isRequired: false,
+        isStandard: true,
       })),
       other: effectiveAntiemetics.filter(agent => categorizeAgent(agent) === 'other').map(agent => ({
         ...agent,
@@ -487,6 +495,8 @@ useEffect(() => {
         dosage: toDoseWithUnit(agent.dosage, agent.unit),
         route: agent.route || '',
         timing: agent.timing || '',
+        isRequired: false,
+        isStandard: true,
       })),
     };
 

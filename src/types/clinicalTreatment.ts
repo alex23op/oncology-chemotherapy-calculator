@@ -27,13 +27,21 @@ export interface CalculatedDrug extends Drug {
 
 export interface PremedAgent {
   name: string;
+  category: string;
+  class: string;
   dosage: string;
+  unit: string;
   route: string;
   timing: string;
-  category: string;
   indication: string;
   rationale?: string;
+  isRequired: boolean;
+  isStandard: boolean;
   administrationDuration?: string;
+  weightBased?: boolean;
+  notes?: string;
+  evidenceLevel?: string;
+  drugSpecific?: string[];
   solvent?: string;
 }
 
