@@ -48,6 +48,7 @@ interface DoseCalculatorProps {
     emetogenicRiskLevel: "high" | "moderate" | "low" | "minimal";
     selectedPremedications: Premedication[];
     selectedAntiemetics: AntiemeticAgent[];
+    groupedPremedications?: any;
   };
 }
 
@@ -515,6 +516,7 @@ useEffect(() => {
                      riskLevel === 'low' ? '10-30% risk of delayed emesis' : '<10% risk of delayed emesis',
       },
       premedications,
+      solventGroups: supportiveCare?.groupedPremedications,
       clinicalNotes,
     };
   };

@@ -268,6 +268,7 @@ describe('PrintableProtocol', () => {
       );
 
       expect(container.textContent).toContain('Generated:');
+      expect(container.textContent).toContain('Total Agents: 0'); // No selectedAgents when PEV groups exist
       expect(container.textContent).toContain('This protocol is computer-generated and should be reviewed by a qualified healthcare professional before use.');
     });
   });

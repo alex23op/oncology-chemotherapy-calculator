@@ -47,6 +47,7 @@ const IndexContent = () => {
   const [emetogenicRiskLevel, setEmetogenicRiskLevel] = useState<"high" | "moderate" | "low" | "minimal">("minimal");
   const [selectedPremedications, setSelectedPremedications] = useState<Premedication[]>([]);
   const [selectedAntiemetics, setSelectedAntiemetics] = useState<AntiemeticAgent[]>([]);
+  const [groupedPremedications, setGroupedPremedications] = useState<any>({ groups: [], individual: [] });
   const [reviewOrientation, setReviewOrientation] = useState<'portrait' | 'landscape'>(
     () => (localStorage.getItem('pdfOrientation') as 'portrait' | 'landscape') || 'portrait'
   );
@@ -123,6 +124,7 @@ const IndexContent = () => {
                 selectedAntiemetics={selectedAntiemetics}
                 onPremedSelectionsChange={setSelectedPremedications}
                 onAntiemeticProtocolChange={setSelectedAntiemetics}
+                onGroupingChange={setGroupedPremedications}
                 weight={weightKg}
               />
             </div>
@@ -149,6 +151,7 @@ const IndexContent = () => {
               emetogenicRiskLevel,
               selectedPremedications,
               selectedAntiemetics,
+              groupedPremedications,
             }}
           />
         </SafeComponentWrapper>
