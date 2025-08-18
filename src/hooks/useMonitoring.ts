@@ -31,8 +31,8 @@ class MonitoringService {
 
   constructor() {
     this.sessionId = this.generateSessionId();
-    this.apiEndpoint = process.env.VITE_MONITORING_ENDPOINT || '/api/monitoring';
-    this.isProduction = process.env.NODE_ENV === 'production';
+    this.apiEndpoint = import.meta.env.VITE_MONITORING_ENDPOINT || '/api/monitoring';
+    this.isProduction = import.meta.env.MODE === 'production';
   }
 
   private generateSessionId(): string {
