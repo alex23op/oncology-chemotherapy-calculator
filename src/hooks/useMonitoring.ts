@@ -247,55 +247,35 @@ export const useMonitoring = () => {
 // Web Vitals monitoring
 export const useWebVitals = () => {
   useEffect(() => {
-    // Import web-vitals dynamically to avoid bundle size impact
-    import('web-vitals').then(({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-      getCLS((metric) => {
-        monitoringService.trackPerformance({
-          name: 'CLS',
-          value: metric.value,
-          timestamp: new Date().toISOString(),
-          context: { type: 'web_vital' }
-        });
-      });
+    // Track basic performance metrics without web-vitals dependency for now
+    const trackNavigationTiming = () => {
+      if (performance.getEntriesByType) {
+        const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+        if (navigation) {
+          monitoringService.trackPerformance({
+            name: 'DOM_CONTENT_LOADED',
+            value: navigation.domContentLoadedEventEnd - navigation.domContentLoadedEventStart,
+            timestamp: new Date().toISOString(),
+            context: { type: 'navigation_timing' }
+          });
 
-      getFID((metric) => {
-        monitoringService.trackPerformance({
-          name: 'FID',
-          value: metric.value,
-          timestamp: new Date().toISOString(),
-          context: { type: 'web_vital' }
-        });
-      });
+          monitoringService.trackPerformance({
+            name: 'LOAD_COMPLETE',
+            value: navigation.loadEventEnd - navigation.loadEventStart,
+            timestamp: new Date().toISOString(),
+            context: { type: 'navigation_timing' }
+          });
+        }
+      }
+    };
 
-      getFCP((metric) => {
-        monitoringService.trackPerformance({
-          name: 'FCP',
-          value: metric.value,
-          timestamp: new Date().toISOString(),
-          context: { type: 'web_vital' }
-        });
-      });
-
-      getLCP((metric) => {
-        monitoringService.trackPerformance({
-          name: 'LCP',
-          value: metric.value,
-          timestamp: new Date().toISOString(),
-          context: { type: 'web_vital' }
-        });
-      });
-
-      getTTFB((metric) => {
-        monitoringService.trackPerformance({
-          name: 'TTFB',
-          value: metric.value,
-          timestamp: new Date().toISOString(),
-          context: { type: 'web_vital' }
-        });
-      });
-    }).catch((error) => {
-      logger.error('Failed to load web-vitals:', error);
-    });
+    // Track after page load
+    if (document.readyState === 'complete') {
+      trackNavigationTiming();
+    } else {
+      window.addEventListener('load', trackNavigationTiming);
+      return () => window.removeEventListener('load', trackNavigationTiming);
+    }
   }, []);
 };
 
