@@ -22,6 +22,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toKg } from "@/utils/units";
 import { logger } from '@/utils/logger';
 import { TreatmentData } from '@/types/clinicalTreatment';
+import { useDataPersistence } from '@/context/DataPersistenceContext';
 
 
 interface PatientData {
@@ -41,25 +42,80 @@ const IndexContent = () => {
   const { t } = useTranslation();
   const { autoJumpEnabled } = useSmartNav();
   const { goTo } = useWizard();
+  const { 
+    state, 
+    setPatientData: setPersistentPatientData, 
+    setRegimenData: setPersistentRegimenData,
+    setSupportiveData: setPersistentSupportiveData,
+    setDoseData: setPersistentDoseData,
+    resetAllData 
+  } = useDataPersistence();
   
   // Performance monitoring
   useMonitoring();
 
-  const [patientData, setPatientData] = useState<PatientData | null>(null);
-  const [selectedRegimen, setSelectedRegimen] = useState<Regimen | null>(null);
-  const [treatmentData, setTreatmentData] = useState<any | null>(null);
+  // Local state initialized from persistent state
+  const [patientData, setPatientData] = useState<PatientData | null>(
+    state.patientData ? state.patientData as PatientData : null
+  );
+  const [selectedRegimen, setSelectedRegimen] = useState<Regimen | null>(
+    state.regimenData?.selectedRegimen || null
+  );
+  const [treatmentData, setTreatmentData] = useState<any | null>(
+    state.doseData?.treatmentData || null
+  );
 
-  // Supportive care state (Tab 3)
-  const [emetogenicRiskLevel, setEmetogenicRiskLevel] = useState<"high" | "moderate" | "low" | "minimal">("minimal");
-  const [selectedPremedications, setSelectedPremedications] = useState<Premedication[]>([]);
-  const [selectedAntiemetics, setSelectedAntiemetics] = useState<AntiemeticAgent[]>([]);
-  const [groupedPremedications, setGroupedPremedications] = useState<any>({ groups: [], individual: [] });
+  // Supportive care state initialized from persistent state
+  const [emetogenicRiskLevel, setEmetogenicRiskLevel] = useState<"high" | "moderate" | "low" | "minimal">(
+    state.supportiveData?.emetogenicRiskLevel || "minimal"
+  );
+  const [selectedPremedications, setSelectedPremedications] = useState<Premedication[]>(
+    state.supportiveData?.selectedPremedications || []
+  );
+  const [selectedAntiemetics, setSelectedAntiemetics] = useState<AntiemeticAgent[]>(
+    state.supportiveData?.selectedAntiemetics || []
+  );
+  const [groupedPremedications, setGroupedPremedications] = useState<any>(
+    state.supportiveData?.groupedPremedications || { groups: [], individual: [] }
+  );
   const [reviewOrientation, setReviewOrientation] = useState<'portrait' | 'landscape'>(
     () => (localStorage.getItem('pdfOrientation') as 'portrait' | 'landscape') || 'portrait'
   );
+  
   useEffect(() => {
     try { localStorage.setItem('pdfOrientation', reviewOrientation); } catch {}
   }, [reviewOrientation]);
+
+  // Sync local state changes to persistent storage
+  useEffect(() => {
+    if (patientData) {
+      setPersistentPatientData(patientData);
+    }
+  }, [patientData, setPersistentPatientData]);
+
+  useEffect(() => {
+    if (selectedRegimen) {
+      setPersistentRegimenData({ selectedRegimen });
+    }
+  }, [selectedRegimen, setPersistentRegimenData]);
+
+  useEffect(() => {
+    setPersistentSupportiveData({
+      emetogenicRiskLevel,
+      selectedPremedications,
+      selectedAntiemetics,
+      groupedPremedications
+    });
+  }, [emetogenicRiskLevel, selectedPremedications, selectedAntiemetics, groupedPremedications, setPersistentSupportiveData]);
+
+  useEffect(() => {
+    if (treatmentData) {
+      setPersistentDoseData({ 
+        calculations: treatmentData.calculatedDrugs || [],
+        treatmentData 
+      });
+    }
+  }, [treatmentData, setPersistentDoseData]);
 
   const handlePatientDataChange = (data: PatientData) => {
     setPatientData(data);
@@ -221,41 +277,51 @@ const IndexContent = () => {
                 <div id="protocol-print">
                   <CompactClinicalTreatmentSheetOptimized treatmentData={treatmentData} />
                 </div>
-              <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
-                <Select value={reviewOrientation} onValueChange={(v) => setReviewOrientation(v as 'portrait' | 'landscape')}>
-                  <SelectTrigger className="w-[140px]">
-                    <SelectValue placeholder={t('doseCalculator.orientation', { defaultValue: 'Orientation' })} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="portrait">{t('doseCalculator.portrait', { defaultValue: 'Portrait' })}</SelectItem>
-                    <SelectItem value="landscape">{t('doseCalculator.landscape', { defaultValue: 'Landscape' })}</SelectItem>
-                  </SelectContent>
-                </Select>
-                <button
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded border bg-background hover-scale"
-                  onClick={async () => {
-                    const { generateClinicalTreatmentPDF } = await import('@/utils/pdfExport');
-                    await generateClinicalTreatmentPDF({
-                      ...treatmentData,
-                      elementId: 'protocol-print',
-                      orientation: reviewOrientation,
-                    });
-                  }}
-                >
-                  {t('doseCalculator.exportPdf')}
-                </button>
-                <button
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded border bg-background hover-scale"
-                  onClick={() => {
-                    document.body.classList.add('printing-protocol');
-                    window.print();
-                    setTimeout(() => document.body.classList.remove('printing-protocol'), 100);
-                  }}
-                >
-                  {t('doseCalculator.print')}
-                </button>
+                <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
+                  <Select value={reviewOrientation} onValueChange={(v) => setReviewOrientation(v as 'portrait' | 'landscape')}>
+                    <SelectTrigger className="w-[140px]">
+                      <SelectValue placeholder={t('doseCalculator.orientation', { defaultValue: 'Orientation' })} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="portrait">{t('doseCalculator.portrait', { defaultValue: 'Portrait' })}</SelectItem>
+                      <SelectItem value="landscape">{t('doseCalculator.landscape', { defaultValue: 'Landscape' })}</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <button
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded border bg-background hover-scale"
+                    onClick={async () => {
+                      const { generateClinicalTreatmentPDF } = await import('@/utils/pdfExport');
+                      await generateClinicalTreatmentPDF({
+                        ...treatmentData,
+                        elementId: 'protocol-print',
+                        orientation: reviewOrientation,
+                      });
+                      // Reset all data after successful PDF generation
+                      setTimeout(() => {
+                        resetAllData();
+                        goTo('patient');
+                      }, 1000);
+                    }}
+                  >
+                    {t('doseCalculator.exportPdf')}
+                  </button>
+                  <button
+                    className="inline-flex items-center gap-2 px-3 py-2 rounded border bg-background hover-scale"
+                    onClick={() => {
+                      document.body.classList.add('printing-protocol');
+                      window.print();
+                      setTimeout(() => {
+                        document.body.classList.remove('printing-protocol');
+                        // Reset all data after successful printing
+                        resetAllData();
+                        goTo('patient');
+                      }, 1000);
+                    }}
+                  >
+                    {t('doseCalculator.print')}
+                  </button>
+                </div>
               </div>
-            </div>
             ) : (
               <div className="text-sm text-muted-foreground">
                 {!selectedRegimen 
