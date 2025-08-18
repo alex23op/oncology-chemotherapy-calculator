@@ -7,7 +7,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
-import { Calculator, Edit, Save, AlertTriangle, CheckCircle, Undo2, History } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Calendar } from "@/components/ui/calendar";
+import { Calculator, Edit, Save, AlertTriangle, CheckCircle, Undo2, History, Calendar as CalendarIcon } from "lucide-react";
 import { Regimen, Drug, Premedication } from "@/types/regimens";
 import { SolventVolumeSelector } from "@/components/SolventVolumeSelector";
 import { calculateCompleteDose, DoseCalculationResult } from "@/utils/doseCalculations";
@@ -15,6 +17,8 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { logger } from '@/utils/logger';
 import { ErrorBoundary } from "./ErrorBoundary";
+import { sanitizeCNP, validateCNP } from "@/utils/cnp";
+import { format, addDays, isValid } from "date-fns";
 
 interface DoseCalculatorEnhancedProps {
   regimen: Regimen | null;
@@ -180,6 +184,14 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
   const [clinicalNotes, setClinicalNotes] = useState('');
   const { savedCalculations, saveCalculation } = useCalculationHistory();
 
+  // Patient and treatment details state
+  const [patientName, setPatientName] = useState<string>("");
+  const [patientCNP, setPatientCNP] = useState<string>("");
+  const [cycleNumber, setCycleNumber] = useState<string>("");
+  const [observationNumber, setObservationNumber] = useState<string>("");
+  const [administrationDate, setAdministrationDate] = useState<Date | undefined>(undefined);
+  const [activeTab, setActiveTab] = useState<string>("patient");
+
   // Memoized calculations based on regimen and patient data
   const initialCalculations = useMemo(() => {
     if (!regimen) return [];
@@ -295,6 +307,66 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
     return Math.round(((calculated - adjusted) / calculated) * 100);
   }, []);
 
+  // Validation functions
+  const handleCNPChange = useCallback((value: string) => {
+    const sanitized = sanitizeCNP(value);
+    setPatientCNP(sanitized);
+    
+    if (sanitized && !validateCNP(sanitized).isValid) {
+      toast.error(t('doseCalculator.invalidCNP', 'Please enter a valid 13-digit CNP'));
+    }
+  }, [t]);
+
+  const validateCycleNumber = useCallback((cycle: string): boolean => {
+    if (!regimen || !cycle) return true;
+    const cycleNum = parseInt(cycle, 10);
+    if (isNaN(cycleNum) || cycleNum < 1) return false;
+    
+    const cycles = regimen.cycles;
+    // Handle different cycle types: number, string with range, or "Until progression"
+    if (typeof cycles === "number") {
+      return cycleNum <= cycles;
+    } else if (typeof cycles === "string") {
+      if (cycles.includes("-")) {
+        const parts = cycles.split("-");
+        if (parts.length === 2) {
+          const maxCycle = parseInt(parts[1], 10);
+          if (!isNaN(maxCycle)) {
+            return cycleNum <= maxCycle;
+          }
+        }
+      }
+      // For "Until progression" or other string values, allow any positive number
+      return true;
+    }
+    return true;
+  }, [regimen]);
+
+  const handleCycleNumberChange = useCallback((value: string) => {
+    setCycleNumber(value);
+    if (value && !validateCycleNumber(value)) {
+      toast.error(t('doseCalculator.invalidCycle', 'Invalid cycle number for regimen'));
+    }
+  }, [validateCycleNumber, t]);
+
+  // Calculate next cycle date
+  const nextCycleDate = useMemo(() => {
+    if (!regimen || !administrationDate || !isValid(administrationDate)) return null;
+    
+    const schedule = regimen.schedule.toLowerCase();
+    let daysToAdd = 14; // Default: 2 weeks
+    
+    if (schedule.includes("3 weeks") || schedule.includes("21 days")) {
+      daysToAdd = 21;
+    } else if (schedule.includes("4 weeks") || schedule.includes("28 days")) {
+      daysToAdd = 28;
+    } else if (schedule.includes("weekly") || schedule.includes("7 days")) {
+      daysToAdd = 7;
+    }
+    
+    return addDays(administrationDate, daysToAdd);
+  }, [regimen, administrationDate]);
+
   const canUndo = state.historyIndex > 0;
   const canRedo = state.historyIndex < state.history.length - 1;
 
@@ -351,6 +423,114 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
       </CardHeader>
 
       <CardContent className="space-y-6">
+        {/* Patient and Treatment Details Tabs */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="patient" className="text-xs">{t('doseCalculator.fullNameLabel')}</TabsTrigger>
+            <TabsTrigger value="cnp" className="text-xs">{t('doseCalculator.cnpLabel')}</TabsTrigger>
+            <TabsTrigger value="calendar" className="text-xs">{t('doseCalculator.calendar')}</TabsTrigger>
+            <TabsTrigger value="cycle" className="text-xs">{t('doseCalculator.cycleLabel')}</TabsTrigger>
+            <TabsTrigger value="observation" className="text-xs">{t('doseCalculator.foNumberLabel')}</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="patient" className="space-y-4">
+            <div>
+              <Label htmlFor="patientName">{t('doseCalculator.fullNameLabel')}</Label>
+              <Input
+                id="patientName"
+                value={patientName}
+                onChange={(e) => setPatientName(e.target.value)}
+                placeholder={t('doseCalculator.fullNamePlaceholder')}
+                aria-label={t('doseCalculator.fullNameLabel')}
+                className="mt-1"
+              />
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="cnp" className="space-y-4">
+            <div>
+              <Label htmlFor="cnp">{t('doseCalculator.cnpLabel')}</Label>
+              <Input
+                id="cnp"
+                value={patientCNP}
+                onChange={(e) => handleCNPChange(e.target.value)}
+                placeholder={t('doseCalculator.cnpPlaceholder')}
+                aria-label={t('doseCalculator.cnpLabel')}
+                className="mt-1"
+                maxLength={13}
+              />
+              {patientCNP && !validateCNP(patientCNP).isValid && (
+                <p className="text-sm text-destructive mt-1">
+                  {t('doseCalculator.invalidCNP', 'Please enter a valid 13-digit CNP')}
+                </p>
+              )}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="calendar" className="space-y-4">
+            <div>
+              <Label>{t('doseCalculator.treatmentDateLabel')}</Label>
+              <div className="mt-2">
+                <Calendar
+                  mode="single"
+                  selected={administrationDate}
+                  onSelect={setAdministrationDate}
+                  className="rounded-md border w-fit"
+                  aria-label={t('doseCalculator.treatmentDateLabel')}
+                />
+              </div>
+              {nextCycleDate && (
+                <div className="mt-4 p-3 bg-muted/50 rounded-lg">
+                  <Label className="text-sm font-medium">{t('doseCalculator.nextCycleDateLabel')}</Label>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    {format(nextCycleDate, "PPP")}
+                  </p>
+                </div>
+              )}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="cycle" className="space-y-4">
+            <div>
+              <Label htmlFor="cycleNumber">{t('doseCalculator.cycleLabel')}</Label>
+              <Input
+                id="cycleNumber"
+                type="number"
+                value={cycleNumber}
+                onChange={(e) => handleCycleNumberChange(e.target.value)}
+                placeholder="1"
+                aria-label={t('doseCalculator.cycleLabel')}
+                className="mt-1"
+                min="1"
+              />
+              {regimen && (
+                <p className="text-sm text-muted-foreground mt-1">
+                  {t('doseCalculator.metrics.cycles')}: {regimen.cycles}
+                </p>
+              )}
+              {cycleNumber && !validateCycleNumber(cycleNumber) && (
+                <p className="text-sm text-destructive mt-1">
+                  {t('doseCalculator.invalidCycle', 'Invalid cycle number for regimen')}
+                </p>
+              )}
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="observation" className="space-y-4">
+            <div>
+              <Label htmlFor="observationNumber">{t('doseCalculator.foNumberLabel')}</Label>
+              <Input
+                id="observationNumber"
+                value={observationNumber}
+                onChange={(e) => setObservationNumber(e.target.value)}
+                placeholder={t('doseCalculator.foNumberPlaceholder')}
+                aria-label={t('doseCalculator.foNumberLabel')}
+                className="mt-1"
+              />
+            </div>
+          </TabsContent>
+        </Tabs>
+
         {/* Patient Summary */}
         <div className="bg-muted/30 p-4 rounded-lg">
           <h3 className="font-semibold mb-2">{t('doseCalculator.patientSummary')}</h3>

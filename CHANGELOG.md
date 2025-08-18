@@ -1,6 +1,33 @@
 # Changelog - Chemotherapy Application Code Review & Improvements
 
-## Version 2.6.0 - Component Error Handling and Data Loading (2025-08-18)
+## Version 2.5.0 - Restored Dose Calculator Tabs and Patient Fields (2025-08-18)
+### Enhancements
+- **Restored Tabs Structure**: Added comprehensive tabs interface to DoseCalculatorEnhanced with 5 tabs: Patient Name, CNP, Calendar, Cycle Number, and Observation Number (F.O.)
+- **CNP Validation**: Implemented robust Romanian CNP validation (13-digit format) with input sanitization and real-time error feedback
+- **Cycle Number Validation**: Added intelligent cycle validation against regimen cycles with support for ranges (e.g., "4-6") and progressive regimens ("Until progression")
+- **Calendar Integration**: Integrated date picker for administration date with automatic next cycle date calculation based on regimen schedule
+- **Smart Date Calculations**: Enhanced date calculations supporting weekly, bi-weekly, tri-weekly, and monthly schedules
+- **Observation Number Field**: Added F.O. (observation sheet) number field for clinical documentation without specific validation constraints
+- **Accessibility Enhancements**: Implemented comprehensive ARIA labels, keyboard navigation, and screen reader support
+- **Preserved Functionality**: Maintained all existing dose calculation, editing, and history features while adding new patient details interface
+
+### Technical Improvements
+- **Type Safety**: Enhanced TypeScript handling for union types in regimen cycles
+- **Error Handling**: Added graceful error handling for validation failures with user-friendly toast notifications
+- **Date Utilities**: Integrated date-fns for robust date manipulation and formatting
+- **Component Architecture**: Maintained clean separation between patient details and dose calculations
+
+### Testing
+- **Comprehensive Test Suite**: Added full test coverage for tabs functionality, field validation, and user interactions
+- **Accessibility Testing**: Implemented tests for keyboard navigation and screen reader compatibility
+- **Input Validation Tests**: Added specific tests for CNP sanitization, cycle validation, and calendar integration
+
+### Translations Enhancement
+- **Bilingual Support**: Enhanced existing translations for patient details fields in English and Romanian
+- **Validation Messages**: Added user-friendly error messages for CNP and cycle validation in both languages
+- **Consistent Terminology**: Maintained consistency with existing medical terminology across the application
+
+## Version 2.4.0 - Enhanced CancerTypeSelector with Error Handling (2025-08-18)
 ### 🔧 Bug Fixes
 - **Fixed Critical Loading Error**: Resolved "can't access property 'filter', c is undefined" error in `CancerTypeSelectorOptimized.tsx`
 - **Defensive Programming**: Added comprehensive null/undefined checks for `cancerTypes` data before filtering operations

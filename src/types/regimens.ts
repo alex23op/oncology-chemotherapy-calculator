@@ -58,7 +58,7 @@ export interface Regimen {
   drugs: Drug[];
   premedications?: Premedication[];
   schedule: string;
-  cycles: number;
+  cycles: number | string;
   biomarkerRequirements?: Biomarker[];
   eligibilityCriteria?: {
     ecogStatus: number[];
