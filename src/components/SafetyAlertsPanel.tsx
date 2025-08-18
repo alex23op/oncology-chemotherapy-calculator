@@ -263,3 +263,6 @@ export const SafetyAlertsPanel: React.FC<SafetyAlertsPanelProps> = ({
     </div>
   );
 };
+
+// Add default export
+export default SafetyAlertsPanel;
