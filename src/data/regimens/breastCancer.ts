@@ -43,7 +43,9 @@ export const breastCancerRegimens: Regimen[] = [
         route: "IV", 
         day: "Day 1",
         dilution: "Normal saline 50-100mL",
-        administrationDuration: "5-10 minutes"
+        administrationDuration: "5-10 minutes",
+        availableSolvents: ["NS", "D5W"],
+        availableVolumes: [50, 100, 250]
       },
       { 
         name: "Cyclophosphamide", 
@@ -61,7 +63,9 @@ export const breastCancerRegimens: Regimen[] = [
         route: "IV", 
         day: "Day 1",
         dilution: "Normal saline 250-500mL",
-        administrationDuration: "3 hours"
+        administrationDuration: "3 hours",
+        availableSolvents: ["NS", "D5W"],
+        availableVolumes: [250, 500]
       }
     ],
     schedule: "AC q3wk x 4 cycles → Paclitaxel q3wk x 4 cycles",
@@ -115,7 +119,7 @@ export const breastCancerRegimens: Regimen[] = [
     category: "adjuvant",
     drugs: [
       { name: "Docetaxel", dosage: "75", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 250mL", administrationDuration: "1 hour" },
-      { name: "Cyclophosphamide", dosage: "600", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 250mL", administrationDuration: "30-60 minutes" }
+      { name: "Cyclophosphamide", dosage: "600", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 250mL", administrationDuration: "30-60 minutes", availableSolvents: ["NS", "D5W"], availableVolumes: [100, 250, 500] }
     ],
     schedule: "Every 3 weeks",
     cycles: 4

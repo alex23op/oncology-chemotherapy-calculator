@@ -22,7 +22,9 @@ export const colorectalCancerRegimens: Regimen[] = [
         drugClass: "chemotherapy",
         mechanismOfAction: "Platinum alkylating agent",
         administrationDuration: "120 minutes",
-        dilution: "250-500 mL D5W"
+        dilution: "250-500 mL D5W",
+        availableSolvents: ["D5W"],
+        availableVolumes: [250, 500]
       },
       {
         name: "Leucovorin",
@@ -33,7 +35,9 @@ export const colorectalCancerRegimens: Regimen[] = [
         drugClass: "chemotherapy",
         mechanismOfAction: "Folate analog",
         administrationDuration: "120 minutes",
-        dilution: "250 mL NS"
+        dilution: "250 mL NS",
+        availableSolvents: ["NS", "D5W"],
+        availableVolumes: [100, 250, 500]
       },
       {
         name: "5-Fluorouracil",
@@ -127,7 +131,9 @@ export const colorectalCancerRegimens: Regimen[] = [
         drugClass: "chemotherapy",
         mechanismOfAction: "Topoisomerase I inhibitor",
         administrationDuration: "90 minutes",
-        dilution: "250-500 mL D5W"
+        dilution: "250-500 mL D5W",
+        availableSolvents: ["NS", "D5W"],
+        availableVolumes: [250, 500]
       },
       {
         name: "Leucovorin",

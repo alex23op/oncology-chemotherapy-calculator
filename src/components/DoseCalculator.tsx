@@ -15,6 +15,7 @@ import { DatePickerField } from "./DatePickerField";
 import { MobileActionBar } from "./MobileActionBar";
 import { getSolventI18nKey } from '@/types/ui';
 import { logger } from '@/utils/logger';
+import { SolventVolumeSelector } from "@/components/SolventVolumeSelector";
 import { DraftCalculation, LocalPremedAgent } from '@/types/enhanced';
 
 const TreatmentCalendarLazy = lazy(() => import("./TreatmentCalendar").then(m => ({ default: m.TreatmentCalendar })));
@@ -1076,6 +1077,16 @@ const handleExportData = () => {
                         <strong>{t('doseCalculator.notes', { defaultValue: 'Notes' })}:</strong> {calc.notes}
                       </div>
                     )}
+
+                    {/* Solvent and Volume Selection */}
+                    <SolventVolumeSelector
+                      drug={regimen.drugs[index]}
+                      selectedSolventType={calc.selectedSolventType}
+                      selectedVolume={calc.selectedVolume}
+                      onSolventTypeChange={(solventType) => handleSolventTypeChange(index, solventType)}
+                      onVolumeChange={(volume) => handleVolumeChange(index, volume)}
+                      disabled={!isEditing}
+                    />
                   </div>
                 </div>
               </div>
