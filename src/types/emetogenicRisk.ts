@@ -153,5 +153,24 @@ export const drugEmetogenicClassification: EmetogenicClassification[] = [
   { drugName: "Durvalumab", riskLevel: "minimal" },
   { drugName: "Ramucirumab", riskLevel: "minimal" },
   { drugName: "Lurbinectedin", riskLevel: "moderate" },
-  { drugName: "Amivantamab", riskLevel: "low" }
+  { drugName: "Amivantamab", riskLevel: "low" },
+  
+  // Genitourinary Cancer Drugs
+  { drugName: "Enfortumab vedotin", riskLevel: "low" },
+  { drugName: "Avelumab", riskLevel: "minimal" },
+  { drugName: "Sacituzumab govitecan", riskLevel: "moderate" },
+  { drugName: "Bleomycin", riskLevel: "low" },
+  { drugName: "Vinblastine", riskLevel: "low" },
+  { drugName: "Ifosfamide", riskLevel: "moderate" },
+  { drugName: "Cabazitaxel", riskLevel: "moderate" },
+  { drugName: "Darolutamide", riskLevel: "low" },
+  { drugName: "Enzalutamide", riskLevel: "low" },
+  { drugName: "Talazoparib", riskLevel: "minimal" },
+  { drugName: "Goserelin", riskLevel: "minimal" },
+  { drugName: "Sunitinib", riskLevel: "moderate" },
+  { drugName: "Pazopanib", riskLevel: "low" },
+  { drugName: "Axitinib", riskLevel: "low" },
+  { drugName: "Cabozantinib", riskLevel: "low" },
+  { drugName: "Belzutifan", riskLevel: "low" },
+  { drugName: "Prednisone", riskLevel: "minimal" }
 ];

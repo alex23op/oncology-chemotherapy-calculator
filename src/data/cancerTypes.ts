@@ -12,6 +12,7 @@ import {
   gtnRegimens, 
   ovarianCancerRegimens 
 } from "./regimens/gynaecology";
+import { allGenitourinaryRegimens } from "./regimens/genitourinaryCancer";
 
 // Add subtype to gynecological regimens
 const cervicalRegimensWithSubtype = cervicalCancerRegimens.map(regimen => ({
@@ -69,5 +70,11 @@ export const cancerTypes: CancerType[] = [
       ...gtnRegimensWithSubtype,
       ...ovarianRegimensWithSubtype
     ]
+  },
+  {
+    id: "gu-all",
+    name: "Genitourinary Cancers",
+    category: "Genitourinary",
+    regimens: allGenitourinaryRegimens
   }
 ];

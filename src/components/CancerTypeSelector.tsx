@@ -35,8 +35,8 @@ export const CancerTypeSelector = ({ onRegimenSelect }: CancerTypeSelectorProps)
       regimens = regimens.filter((regimen: Regimen) => regimen.category === category);
     }
     
-    // Filter by subtype (for gynecological and lung cancers)
-    if ((cancer.id === "gyn-all" || cancer.id === "lung-all") && subtype !== "all") {
+    // Filter by subtype (for gynecological, lung, and genitourinary cancers)
+    if ((cancer.id === "gyn-all" || cancer.id === "lung-all" || cancer.id === "gu-all") && subtype !== "all") {
       regimens = regimens.filter((regimen: Regimen) => regimen.subtype === subtype);
     }
     
@@ -101,15 +101,21 @@ export const CancerTypeSelector = ({ onRegimenSelect }: CancerTypeSelectorProps)
                     <h4 className="font-medium text-sm text-foreground">{t('cancerSelector.filterLabel')}</h4>
                   </div>
 
-                  {/* Subtype selector for gynecological and lung cancers */}
-                  {(cancer.id === "gyn-all" || cancer.id === "lung-all") && (
+                  {/* Subtype selector for gynecological, lung, and genitourinary cancers */}
+                  {(cancer.id === "gyn-all" || cancer.id === "lung-all" || cancer.id === "gu-all") && (
                     <div className="mb-4">
                       <Label className="text-sm font-medium text-foreground mb-2 block">
-                        {cancer.id === "gyn-all" ? "Cancer Subtype" : "Lung Cancer Subtype"}
+                        {cancer.id === "gyn-all" ? "Cancer Subtype" : 
+                         cancer.id === "lung-all" ? "Lung Cancer Subtype" : 
+                         "GU Cancer Subtype"}
                       </Label>
                       <Select value={selectedSubtype} onValueChange={setSelectedSubtype}>
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder={`Select ${cancer.id === "gyn-all" ? "cancer" : "lung cancer"} subtype`} />
+                          <SelectValue placeholder={`Select ${
+                            cancer.id === "gyn-all" ? "cancer" : 
+                            cancer.id === "lung-all" ? "lung cancer" : 
+                            "genitourinary cancer"
+                          } subtype`} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">All Subtypes</SelectItem>
@@ -122,18 +128,27 @@ export const CancerTypeSelector = ({ onRegimenSelect }: CancerTypeSelectorProps)
                               <SelectItem value="SCLC">SCLC</SelectItem>
                             </>
                           )}
+                          {cancer.id === "gu-all" && (
+                            <>
+                              <SelectItem value="Urothelial">Urothelial</SelectItem>
+                              <SelectItem value="Germ Cell Tumours">Germ Cell Tumours</SelectItem>
+                              <SelectItem value="Prostate Cancer">Prostate Cancer</SelectItem>
+                              <SelectItem value="Renal Cell Carcinoma">Renal Cell Carcinoma</SelectItem>
+                            </>
+                          )}
                         </SelectContent>
                       </Select>
                     </div>
                   )}
                   
                   <Tabs value={selectedCategory} onValueChange={setSelectedCategory} className="w-full">
-                    <TabsList className="grid w-full grid-cols-5">
+                    <TabsList className="grid w-full grid-cols-6">
                       <TabsTrigger value="all" className="text-xs">{t('cancerSelector.tabs.all')}</TabsTrigger>
                       <TabsTrigger value="neoadjuvant" className="text-xs">{t('cancerSelector.tabs.neoadjuvant')}</TabsTrigger>
                       <TabsTrigger value="adjuvant" className="text-xs">{t('cancerSelector.tabs.adjuvant')}</TabsTrigger>
                       <TabsTrigger value="advanced" className="text-xs">{t('cancerSelector.tabs.advanced')}</TabsTrigger>
                       <TabsTrigger value="metastatic" className="text-xs">{t('cancerSelector.tabs.metastatic')}</TabsTrigger>
+                      <TabsTrigger value="maintenance" className="text-xs">Maintenance</TabsTrigger>
                     </TabsList>
                     
                     <TabsContent value={selectedCategory} className="mt-4 space-y-3">
