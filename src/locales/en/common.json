@@ -198,30 +198,39 @@
     "searchPlaceholder": "Search by cancer type or category...",
     "select": "Select",
     "selected": "Selected",
-    "filter": "Filter by Treatment Setting",
-    "filterLabel": "Filter by Treatment Setting:",
-    "subtype": "Subtype",
-    "selectSubtype": "Select subtype",
+    "subcategory": "Cancer Subcategory",
+    "subcategoryPlaceholder": "Select a subcategory",
     "categories": {
-      "all": "All",
       "neoadjuvant": "Neoadjuvant",
       "adjuvant": "Adjuvant",
       "advanced": "Advanced",
-      "metastatic": "Metastatic"
+      "metastatic": "Metastatic",
+      "maintenance": "Maintenance",
+      "general": "General"
     },
-    "tabs": {
-      "all": "All",
-      "neoadjuvant": "Neoadjuvant",
-      "adjuvant": "Adjuvant",
-      "advanced": "Advanced",
-      "metastatic": "Metastatic"
+    "subcategories": {
+      "all": "All Subcategories",
+      "Colorectal": "Colorectal",
+      "Gastric": "Gastric",
+      "Esophageal": "Esophageal",
+      "Pancreas": "Pancreas",
+      "NSCLC": "Non-Small Cell Lung Cancer",
+      "SCLC": "Small Cell Lung Cancer",
+      "Cervical Cancer": "Cervical Cancer",
+      "Endometrial Cancer": "Endometrial Cancer",
+      "GTN": "Gestational Trophoblastic Neoplasia",
+      "Ovarian Cancer": "Ovarian Cancer",
+      "Bladder": "Bladder",
+      "Kidney": "Kidney",
+      "Prostate": "Prostate",
+      "Testicular": "Testicular"
     },
     "meta": {
       "schedule": "Schedule",
       "cycles": "Cycles",
       "calculateDoses": "Calculate Doses",
       "drugs": "Drugs",
-      "noRegimensForFilter": "No {{filter}} regimens available for this cancer type.",
+      "noRegimens": "No regimens available for the selected criteria.",
       "noResults": "No cancer types found matching your search."
     }
   },

@@ -80,11 +80,14 @@ const RegimenCard = React.memo<{
             </Tooltip>
           </TooltipProvider>
           <div className="flex items-center gap-1 mt-2">
-            <Badge variant="outline" className="text-xs">
-              {regimen.category}
+            <Badge 
+              variant={regimen.category === "metastatic" ? "destructive" : regimen.category === "neoadjuvant" ? "default" : "secondary"} 
+              className="text-xs"
+            >
+              {t(`cancerSelector.categories.${regimen.category}`, regimen.category)}
             </Badge>
             {regimen.lineOfTherapy && (
-              <Badge variant="secondary" className="text-xs">
+              <Badge variant="outline" className="text-xs">
                 {regimen.lineOfTherapy}
               </Badge>
             )}
@@ -142,7 +145,7 @@ export const CancerTypeSelectorOptimized = ({ onRegimenSelect }: CancerTypeSelec
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCancer, setSelectedCancer] = useState<string | null>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  // Removed selectedCategory state - no longer filtering by treatment environment
   const [selectedSubtype, setSelectedSubtype] = useState<string>("all");
   const [favorites, setFavorites] = useState<Set<string>>(() => {
     try {
@@ -171,14 +174,9 @@ export const CancerTypeSelectorOptimized = ({ onRegimenSelect }: CancerTypeSelec
     );
   }, [searchTerm]);
 
-  // Memoized regimen filtering function
-  const getRegimensByCategory = useCallback((cancer: any, category: string, subtype: string = "all") => {
+  // Simplified regimen filtering - only by subtype
+  const getRegimensBySubtype = useCallback((cancer: any, subtype: string = "all") => {
     let regimens = cancer.regimens;
-    
-    // Filter by category
-    if (category !== "all") {
-      regimens = regimens.filter((regimen: Regimen) => regimen.category === category);
-    }
     
     // Filter by subtype (for gynecological, lung, genitourinary, and gastrointestinal cancers)
     if ((cancer.id === "gyn-all" || cancer.id === "lung-all" || cancer.id === "gu-all" || cancer.id === "gi-all") && subtype !== "all") {
@@ -281,62 +279,46 @@ export const CancerTypeSelectorOptimized = ({ onRegimenSelect }: CancerTypeSelec
                   role="region"
                   aria-label={`${cancer.name} regimens`}
                 >
-                  <div className="flex items-center gap-2 mb-3">
-                    <Filter className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm font-medium">{t('cancerSelector.filter')}:</span>
-                  </div>
+                  {/* Subtype selector for multi-subtype cancers */}
+                  {(cancer.id === "gyn-all" || cancer.id === "gi-all" || cancer.id === "gu-all" || cancer.id === "lung-all") && (
+                    <div className="mb-4">
+                      <Label htmlFor={`subtype-${cancer.id}`} className="text-sm font-medium">
+                        {t('cancerSelector.subcategory')}:
+                      </Label>
+                      <Select value={selectedSubtype} onValueChange={setSelectedSubtype}>
+                        <SelectTrigger id={`subtype-${cancer.id}`} className="mt-1">
+                          <SelectValue placeholder={t('cancerSelector.subcategoryPlaceholder')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">{t('cancerSelector.subcategories.all')}</SelectItem>
+                          {getAvailableSubtypes(cancer).map((subtype: string) => (
+                            <SelectItem key={subtype} value={subtype}>
+                              {t(`cancerSelector.subcategories.${subtype}`, subtype)}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
 
-                  <Tabs value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <TabsList className="grid w-full grid-cols-4">
-                      <TabsTrigger value="all">{t('cancerSelector.categories.all')}</TabsTrigger>
-                      <TabsTrigger value="neoadjuvant">{t('cancerSelector.categories.neoadjuvant')}</TabsTrigger>
-                      <TabsTrigger value="adjuvant">{t('cancerSelector.categories.adjuvant')}</TabsTrigger>
-                      <TabsTrigger value="metastatic">{t('cancerSelector.categories.metastatic')}</TabsTrigger>
-                    </TabsList>
-
-                    {/* Subtype selector for multi-subtype cancers */}
-                    {(cancer.id === "gyn-all" || cancer.id === "gi-all" || cancer.id === "gu-all") && (
-                      <div className="mt-3">
-                        <Label htmlFor={`subtype-${cancer.id}`} className="text-sm font-medium">
-                          {t('cancerSelector.subtype')}:
-                        </Label>
-                        <Select value={selectedSubtype} onValueChange={setSelectedSubtype}>
-                          <SelectTrigger id={`subtype-${cancer.id}`} className="mt-1">
-                            <SelectValue placeholder={t('cancerSelector.selectSubtype')} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="all">{t('cancerSelector.categories.all')}</SelectItem>
-                        {getAvailableSubtypes(cancer).map((subtype: string) => (
-                          <SelectItem key={subtype} value={subtype}>
-                            {subtype}
-                          </SelectItem>
-                        ))}
-                          </SelectContent>
-                        </Select>
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {getRegimensBySubtype(cancer, selectedSubtype).map((regimen) => (
+                      <RegimenCard
+                        key={regimen.id}
+                        regimen={regimen}
+                        onSelect={handleRegimenSelect}
+                        isFavorite={favorites.has(regimen.id)}
+                        onToggleFavorite={handleToggleFavorite}
+                        t={t}
+                      />
+                    ))}
+                    
+                    {getRegimensBySubtype(cancer, selectedSubtype).length === 0 && (
+                      <div className="text-center py-4 text-muted-foreground text-sm">
+                        {t('cancerSelector.meta.noRegimens')}
                       </div>
                     )}
-
-                    <TabsContent value={selectedCategory} className="mt-4">
-                      <div className="space-y-2 max-h-96 overflow-y-auto">
-                        {getRegimensByCategory(cancer, selectedCategory, selectedSubtype).map((regimen) => (
-                          <RegimenCard
-                            key={regimen.id}
-                            regimen={regimen}
-                            onSelect={handleRegimenSelect}
-                            isFavorite={favorites.has(regimen.id)}
-                            onToggleFavorite={handleToggleFavorite}
-                            t={t}
-                          />
-                        ))}
-                        
-                        {getRegimensByCategory(cancer, selectedCategory, selectedSubtype).length === 0 && (
-                          <div className="text-center py-4 text-muted-foreground text-sm">
-                            {t('cancerSelector.meta.noRegimensForFilter', { filter: selectedCategory })}
-                          </div>
-                        )}
-                      </div>
-                    </TabsContent>
-                  </Tabs>
+                  </div>
                 </div>
               )}
             </div>

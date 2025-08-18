@@ -1,5 +1,33 @@
 # Changelog - Chemotherapy Application Code Review & Improvements
 
+## Version 2.3.0 - Simplified Cancer Regimen Selection (2025-08-18)
+### 🎯 UX Enhancement - Simplified Filtering
+- **Removed Treatment Environment Filter Tabs**: Eliminated confusing neoadjuvant/adjuvant/metastatic filter tabs from cancer selector
+- **Visual Treatment Badges**: Treatment environment now displayed as intuitive color-coded badges (metastatic=red, neoadjuvant=blue, adjuvant=gray)
+- **Subcategory-Only Filtering**: Streamlined regimen selection to focus on cancer subcategories (Colorectal, Gastric, NSCLC, etc.)
+- **Reduced Cognitive Load**: Simplified interface reduces decision fatigue for healthcare professionals
+
+### 🌐 Enhanced Translations
+- **Comprehensive Subcategory Support**: Added complete translations for all cancer subcategories (EN/RO)
+- **Treatment Environment Labels**: Added proper translations for treatment environment badges
+- **Improved Key Structure**: Updated translation keys to support new simplified filtering logic
+
+### 🧪 Testing & Quality
+- **Simplified Filter Tests**: Added comprehensive test suite for new subcategory-only filtering
+- **Translation Validation**: Tests ensure proper translation display for all subcategories
+- **UI/UX Verification**: Tests confirm removal of old filter tabs and presence of new badges
+
+### 📁 Files Modified
+- `src/components/CancerTypeSelectorOptimized.tsx` - Removed treatment environment tabs, added visual badges
+- `src/locales/en/common.json` - Enhanced subcategory translations
+- `src/locales/ro/common.json` - Added Romanian subcategory translations
+- `src/test/cancer-selector-simplified.test.tsx` - New test suite for simplified filtering
+
+### ⚡ Performance Impact
+- **Faster Selection**: Reduced filtering complexity improves selection speed
+- **Cleaner UI**: Less cluttered interface improves user focus on relevant options
+- **Better Mobile Experience**: Simplified interface works better on smaller screens
+
 ## Version 2.1.1 - i18n Bug Fix & Translation Enhancement (2025-08-18)
 
 ### 🔥 Critical i18n Bug Fixes

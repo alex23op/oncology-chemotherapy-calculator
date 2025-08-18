@@ -200,30 +200,39 @@
     "searchPlaceholder": "Căutați după tip de cancer sau categorie...",
     "select": "Selectează",
     "selected": "Selectat",
-    "filter": "Filtrați după mediul de tratament",
-    "filterLabel": "Filtrați după mediul de tratament:",
-    "subtype": "Subtip",
-    "selectSubtype": "Selectați subtipul",
+    "subcategory": "Subcategorie Cancer",
+    "subcategoryPlaceholder": "Selectați o subcategorie",
     "categories": {
-      "all": "Toate",
       "neoadjuvant": "Neoadjuvant",
       "adjuvant": "Adjuvant",
       "advanced": "Avansat",
-      "metastatic": "Metastatic"
+      "metastatic": "Metastatic",
+      "maintenance": "Întreținere",
+      "general": "General"
     },
-    "tabs": {
-      "all": "Toate",
-      "neoadjuvant": "Neoadjuvant",
-      "adjuvant": "Adjuvant",
-      "advanced": "Avansat",
-      "metastatic": "Metastatic"
+    "subcategories": {
+      "all": "Toate Subcategoriile",
+      "Colorectal": "Colorectal",
+      "Gastric": "Gastric",
+      "Esophageal": "Esofagian",
+      "Pancreas": "Pancreas",
+      "NSCLC": "Cancer Pulmonar Non-Microcelular",
+      "SCLC": "Cancer Pulmonar Microcelular",
+      "Cervical Cancer": "Cancer Cervical",
+      "Endometrial Cancer": "Cancer Endometrial",
+      "GTN": "Neoplasm Trofoblastic Gestațional",
+      "Ovarian Cancer": "Cancer Ovarian",
+      "Bladder": "Vezică",
+      "Kidney": "Rinichi",
+      "Prostate": "Prostată",
+      "Testicular": "Testicular"
     },
     "meta": {
       "schedule": "Program",
       "cycles": "Cicluri",
       "calculateDoses": "Calculează dozele",
       "drugs": "Medicamente",
-      "noRegimensForFilter": "Nu există regimuri {{filter}} pentru acest tip de cancer.",
+      "noRegimens": "Nu există regimuri disponibile pentru criteriile selectate.",
       "noResults": "Nu s-au găsit tipuri de cancer care să corespundă căutării."
     }
   },
