@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
@@ -68,6 +69,7 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
   const [nextCycleDate, setNextCycleDate] = useState<Date | undefined>(undefined);
   const [bsaCapEnabled, setBsaCapEnabled] = useState<boolean>(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [editedCalculations, setEditedCalculations] = useState<EnhancedDoseCalculation[]>([]);
 
   // Calculate effective BSA (with cap if enabled)
   const effectiveBsa = useMemo(() => {
@@ -119,12 +121,22 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
         selected: true,
         notes: '',
         administrationDuration: drug.administrationDuration,
-        selectedSolventType: drug.availableSolvents?.[0],
-        selectedVolume: drug.availableVolumes?.[0],
-        solvent: drug.solvent
+        selectedSolventType: drug.availableSolvents?.[0] || 'Normal Saline 0.9%',
+        selectedVolume: drug.availableVolumes?.[0] || 100,
+        solvent: drug.solvent || 'Normal Saline 0.9%'
       };
     });
   }, [regimen, effectiveBsa, weight, age, creatinineClearance]);
+
+  // Initialize edited calculations when calculations change
+  useEffect(() => {
+    if (calculations.length > 0 && editedCalculations.length === 0) {
+      setEditedCalculations([...calculations]);
+    }
+  }, [calculations, editedCalculations.length]);
+
+  // Get current calculations (edited or original)
+  const currentCalculations = isEditing ? editedCalculations : calculations;
 
   // Validation functions
   const handleCNPChange = useCallback((value: string) => {
@@ -166,6 +178,41 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
     }
   }, [validateCycleNumber, t]);
 
+  // Handle editing functions
+  const handleEditCalculation = useCallback((index: number, field: string, value: any) => {
+    setEditedCalculations(prev => {
+      const updated = [...prev];
+      const calc = { ...updated[index] };
+      
+      if (field === 'finalDose') {
+        calc.finalDose = parseFloat(value) || 0;
+      } else if (field === 'reductionPercentage') {
+        const percentage = parseFloat(value) || 0;
+        calc.reductionPercentage = percentage;
+        calc.adjustedDose = calc.calculatedDose * (1 - percentage / 100);
+        calc.finalDose = calc.adjustedDose;
+      } else if (field === 'solvent') {
+        calc.solvent = value;
+        calc.selectedSolventType = value;
+      } else if (field === 'notes') {
+        calc.notes = value;
+      }
+      
+      updated[index] = calc;
+      return updated;
+    });
+  }, []);
+
+  const handleSaveEdits = useCallback(() => {
+    setIsEditing(false);
+    toast.success('Modificările au fost salvate cu succes');
+  }, []);
+
+  const handleCancelEdits = useCallback(() => {
+    setEditedCalculations([...calculations]);
+    setIsEditing(false);
+  }, [calculations]);
+
   const handleGenerateSheet = useCallback(() => {
     if (!patientCNP) {
       toast.error('Vă rugăm să introduceți CNP-ul pacientului');
@@ -198,7 +245,7 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
         sex
       },
       regimen,
-      calculatedDrugs: Array.isArray(calculations) ? calculations : [],
+      calculatedDrugs: Array.isArray(currentCalculations) ? currentCalculations : [],
       emetogenicRisk: {
         level: "moderate" as const,
         justification: "Regim de chimioterapie standard",
@@ -224,7 +271,7 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
 
     onGenerateSheet?.(treatmentData);
     toast.success('Fișa de tratament a fost generată cu succes');
-  }, [patientCNP, patientName, calculations, observationNumber, cycleNumber, age, weight, height, effectiveBsa, creatinineClearance, sex, regimen, administrationDate, nextCycleDate, bsaCapEnabled, onGenerateSheet]);
+  }, [patientCNP, patientName, currentCalculations, observationNumber, cycleNumber, age, weight, height, effectiveBsa, creatinineClearance, sex, regimen, administrationDate, nextCycleDate, bsaCapEnabled, onGenerateSheet]);
 
   if (!regimen) {
     return (
@@ -418,18 +465,30 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
             <h3 className="text-base font-semibold">
               {t('doseCalculator.drugCalculations', 'Calculele de doze')}
             </h3>
-            <Button
-              variant={isEditing ? "default" : "outline"}
-              size="sm"
-              onClick={() => setIsEditing(!isEditing)}
-              className="flex items-center gap-1"
-            >
-              {isEditing ? <Save className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
-              {isEditing ? 'Salvează' : 'Editează'}
-            </Button>
+            <div className="flex items-center gap-2">
+              {isEditing && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleCancelEdits}
+                  className="flex items-center gap-1"
+                >
+                  Anulează
+                </Button>
+              )}
+              <Button
+                variant={isEditing ? "default" : "outline"}
+                size="sm"
+                onClick={isEditing ? handleSaveEdits : () => setIsEditing(true)}
+                className="flex items-center gap-1"
+              >
+                {isEditing ? <Save className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
+                {isEditing ? 'Salvează' : 'Editează'}
+              </Button>
+            </div>
           </div>
 
-          {calculations.map((calc, index) => (
+          {currentCalculations.map((calc, index) => (
             <div key={`${calc.drug.name}-${index}`} className="border rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <div>
@@ -450,9 +509,20 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
                 </div>
                 <div>
                   <Label className="text-muted-foreground">Reducere %</Label>
-                  <p className="font-medium">
-                    {calc.reductionPercentage}%
-                  </p>
+                  {isEditing ? (
+                    <Input
+                      type="number"
+                      value={calc.reductionPercentage}
+                      onChange={(e) => handleEditCalculation(index, 'reductionPercentage', e.target.value)}
+                      className="mt-1 h-8"
+                      min="0"
+                      max="100"
+                    />
+                  ) : (
+                    <p className="font-medium">
+                      {calc.reductionPercentage}%
+                    </p>
+                  )}
                 </div>
                 <div>
                   <Label className="text-muted-foreground">Doză ajustată</Label>
@@ -462,9 +532,58 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
                 </div>
                 <div>
                   <Label className="text-muted-foreground">Doză finală</Label>
-                  <p className="font-medium text-lg text-accent">
-                    {calc.finalDose} mg
-                  </p>
+                  {isEditing ? (
+                    <Input
+                      type="number"
+                      value={calc.finalDose}
+                      onChange={(e) => handleEditCalculation(index, 'finalDose', e.target.value)}
+                      className="mt-1 h-8"
+                      min="0"
+                      step="0.1"
+                    />
+                  ) : (
+                    <p className="font-medium text-lg text-accent">
+                      {calc.finalDose} mg
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* Solvent and Notes */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t">
+                <div>
+                  <Label className="text-muted-foreground">Solvent</Label>
+                  {isEditing ? (
+                    <select
+                      value={calc.solvent || 'Normal Saline 0.9%'}
+                      onChange={(e) => handleEditCalculation(index, 'solvent', e.target.value)}
+                      className="w-full mt-1 h-8 px-3 rounded-md border border-input bg-background text-sm"
+                    >
+                      <option value="Normal Saline 0.9%">Normal Saline 0.9%</option>
+                      <option value="Dextrose 5%">Dextrose 5%</option>
+                      <option value="Water for Injection">Water for Injection</option>
+                      <option value="Lactated Ringer's">Lactated Ringer's</option>
+                    </select>
+                  ) : (
+                    <p className="font-medium mt-1">
+                      {calc.solvent || 'Normal Saline 0.9%'}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">Note</Label>
+                  {isEditing ? (
+                    <Input
+                      value={calc.notes || ''}
+                      onChange={(e) => handleEditCalculation(index, 'notes', e.target.value)}
+                      className="mt-1 h-8"
+                      placeholder="Adaugă note..."
+                    />
+                  ) : (
+                    <p className="font-medium mt-1">
+                      {calc.notes || '-'}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
@@ -473,10 +592,33 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-2 sm:justify-end pt-4 border-t">
+          {/* Second Edit Button (shortcut) */}
+          <div className="flex items-center gap-2">
+            {isEditing && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleCancelEdits}
+                className="flex items-center gap-1"
+              >
+                Anulează
+              </Button>
+            )}
+            <Button
+              variant={isEditing ? "default" : "outline"}
+              size="sm"
+              onClick={isEditing ? handleSaveEdits : () => setIsEditing(true)}
+              className="flex items-center gap-1"
+            >
+              {isEditing ? <Save className="h-4 w-4" /> : <Edit className="h-4 w-4" />}
+              {isEditing ? 'Salvează' : 'Editează'}
+            </Button>
+          </div>
+          
           <Button
             onClick={handleGenerateSheet}
             className="flex items-center gap-2"
-            disabled={!patientCNP || !patientName || !calculations.length}
+            disabled={!patientCNP || !patientName || !currentCalculations.length}
           >
             <FileText className="h-4 w-4" />
             Generează fișa tratament

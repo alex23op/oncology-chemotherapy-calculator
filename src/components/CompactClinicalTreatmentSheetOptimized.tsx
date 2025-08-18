@@ -19,40 +19,56 @@ interface CompactClinicalTreatmentSheetProps {
 // Memoized components for performance
 const PatientInfoSection = React.memo<{ patient: TreatmentData['patient']; t: any }>(
   ({ patient, t }) => (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm print:text-xs">
-      <div>
-        <span className="text-muted-foreground font-medium">{t('compactSheet.patientName')}:</span>
-        <p className="font-semibold">{patient.fullName || 'N/A'}</p>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm print:text-xs">
+        <div>
+          <span className="text-muted-foreground font-medium">{t('compactSheet.patientName')}:</span>
+          <p className="font-semibold">{patient.fullName || 'N/A'}</p>
+        </div>
+        <div>
+          <span className="text-muted-foreground font-medium">CNP:</span>
+          <p className="font-semibold">{patient.cnp || 'N/A'}</p>
+        </div>
+        <div>
+          <span className="text-muted-foreground font-medium">{t('compactSheet.foNumber')}:</span>
+          <p className="font-semibold">{patient.foNumber || 'N/A'}</p>
+        </div>
+        <div>
+          <span className="text-muted-foreground font-medium">{t('compactSheet.cycleNumber')}:</span>
+          <p className="font-semibold">Ciclu {patient.cycleNumber || 'N/A'}</p>
+        </div>
+        <div>
+          <span className="text-muted-foreground font-medium">{t('compactSheet.treatmentDate')}:</span>
+          <p className="font-semibold">{formatDate(patient.treatmentDate) || 'N/A'}</p>
+        </div>
+        <div>
+          <span className="text-muted-foreground font-medium">{t('compactSheet.nextCycleDate')}:</span>
+          <p className="font-semibold">{patient.nextCycleDate ? formatDate(patient.nextCycleDate) : 'N/A'}</p>
+        </div>
+        <div>
+          <span className="text-muted-foreground font-medium">{t('compactSheet.age')}:</span>
+          <p className="font-semibold">{patient.age} ani</p>
+        </div>
+        <div>
+          <span className="text-muted-foreground font-medium">{t('compactSheet.sex')}:</span>
+          <p className="font-semibold">{patient.sex === 'male' ? 'M' : 'F'}</p>
+        </div>
+        <div>
+          <span className="text-muted-foreground font-medium">{t('compactSheet.weight')}:</span>
+          <p className="font-semibold">{patient.weight} kg</p>
+        </div>
+        <div>
+          <span className="text-muted-foreground font-medium">{t('compactSheet.height')}:</span>
+          <p className="font-semibold">{patient.height} cm</p>
+        </div>
+        <div>
+          <span className="text-muted-foreground font-medium">BSA:</span>
+          <p className="font-semibold">{patient.bsa.toFixed(2)} m²</p>
+        </div>
+        <div>
+          <span className="text-muted-foreground font-medium">CrCl:</span>
+          <p className="font-semibold">{patient.creatinineClearance} mL/min</p>
+        </div>
       </div>
-      <div>
-        <span className="text-muted-foreground font-medium">CNP:</span>
-        <p className="font-semibold">{patient.cnp || 'N/A'}</p>
-      </div>
-      <div>
-        <span className="text-muted-foreground font-medium">{t('compactSheet.foNumber')}:</span>
-        <p className="font-semibold">{patient.foNumber || 'N/A'}</p>
-      </div>
-      <div>
-        <span className="text-muted-foreground font-medium">{t('compactSheet.treatmentDate')}:</span>
-        <p className="font-semibold">{formatDate(patient.treatmentDate) || 'N/A'}</p>
-      </div>
-      <div>
-        <span className="text-muted-foreground font-medium">{t('compactSheet.age')}:</span>
-        <p className="font-semibold">{patient.age} years</p>
-      </div>
-      <div>
-        <span className="text-muted-foreground font-medium">{t('compactSheet.weight')}:</span>
-        <p className="font-semibold">{patient.weight} kg</p>
-      </div>
-      <div>
-        <span className="text-muted-foreground font-medium">BSA:</span>
-        <p className="font-semibold">{patient.bsa.toFixed(2)} m²</p>
-      </div>
-      <div>
-        <span className="text-muted-foreground font-medium">CrCl:</span>
-        <p className="font-semibold">{patient.creatinineClearance} mL/min</p>
-      </div>
-    </div>
   )
 );
 
@@ -252,7 +268,7 @@ PremedicationsSection.displayName = 'PremedicationsSection';
 const CompactClinicalTreatmentSheetCore = forwardRef<HTMLDivElement, CompactClinicalTreatmentSheetProps>(
   ({ treatmentData, className = "", showPrintButton = false, onPrint }, ref) => {
     const { t } = useTranslation();
-    const { patient, regimen, calculatedDrugs, emetogenicRisk, premedications } = treatmentData;
+    const { patient, regimen, calculatedDrugs, emetogenicRisk, premedications, solventGroups } = treatmentData;
 
     // Memoized calculations for performance - with defensive checks
     const drugNotes = useMemo(() => 
@@ -378,27 +394,32 @@ const CompactClinicalTreatmentSheetCore = forwardRef<HTMLDivElement, CompactClin
               </table>
             </div>
             
-            {/* Drug Notes */}
+            {/* Drug Notes and Adjustments */}
             {drugNotes.length > 0 && (
-              <div className="print:mt-1">
-                <h5 className="font-semibold text-sm print:text-xs mb-2">Drug-Specific Notes:</h5>
+              <div className="print:mt-2">
+                <h5 className="font-semibold text-sm print:text-xs mb-2">Note și ajustări specifice:</h5>
                 {drugNotes.map((drug, index) => (
-                  <div key={index} className="print:text-xs print:mb-1 text-sm mb-2">
+                  <div key={index} className="print:text-xs print:mb-1 text-sm mb-2 p-2 bg-muted/30 rounded print:bg-gray-50">
                     <span className="font-semibold">{drug.name}:</span>
                     {drug.adjustmentNotes && (
-                      <span className="ml-1 text-warning">
-                        {t('clinicalSheet.doseAdjustment')}: {drug.adjustmentNotes}
-                      </span>
+                      <div className="ml-2 text-warning">
+                        <strong>Ajustare doză:</strong> {drug.adjustmentNotes}
+                      </div>
                     )}
                     {drug.preparationInstructions && (
-                      <span className="ml-1 text-info">
-                        {t('clinicalSheet.preparation')}: {drug.preparationInstructions}
-                      </span>
+                      <div className="ml-2 text-info">
+                        <strong>Instrucțiuni preparare:</strong> {drug.preparationInstructions}
+                      </div>
                     )}
                     {drug.notes && (
-                      <span className="ml-1 text-muted-foreground">
-                        {t('clinicalSheet.notes')}: {drug.notes}
-                      </span>
+                      <div className="ml-2 text-muted-foreground">
+                        <strong>Note:</strong> {drug.notes}
+                      </div>
+                    )}
+                    {drug.solvent && (
+                      <div className="ml-2 text-sm">
+                        <strong>Solvent:</strong> {drug.solvent}
+                      </div>
                     )}
                   </div>
                 ))}
@@ -414,9 +435,60 @@ const CompactClinicalTreatmentSheetCore = forwardRef<HTMLDivElement, CompactClin
           </CardContent>
         </Card>
 
-        {/* Premedications */}
+        {/* Premedications & PEV Groups */}
         <Card className="print:border-black print:shadow-none">
-          <CardContent className="pt-6">
+          <CardHeader className="pb-3 print:pb-1">
+            <CardTitle className="text-base print:text-sm">
+              Premedicație & Îngrijiri suportive
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {/* PEV Groups */}
+            {solventGroups && solventGroups.groups && solventGroups.groups.length > 0 && (
+              <div className="mb-4">
+                <h5 className="font-semibold text-sm print:text-xs mb-2">Grupuri PEV:</h5>
+                {solventGroups.groups.map((group, index) => (
+                  <div key={group.id} className="mb-3 p-3 border rounded print:border-black print:mb-2">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-semibold text-sm">{index + 1} PEV - {group.solvent}</span>
+                      <span className="text-xs text-muted-foreground">ID: {group.id}</span>
+                    </div>
+                    <div className="space-y-1">
+                      {group.medications.map((med, medIndex) => (
+                        <div key={medIndex} className="text-sm print:text-xs flex justify-between">
+                          <span><strong>{med.name}</strong> {med.dosage} {med.unit}</span>
+                          <span className="text-muted-foreground">{med.route} • {med.timing}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Individual Premedications */}
+            {(solventGroups?.individual && solventGroups.individual.length > 0) && (
+              <div className="mb-4">
+                <h5 className="font-semibold text-sm print:text-xs mb-2">Premedicații individuale:</h5>
+                <div className="space-y-1">
+                  {solventGroups.individual.map((med, index) => (
+                    <div key={index} className="text-sm print:text-xs p-2 border rounded print:border-black">
+                      <div className="flex justify-between">
+                        <span><strong>{med.name}</strong> {med.dosage} {med.unit}</span>
+                        <span className="text-muted-foreground">{med.route} • {med.timing}</span>
+                      </div>
+                      {med.solvent && (
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Solvent: {med.solvent}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Standard Premedications Table */}
             <PremedicationsSection premedications={premedications} t={t} />
           </CardContent>
         </Card>
@@ -439,20 +511,62 @@ const CompactClinicalTreatmentSheetCore = forwardRef<HTMLDivElement, CompactClin
           </Card>
         )}
 
-        {/* Footer */}
-        <div className="print:mt-4 print:pt-2 print:border-t print:border-black">
+        {/* Footer & Signatures */}
+        <div className="print:mt-6 print:pt-4 print:border-t-2 print:border-black">
+          {/* Administration Section */}
+          <Card className="print:border-black print:shadow-none mb-4">
+            <CardHeader className="pb-2 print:pb-1">
+              <CardTitle className="text-base print:text-sm">
+                Administrare și Monitorizare
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm print:text-xs">
+                <div>
+                  <p className="font-semibold mb-2">Farmacist responsabil:</p>
+                  <div className="border-b border-dashed border-gray-400 h-6 print:h-4"></div>
+                  <p className="text-xs text-muted-foreground mt-1">Nume, semnătură, data</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-2">Asistent medical:</p>
+                  <div className="border-b border-dashed border-gray-400 h-6 print:h-4"></div>
+                  <p className="text-xs text-muted-foreground mt-1">Nume, semnătură, data</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-2">Medic prescriptor:</p>
+                  <div className="border-b border-dashed border-gray-400 h-6 print:h-4"></div>
+                  <p className="text-xs text-muted-foreground mt-1">Nume, semnătură, data</p>
+                </div>
+                <div>
+                  <p className="font-semibold mb-2">Ora începerii tratamentului:</p>
+                  <div className="border-b border-dashed border-gray-400 h-6 print:h-4"></div>
+                  <p className="text-xs text-muted-foreground mt-1">HH:MM</p>
+                </div>
+              </div>
+              
+              <div className="mt-4 pt-3 border-t">
+                <p className="font-semibold mb-2 text-sm">Observații clinice:</p>
+                <div className="border border-gray-300 rounded p-2 min-h-[60px] print:min-h-[40px]">
+                  <div className="text-xs text-gray-400">
+                    Spațiu pentru notarea observațiilor clinice, reacțiilor adverse, modificărilor de protocol...
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           <div className="flex justify-between items-center text-xs print:text-xs text-muted-foreground">
             <div>
-              Generated: {new Date().toLocaleString('ro-RO')}
+              Generat: {new Date().toLocaleString('ro-RO')}
             </div>
             <div>
-              Pharmacist: _________________ Nurse: _________________
+              Pagina 1 din 1
             </div>
           </div>
           <div className="mt-2 text-xs text-center text-muted-foreground">
             <p>
-              ⚠️ This protocol must be verified by a qualified healthcare professional before administration.
-              Consult NCCN/ESMO guidelines and local policies.
+              ⚠️ Acest protocol trebuie verificat de un profesionist medical calificat înainte de administrare.
+              Consultați ghidurile NCCN/ESMO și politicile locale.
             </p>
           </div>
         </div>
