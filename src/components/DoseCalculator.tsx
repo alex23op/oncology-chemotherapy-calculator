@@ -139,6 +139,7 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
       
       const newCalculations = regimen.drugs.map((drug, drugIndex) => {
         let calculatedDose = 0;
+        let doseAlert = { isExceeded: false }; // Declare at function scope
         
         try {
           if (drug.unit === "mg/m²") {
@@ -166,7 +167,7 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
           }
 
           // Check dose limits and create alert
-          const doseAlert = checkDoseLimit(drug.name, calculatedDose, regimen.schedule);
+          doseAlert = checkDoseLimit(drug.name, calculatedDose, regimen.schedule);
 
         } catch (error) {
           logger.error("Error calculating dose for drug", {
@@ -174,7 +175,7 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
             data: { drugName: drug.name, error: error.message }
           });
           calculatedDose = 0;
-          const doseAlert = { isExceeded: false };
+          doseAlert = { isExceeded: false }; // Assign, don't declare
         }
 
         // Preserve existing user modifications if this drug already exists
@@ -926,18 +927,31 @@ const handleExportData = () => {
                       />
                    </div>
                    <div className="flex-1 space-y-4">
-                     <div className="flex justify-between items-start">
-                       <div>
-                         <h4 className="font-bold text-xl text-foreground">{calc.drug.name}</h4>
-                         <div className="flex gap-2 mt-2">
-                           <Badge variant="outline" className="font-medium">{calc.drug.route}</Badge>
-                           {calc.drug.day && <Badge variant="secondary" className="font-medium">{calc.drug.day}</Badge>}
-                         </div>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-bold text-xl text-foreground">{calc.drug.name}</h4>
+                          <div className="flex gap-2 mt-2">
+                            <Badge variant="outline" className="font-medium">{calc.drug.route}</Badge>
+                            {calc.drug.day && <Badge variant="secondary" className="font-medium">{calc.drug.day}</Badge>}
+                          </div>
 <p className="text-sm text-muted-foreground mt-2 font-medium">
   {t('doseCalculator.standardDose')}: <span className="text-foreground">{calc.drug.dosage} {calc.drug.unit}</span>
-                         </p>
-                       </div>
-                     </div>
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Dose Alert */}
+                      {calc.doseAlert?.isExceeded && (
+                        <Alert variant="destructive" className="mt-3">
+                          <AlertTriangle className="h-4 w-4" />
+                          <AlertDescription>
+                            <strong>Alertă doză:</strong> {calc.doseAlert.warning}
+                            {calc.doseAlert.suggestedAction && (
+                              <div className="mt-1 text-sm">{calc.doseAlert.suggestedAction}</div>
+                            )}
+                          </AlertDescription>
+                        </Alert>
+                      )}
 
 {(calc.drug.dilution || calc.administrationDuration || calc.solvent) && (
   <div className="border-2 border-accent/30 bg-accent/10 rounded-lg p-4">

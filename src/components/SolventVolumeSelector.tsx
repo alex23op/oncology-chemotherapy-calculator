@@ -34,13 +34,24 @@ export const SolventVolumeSelector: React.FC<SolventVolumeSelectorProps> = ({
     if (drug.name === "Oxaliplatin" && selectedVolume && selectedVolume < 250) {
       return "Volumul minim pentru Oxaliplatin este 250 mL";
     }
+    if (drug.name === "Paclitaxel" && selectedVolume) {
+      const testDose = 200; // Example dose for concentration check
+      const concentration = testDose / selectedVolume;
+      if (concentration > 1.2) {
+        return `Concentrația va fi prea mare (${concentration.toFixed(2)} mg/mL > 1.2 mg/mL)`;
+      }
+      if (concentration < 0.3) {
+        return `Concentrația va fi prea mică (${concentration.toFixed(2)} mg/mL < 0.3 mg/mL)`;
+      }
+    }
     return null;
   };
 
   const validationError = validateSelection();
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 p-3 bg-secondary/30 rounded-lg border">
+      <h6 className="font-medium text-sm text-foreground">Selecție solvent și volum</h6>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <Label className="text-sm font-medium">Solvent</Label>
@@ -49,7 +60,7 @@ export const SolventVolumeSelector: React.FC<SolventVolumeSelectorProps> = ({
             onValueChange={onSolventTypeChange}
             disabled={disabled || drug.availableSolvents.length === 1}
           >
-            <SelectTrigger className="mt-1">
+            <SelectTrigger className="mt-1 bg-background">
               <SelectValue placeholder="Selectați solventul" />
             </SelectTrigger>
             <SelectContent className="bg-background border shadow-lg z-50">
@@ -61,6 +72,11 @@ export const SolventVolumeSelector: React.FC<SolventVolumeSelectorProps> = ({
               ))}
             </SelectContent>
           </Select>
+          {drug.availableSolvents.length === 1 && (
+            <p className="text-xs text-muted-foreground mt-1">
+              Solvent obligatoriu pentru {drug.name}
+            </p>
+          )}
         </div>
 
         <div>
@@ -70,7 +86,7 @@ export const SolventVolumeSelector: React.FC<SolventVolumeSelectorProps> = ({
             onValueChange={(value) => onVolumeChange(Number(value))}
             disabled={disabled}
           >
-            <SelectTrigger className="mt-1">
+            <SelectTrigger className="mt-1 bg-background">
               <SelectValue placeholder="Selectați volumul" />
             </SelectTrigger>
             <SelectContent className="bg-background border shadow-lg z-50">
