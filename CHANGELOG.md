@@ -1,6 +1,44 @@
 # Changelog - Chemotherapy Application Code Review & Improvements
 
-## Version 2.3.0 - Simplified Cancer Regimen Selection (2025-08-18)
+## Version 2.5.0 - Contextual Search for All Subcategories (2025-08-18)
+### 🔍 Advanced Search Functionality
+- **Contextual Search Input**: Added sophisticated search functionality that filters regimens by name or drug within selected subcategory
+- **Smart Search Activation**: Search input is intelligently disabled until a specific subcategory is selected (not "All Subcategories")
+- **Multi-Parameter Search**: Enhanced search to query regimen name, description, and individual drug names for comprehensive results
+- **Cross-Category Support**: Contextual search works across ALL cancer categories (Gastrointestinal, Lung, Gynaecological, Genitourinary)
+
+### ⚡ Performance & UX Optimizations
+- **Debounced Search**: Implemented 300ms debouncing to prevent excessive API calls and improve performance
+- **Dynamic Feedback**: Real-time toast notifications for "no results found" with specific subcategory context
+- **Automatic Cleanup**: Search terms automatically clear when changing subcategories to prevent confusion
+- **Separated Search Contexts**: Distinguished global cancer search from contextual regimen search for better UX
+
+### ♿ Accessibility & WCAG Compliance
+- **WCAG 2.1 AA Compliance**: Added comprehensive aria-labels, aria-describedby, and proper form associations
+- **Screen Reader Support**: Enhanced screen reader experience with descriptive help text and status announcements
+- **Keyboard Navigation**: Full keyboard accessibility for search input and results navigation
+- **Focus Management**: Proper focus management when search becomes available/unavailable
+
+### 🌐 Enhanced Internationalization
+- **Comprehensive Translations**: Added complete EN/RO translations for all contextual search features
+- **Dynamic Placeholders**: Context-aware placeholder text that adapts to selected subcategory
+- **Error Message Localization**: Localized "no results" messages with proper subcategory context
+- **Search Help Text**: Translated help text and accessibility labels for all supported languages
+
+### 🧪 Comprehensive Testing Suite
+- **Vitest Unit Tests**: Complete test coverage for contextual search functionality across all subcategories
+- **Accessibility Testing**: Automated tests for ARIA attributes and keyboard navigation compliance
+- **Cross-Subcategory Validation**: Tests ensure search works correctly when switching between different subcategories
+- **Performance Testing**: Tests validate debouncing and search performance under various conditions
+- **Translation Testing**: Automated verification of proper translation key resolution
+
+### 🔧 Technical Improvements
+- **Enhanced State Management**: Improved state handling with proper cleanup and memoization
+- **Type Safety**: Full TypeScript support with proper type definitions for search parameters
+- **Error Handling**: Robust error handling for edge cases and malformed search queries
+- **Memory Optimization**: Proper cleanup of debounced functions and event listeners
+
+## Version 2.4.0 - Simplified Cancer Regimen Selection (2025-08-18)
 ### 🎯 UX Enhancement - Simplified Filtering
 - **Removed Treatment Environment Filter Tabs**: Eliminated confusing neoadjuvant/adjuvant/metastatic filter tabs from cancer selector
 - **Visual Treatment Badges**: Treatment environment now displayed as intuitive color-coded badges (metastatic=red, neoadjuvant=blue, adjuvant=gray)

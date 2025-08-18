@@ -13,6 +13,8 @@ import { Regimen } from "@/types/regimens";
 import { useTranslation } from 'react-i18next';
 import { validateCancerType } from "@/types/schemas";
 import { logger } from '@/utils/logger';
+import { toast } from "sonner";
+import debounce from "lodash.debounce";
 
 interface CancerTypeSelectorProps {
   onRegimenSelect: (regimen: Regimen) => void;
@@ -143,9 +145,9 @@ RegimenCard.displayName = 'RegimenCard';
 
 export const CancerTypeSelectorOptimized = ({ onRegimenSelect }: CancerTypeSelectorProps) => {
   const { t } = useTranslation();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [globalSearchTerm, setGlobalSearchTerm] = useState("");
+  const [contextualSearchTerm, setContextualSearchTerm] = useState("");
   const [selectedCancer, setSelectedCancer] = useState<string | null>(null);
-  // Removed selectedCategory state - no longer filtering by treatment environment
   const [selectedSubtype, setSelectedSubtype] = useState<string>("all");
   const [favorites, setFavorites] = useState<Set<string>>(() => {
     try {
@@ -169,18 +171,28 @@ export const CancerTypeSelectorOptimized = ({ onRegimenSelect }: CancerTypeSelec
   // Memoized filtered cancers to prevent unnecessary recalculations
   const filteredCancers = useMemo(() => {
     return cancerTypes.filter(cancer =>
-      cancer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      cancer.category.toLowerCase().includes(searchTerm.toLowerCase())
+      cancer.name.toLowerCase().includes(globalSearchTerm.toLowerCase()) ||
+      cancer.category.toLowerCase().includes(globalSearchTerm.toLowerCase())
     );
-  }, [searchTerm]);
+  }, [globalSearchTerm]);
 
-  // Simplified regimen filtering - only by subtype
-  const getRegimensBySubtype = useCallback((cancer: any, subtype: string = "all") => {
+  // Enhanced regimen filtering with contextual search
+  const getRegimensBySubtype = useCallback((cancer: any, subtype: string = "all", searchTerm: string = "") => {
     let regimens = cancer.regimens;
     
     // Filter by subtype (for gynecological, lung, genitourinary, and gastrointestinal cancers)
     if ((cancer.id === "gyn-all" || cancer.id === "lung-all" || cancer.id === "gu-all" || cancer.id === "gi-all") && subtype !== "all") {
       regimens = regimens.filter((regimen: Regimen) => regimen.subtype === subtype);
+    }
+    
+    // Apply contextual search within the selected subcategory
+    if (searchTerm.trim() && subtype !== "all") {
+      const lowerSearch = searchTerm.toLowerCase();
+      regimens = regimens.filter((regimen: Regimen) =>
+        regimen.name.toLowerCase().includes(lowerSearch) ||
+        regimen.description.toLowerCase().includes(lowerSearch) ||
+        regimen.drugs.some(drug => drug.name.toLowerCase().includes(lowerSearch))
+      );
     }
     
     return regimens;
@@ -222,7 +234,30 @@ export const CancerTypeSelectorOptimized = ({ onRegimenSelect }: CancerTypeSelec
   const handleCancerSelect = useCallback((cancerId: string) => {
     setSelectedCancer(selectedCancer === cancerId ? null : cancerId);
     setSelectedSubtype("all"); // Reset subtype when selecting different cancer
+    setContextualSearchTerm(""); // Clear contextual search when changing cancer
   }, [selectedCancer]);
+
+  // Debounced contextual search handler
+  const debouncedSetContextualSearch = useMemo(
+    () => debounce((value: string) => setContextualSearchTerm(value), 300),
+    []
+  );
+
+  // Handle subtype change and clear contextual search
+  const handleSubtypeChange = useCallback((subtype: string) => {
+    setSelectedSubtype(subtype);
+    setContextualSearchTerm(""); // Clear search when changing subtype
+  }, []);
+
+  // Show toast when no results found
+  const showNoResultsToast = useCallback((searchTerm: string, subtype: string) => {
+    if (searchTerm.trim() && subtype !== "all") {
+      toast.error(t('cancerSelector.noResults', 'No regimens found for "{term}" in {subcategory}', {
+        term: searchTerm,
+        subcategory: t(`cancerSelector.subcategories.${subtype}`, subtype)
+      }));
+    }
+  }, [t]);
 
   return (
     <Card className="w-full">
@@ -234,19 +269,19 @@ export const CancerTypeSelectorOptimized = ({ onRegimenSelect }: CancerTypeSelec
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="search">{t('cancerSelector.searchLabel')}</Label>
+          <Label htmlFor="global-search">{t('cancerSelector.searchLabel')}</Label>
           <div className="relative">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
-              id="search"
+              id="global-search"
               placeholder={t('cancerSelector.searchPlaceholder')}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={globalSearchTerm}
+              onChange={(e) => setGlobalSearchTerm(e.target.value)}
               className="pl-10"
-              aria-describedby="search-help"
+              aria-describedby="global-search-help"
             />
-            <div id="search-help" className="sr-only">
-              Search for cancer types and treatment regimens
+            <div id="global-search-help" className="sr-only">
+              {t('cancerSelector.globalSearchHelp', 'Search for cancer types and categories')}
             </div>
           </div>
         </div>
@@ -285,7 +320,7 @@ export const CancerTypeSelectorOptimized = ({ onRegimenSelect }: CancerTypeSelec
                       <Label htmlFor={`subtype-${cancer.id}`} className="text-sm font-medium">
                         {t('cancerSelector.subcategory')}:
                       </Label>
-                      <Select value={selectedSubtype} onValueChange={setSelectedSubtype}>
+                      <Select value={selectedSubtype} onValueChange={handleSubtypeChange}>
                         <SelectTrigger id={`subtype-${cancer.id}`} className="mt-1">
                           <SelectValue placeholder={t('cancerSelector.subcategoryPlaceholder')} />
                         </SelectTrigger>
@@ -301,21 +336,63 @@ export const CancerTypeSelectorOptimized = ({ onRegimenSelect }: CancerTypeSelec
                     </div>
                   )}
 
+                  {/* Contextual search within selected subcategory */}
+                  {selectedSubtype !== "all" && (
+                    <div className="mb-4">
+                      <Label htmlFor={`contextual-search-${cancer.id}`} className="text-sm font-medium">
+                        {t('cancerSelector.contextualSearch', 'Search in {subcategory}', {
+                          subcategory: t(`cancerSelector.subcategories.${selectedSubtype}`, selectedSubtype)
+                        })}:
+                      </Label>
+                      <div className="relative mt-1">
+                        <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          id={`contextual-search-${cancer.id}`}
+                          placeholder={t('cancerSelector.contextualSearchPlaceholder', 'Search by regimen name or drug (e.g., Oxaliplatin, mFOLFOX6)')}
+                          onChange={(e) => debouncedSetContextualSearch(e.target.value)}
+                          className="pl-10"
+                          aria-label={t('cancerSelector.contextualSearchAria', 'Search regimens by name or drug in {subcategory}', {
+                            subcategory: t(`cancerSelector.subcategories.${selectedSubtype}`, selectedSubtype)
+                          })}
+                          aria-describedby={`contextual-search-help-${cancer.id}`}
+                        />
+                        <div id={`contextual-search-help-${cancer.id}`} className="sr-only">
+                          {t('cancerSelector.contextualSearchHelp', 'Search for regimens by name or drug within the selected subcategory')}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   <div className="space-y-2 max-h-96 overflow-y-auto">
-                    {getRegimensBySubtype(cancer, selectedSubtype).map((regimen) => (
-                      <RegimenCard
-                        key={regimen.id}
-                        regimen={regimen}
-                        onSelect={handleRegimenSelect}
-                        isFavorite={favorites.has(regimen.id)}
-                        onToggleFavorite={handleToggleFavorite}
-                        t={t}
-                      />
-                    ))}
+                    {(() => {
+                      const regimens = getRegimensBySubtype(cancer, selectedSubtype, contextualSearchTerm);
+                      
+                      // Show toast if no results found with search term
+                      if (regimens.length === 0 && contextualSearchTerm.trim() && selectedSubtype !== "all") {
+                        setTimeout(() => showNoResultsToast(contextualSearchTerm, selectedSubtype), 100);
+                      }
+                      
+                      return regimens.map((regimen) => (
+                        <RegimenCard
+                          key={regimen.id}
+                          regimen={regimen}
+                          onSelect={handleRegimenSelect}
+                          isFavorite={favorites.has(regimen.id)}
+                          onToggleFavorite={handleToggleFavorite}
+                          t={t}
+                        />
+                      ));
+                    })()}
                     
-                    {getRegimensBySubtype(cancer, selectedSubtype).length === 0 && (
+                    {getRegimensBySubtype(cancer, selectedSubtype, contextualSearchTerm).length === 0 && (
                       <div className="text-center py-4 text-muted-foreground text-sm">
-                        {t('cancerSelector.meta.noRegimens')}
+                        {contextualSearchTerm.trim() && selectedSubtype !== "all" 
+                          ? t('cancerSelector.noSearchResults', 'No regimens found for "{term}" in {subcategory}', {
+                              term: contextualSearchTerm,
+                              subcategory: t(`cancerSelector.subcategories.${selectedSubtype}`, selectedSubtype)
+                            })
+                          : t('cancerSelector.meta.noRegimens', 'No regimens available')
+                        }
                       </div>
                     )}
                   </div>
