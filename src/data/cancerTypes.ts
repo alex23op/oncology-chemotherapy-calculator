@@ -13,6 +13,27 @@ import {
   ovarianCancerRegimens 
 } from "./regimens/gynaecology";
 
+// Add subtype to gynecological regimens
+const cervicalRegimensWithSubtype = cervicalCancerRegimens.map(regimen => ({
+  ...regimen,
+  subtype: "Cervical Cancer"
+}));
+
+const endometrialRegimensWithSubtype = endometrialCancerRegimens.map(regimen => ({
+  ...regimen,
+  subtype: "Endometrial Cancer"
+}));
+
+const gtnRegimensWithSubtype = gtnRegimens.map(regimen => ({
+  ...regimen,
+  subtype: "GTN"
+}));
+
+const ovarianRegimensWithSubtype = ovarianCancerRegimens.map(regimen => ({
+  ...regimen,
+  subtype: "Ovarian Cancer"
+}));
+
 export const cancerTypes: CancerType[] = [
   {
     id: "breast",
@@ -39,27 +60,14 @@ export const cancerTypes: CancerType[] = [
     regimens: [...headNeckRegimens]
   },
   {
-    id: "gyn-cervical",
-    name: "Cervical Cancer",
+    id: "gyn-all",
+    name: "Gynaecological Cancers",
     category: "Gynaecology",
-    regimens: [...cervicalCancerRegimens]
-  },
-  {
-    id: "gyn-endometrial",
-    name: "Endometrial Cancer", 
-    category: "Gynaecology",
-    regimens: [...endometrialCancerRegimens]
-  },
-  {
-    id: "gyn-gtn",
-    name: "Gestational Trophoblastic Neoplasia (GTN)",
-    category: "Gynaecology", 
-    regimens: [...gtnRegimens]
-  },
-  {
-    id: "gyn-ovarian",
-    name: "Ovarian, Fallopian Tube & Primary Peritoneal Cancer",
-    category: "Gynaecology",
-    regimens: [...ovarianCancerRegimens]
+    regimens: [
+      ...cervicalRegimensWithSubtype,
+      ...endometrialRegimensWithSubtype,
+      ...gtnRegimensWithSubtype,
+      ...ovarianRegimensWithSubtype
+    ]
   }
 ];

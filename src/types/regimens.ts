@@ -49,6 +49,7 @@ export interface Regimen {
   name: string;
   description: string;
   category: "neoadjuvant" | "adjuvant" | "advanced" | "metastatic";
+  subtype?: string;
   lineOfTherapy?: "first-line" | "second-line" | "third-line" | "maintenance" | "salvage";
   drugs: Drug[];
   premedications?: Premedication[];
