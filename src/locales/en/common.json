@@ -354,7 +354,7 @@
   "generateSheetNeedCalcs": "No dose calculations available. Please ensure regimen is selected and patient data is entered.",
   "sheetGenerated": "Treatment sheet generated successfully",
   "dataExported": "Data exported successfully"
-}
+},
   "safetyAlerts": {
     "allClear": "All safety checks passed",
     "title": "Clinical Safety Alerts",
