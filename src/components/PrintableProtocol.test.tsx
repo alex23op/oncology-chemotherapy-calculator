@@ -48,7 +48,8 @@ const mockSolventGroups: GroupedPremedications = {
           timing: '30 min before chemo',
           indication: 'Antiemetic',
           isRequired: true,
-          isStandard: true
+          isStandard: true,
+          solvent: null
         },
         {
           name: 'Granisetron',
@@ -60,7 +61,8 @@ const mockSolventGroups: GroupedPremedications = {
           timing: '30 min before chemo',
           indication: 'Antiemetic',
           isRequired: true,
-          isStandard: true
+          isStandard: true,
+          solvent: null
         }
       ]
     },
@@ -78,7 +80,8 @@ const mockSolventGroups: GroupedPremedications = {
           timing: '30 min before chemo',
           indication: 'Infusion reaction prophylaxis',
           isRequired: false,
-          isStandard: true
+          isStandard: true,
+          solvent: null
         }
       ]
     }
@@ -95,7 +98,7 @@ const mockSolventGroups: GroupedPremedications = {
       indication: 'Gastroprotection',
       isRequired: false,
       isStandard: true,
-      solvent: 'Normal Saline 100ml'
+      solvent: 'Normal Saline 0.9%'
     }
   ]
 };

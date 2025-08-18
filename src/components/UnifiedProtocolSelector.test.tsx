@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { UnifiedProtocolSelector } from './UnifiedProtocolSelector';
+import UnifiedProtocolSelector from './UnifiedProtocolSelector';
 
 // Mock i18next with proper translations
 vi.mock('react-i18next', () => ({

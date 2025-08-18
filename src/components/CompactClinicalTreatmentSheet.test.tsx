@@ -22,14 +22,24 @@ const mockTreatmentData: TreatmentData = {
     groups: [
       {
         id: 'group-1',
-        solvent: 'NaCl 100 ml',
-        medications: [
-          { name: 'Dexametazonă', dosage: '8 mg', route: 'IV', timing: '30 min', category: 'Antiemetics', indication: 'CINV', class: 'Corticosteroid', unit: 'mg', isRequired: true, isStandard: true }
-        ]
+        solvent: 'Normal Saline 0.9%',
+        medications: [{
+          name: 'Dexametazonă',
+          dosage: '8 mg',
+          route: 'IV',
+          timing: '30 min',
+          category: 'Antiemetics',
+          indication: 'CINV',
+          class: 'Corticosteroid',
+          unit: 'mg',
+          isRequired: true,
+          isStandard: true,
+          solvent: null
+        }]
       }
     ],
     individual: [
-      { name: 'Difenhidramină', dosage: '25 mg', route: 'IV', timing: '15 min', category: 'Antiemetics', indication: 'Allergy prophylaxis', solvent: 'Glucoză 250 ml', class: 'Antihistamine', unit: 'mg', isRequired: true, isStandard: true }
+      { name: 'Difenhidramină', dosage: '25 mg', route: 'IV', timing: '15 min', category: 'Antiemetics', indication: 'Allergy prophylaxis', solvent: 'Dextrose 5%', class: 'Antihistamine', unit: 'mg', isRequired: true, isStandard: true }
     ]
   }
 };

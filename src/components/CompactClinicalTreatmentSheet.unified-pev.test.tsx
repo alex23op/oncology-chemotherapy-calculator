@@ -22,22 +22,22 @@ const mockTreatmentDataWithPEVs: TreatmentData = {
     groups: [
       {
         id: 'group-1',
-        solvent: 'NaCl 100 ml',
+        solvent: 'Normal Saline 0.9%',
         medications: [
-          { name: 'Dexametazonă', dosage: '8 mg', route: 'IV', timing: '30 min', category: 'Antiemetics', indication: 'CINV', class: 'Corticosteroid', unit: 'mg', isRequired: true, isStandard: true },
-          { name: 'Granisetron', dosage: '1 mg', route: 'IV', timing: '30 min', category: 'Antiemetics', indication: 'CINV', class: '5-HT3 Antagonist', unit: 'mg', isRequired: true, isStandard: true }
+          { name: 'Dexametazonă', dosage: '8 mg', route: 'IV', timing: '30 min', category: 'Antiemetics', indication: 'CINV', class: 'Corticosteroid', unit: 'mg', isRequired: true, isStandard: true, solvent: null },
+          { name: 'Granisetron', dosage: '1 mg', route: 'IV', timing: '30 min', category: 'Antiemetics', indication: 'CINV', class: '5-HT3 Antagonist', unit: 'mg', isRequired: true, isStandard: true, solvent: null }
         ]
       },
       {
         id: 'group-2',
         solvent: 'Glucoză 250 ml',
         medications: [
-          { name: 'Omeprazol', dosage: '40 mg', route: 'IV', timing: '15 min', category: 'GI Protection', indication: 'Gastroprotection', class: 'PPI', unit: 'mg', isRequired: true, isStandard: true }
+          { name: 'Omeprazol', dosage: '40 mg', route: 'IV', timing: '15 min', category: 'GI Protection', indication: 'Gastroprotection', class: 'PPI', unit: 'mg', isRequired: true, isStandard: true, solvent: null }
         ]
       }
     ],
     individual: [
-      { name: 'Difenhidramină', dosage: '25 mg', route: 'IV', timing: '15 min', category: 'Antiemetics', indication: 'Allergy prophylaxis', solvent: 'NaCl 100 ml', class: 'Antihistamine', unit: 'mg', isRequired: true, isStandard: true }
+      { name: 'Difenhidramină', dosage: '25 mg', route: 'IV', timing: '15 min', category: 'Antiemetics', indication: 'Allergy prophylaxis', solvent: 'Normal Saline 0.9%', class: 'Antihistamine', unit: 'mg', isRequired: true, isStandard: true }
     ]
   }
 };

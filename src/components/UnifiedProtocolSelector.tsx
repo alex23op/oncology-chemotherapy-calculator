@@ -1,58 +1,40 @@
-import { useState, useEffect, useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Shield, AlertTriangle, Clock, Pill, ChevronDown, BookOpen, Edit, Heart, Activity, Zap, Droplet, Users, FileText } from "lucide-react";
-import { Drug } from "@/types/regimens";
-import { PremedAgent, GroupedPremedications } from "@/types/clinicalTreatment";
-import { SolventType, AVAILABLE_SOLVENTS, validateSolventType } from "@/types/solvents";
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { ChevronDown, ChevronRight, CheckCircle, AlertTriangle, Pill, Shield, Heart, Activity, Droplet, Lightbulb, Beaker, ShoppingCart, User, X, Settings } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { toast } from 'sonner';
+import { AVAILABLE_SOLVENTS, SolventType } from '@/types/solvents';
+import type { PremedAgent, PremedSolventGroup, GroupedPremedications } from '@/types/clinicalTreatment';
 import { SolventGroupManager } from './SolventGroupManager';
 
 interface UnifiedProtocolSelectorProps {
   drugNames: string[];
-  drugs: Drug[];
-  emetogenicRiskLevel: "high" | "moderate" | "low" | "minimal";
-  selectedPremedications: any[];
-  selectedAntiemetics: any[];
-  onPremedSelectionsChange: (premedications: any[]) => void;
-  onAntiemeticProtocolChange: (agents: any[]) => void;
-  onGroupingChange?: (grouping: GroupedPremedications) => void;
-  weight: number;
+  emetogenicRisk: "high" | "moderate" | "low" | "minimal";
+  selectedAgents?: LocalPremedAgent[];
+  onSelectionChange?: (agents: LocalPremedAgent[]) => void;
+  onRecommendationApplied?: (agents: LocalPremedAgent[]) => void;
+  onGroupingChange?: (groupedPremedications: GroupedPremedications) => void;
+  patientWeight?: number;
 }
 
-interface LocalPremedAgent {
-  name: string;
-  category: string;
-  class: string;
-  dosage: string;
-  unit: string;
-  route: string;
-  timing: string;
-  indication: string;
-  rationale?: string;
-  isRequired: boolean;
-  isStandard: boolean;
+interface LocalPremedAgent extends PremedAgent {
   administrationDuration?: string;
   weightBased?: boolean;
   notes?: string;
   evidenceLevel?: string;
   drugSpecific?: string[];
-  solvent: SolventType;
 }
 
 interface CategoryData {
   id: string;
   name: string;
   description: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   color: string;
   agents: LocalPremedAgent[];
 }
@@ -78,7 +60,8 @@ const premedCategories: CategoryData[] = [
         isRequired: true,
         isStandard: true,
         evidenceLevel: "IA",
-        drugSpecific: ["cisplatin", "carboplatin", "doxorubicin", "cyclophosphamide"]
+        drugSpecific: ["cisplatin", "carboplatin", "doxorubicin", "cyclophosphamide"],
+        solvent: null
       },
       {
         name: "Granisetron",
@@ -92,7 +75,8 @@ const premedCategories: CategoryData[] = [
         rationale: "Alternative 5-HT3 antagonist with longer half-life",
         isRequired: false,
         isStandard: true,
-        evidenceLevel: "IA"
+        evidenceLevel: "IA",
+        solvent: null
       },
       {
         name: "Aprepitant",
@@ -107,7 +91,8 @@ const premedCategories: CategoryData[] = [
         isRequired: true,
         isStandard: true,
         evidenceLevel: "IA",
-        drugSpecific: ["cisplatin", "doxorubicin", "cyclophosphamide"]
+        drugSpecific: ["cisplatin", "doxorubicin", "cyclophosphamide"],
+        solvent: null
       },
       {
         name: "Dexamethasone",
@@ -121,7 +106,8 @@ const premedCategories: CategoryData[] = [
         rationale: "Synergistic antiemetic effect, reduces delayed emesis",
         isRequired: true,
         isStandard: true,
-        evidenceLevel: "IA"
+        evidenceLevel: "IA",
+        solvent: null
       },
       {
         name: "Olanzapine",
@@ -136,7 +122,8 @@ const premedCategories: CategoryData[] = [
         isRequired: false,
         isStandard: false,
         evidenceLevel: "IIA",
-        drugSpecific: ["cisplatin"]
+        drugSpecific: ["cisplatin"],
+        solvent: null
       }
     ]
   },
@@ -160,7 +147,8 @@ const premedCategories: CategoryData[] = [
         isRequired: true,
         isStandard: true,
         evidenceLevel: "IA",
-        drugSpecific: ["irinotecan"]
+        drugSpecific: ["irinotecan"],
+        solvent: null
       }
     ]
   },
@@ -184,7 +172,8 @@ const premedCategories: CategoryData[] = [
         isRequired: false,
         isStandard: true,
         evidenceLevel: "IIA",
-        drugSpecific: ["irinotecan", "FOLFIRI"]
+        drugSpecific: ["irinotecan", "FOLFIRI"],
+        solvent: null
       }
     ]
   },
@@ -208,7 +197,8 @@ const premedCategories: CategoryData[] = [
         isRequired: true,
         isStandard: true,
         evidenceLevel: "IA",
-        drugSpecific: ["paclitaxel", "docetaxel", "carboplatin", "oxaliplatin"]
+        drugSpecific: ["paclitaxel", "docetaxel", "carboplatin", "oxaliplatin"],
+        solvent: null
       },
       {
         name: "Famotidine",
@@ -223,7 +213,8 @@ const premedCategories: CategoryData[] = [
         isRequired: true,
         isStandard: true,
         evidenceLevel: "IA",
-        drugSpecific: ["paclitaxel", "docetaxel", "carboplatin", "oxaliplatin"]
+        drugSpecific: ["paclitaxel", "docetaxel", "carboplatin", "oxaliplatin"],
+        solvent: null
       },
       {
         name: "Dexamethasone",
@@ -238,7 +229,8 @@ const premedCategories: CategoryData[] = [
         isRequired: true,
         isStandard: true,
         evidenceLevel: "IA",
-        drugSpecific: ["paclitaxel", "docetaxel"]
+        drugSpecific: ["paclitaxel", "docetaxel"],
+        solvent: null
       }
     ]
   },
@@ -261,7 +253,8 @@ const premedCategories: CategoryData[] = [
         rationale: "Prevents steroid-induced gastric ulceration",
         isRequired: false,
         isStandard: true,
-        evidenceLevel: "IIA"
+        evidenceLevel: "IIA",
+        solvent: null
       },
       {
         name: "Famotidine",
@@ -275,7 +268,8 @@ const premedCategories: CategoryData[] = [
         rationale: "Alternative gastroprotection for patients intolerant to PPIs",
         isRequired: false,
         isStandard: true,
-        evidenceLevel: "IIB"
+        evidenceLevel: "IIB",
+        solvent: null
       }
     ]
   },
@@ -299,7 +293,8 @@ const premedCategories: CategoryData[] = [
         isRequired: false,
         isStandard: true,
         evidenceLevel: "IIA",
-        drugSpecific: ["cisplatin"]
+        drugSpecific: ["cisplatin"],
+        solvent: null
       },
       {
         name: "Mannitol",
@@ -314,695 +309,546 @@ const premedCategories: CategoryData[] = [
         isRequired: false,
         isStandard: true,
         evidenceLevel: "IIA",
-        drugSpecific: ["cisplatin"]
+        drugSpecific: ["cisplatin"],
+        solvent: null
       },
       {
         name: "Mesna",
         category: "Uroprotectant",
-        class: "Sulfhydryl Compound",
-        dosage: "60% of cyclophosphamide dose",
-        unit: "mg",
+        class: "Thiol Compound",
+        dosage: "400",
+        unit: "mg/m²",
         route: "IV",
-        timing: "Before, 4h, and 8h after cyclophosphamide",
+        timing: "0, 4, and 8 hours after cyclophosphamide",
         indication: "Hemorrhagic cystitis prevention",
-        rationale: "Detoxifies acrolein metabolite preventing bladder toxicity",
+        rationale: "Neutralizes acrolein metabolite of cyclophosphamide in bladder",
         isRequired: true,
         isStandard: true,
         evidenceLevel: "IA",
-        drugSpecific: ["cyclophosphamide", "ifosfamide"]
+        drugSpecific: ["cyclophosphamide", "ifosfamide"],
+        solvent: null
       },
       {
         name: "Dexrazoxane",
         category: "Cardioprotectant",
         class: "Iron Chelator",
-        dosage: "10:1 ratio to doxorubicin",
-        unit: "mg",
+        dosage: "300",
+        unit: "mg/m²",
         route: "IV",
         timing: "30 minutes before doxorubicin",
-        indication: "Cardiotoxicity prevention",
-        rationale: "Prevents doxorubicin-induced cardiomyopathy in high cumulative doses",
+        indication: "Cardiomyopathy prevention",
+        rationale: "Prevents doxorubicin-induced cardiomyopathy by iron chelation",
         isRequired: false,
         isStandard: false,
         evidenceLevel: "IIA",
         drugSpecific: ["doxorubicin"],
-        notes: "Consider after cumulative dose >300 mg/m²"
+        notes: "Consider after cumulative dose ≥300 mg/m²",
+        solvent: null
       }
     ]
   },
   {
-    id: "tumor_lysis",
-    name: "Tumor Lysis Syndrome Prophylaxis",
-    description: "Prevention of tumor lysis syndrome in high-risk patients",
-    icon: Zap,
-    color: "bg-indigo-50 border-indigo-200 text-indigo-800",
-    agents: [
-      {
-        name: "Allopurinol",
-        category: "Xanthine Oxidase Inhibitor",
-        class: "Uric Acid Reducer",
-        dosage: "300",
-        unit: "mg",
-        route: "PO",
-        timing: "Daily, start 24-48h before chemotherapy",
-        indication: "Hyperuricemia prevention",
-        rationale: "Prevents uric acid formation in high tumor burden patients",
-        isRequired: false,
-        isStandard: true,
-        evidenceLevel: "IA",
-        notes: "For intermediate TLS risk"
-      },
-      {
-        name: "Rasburicase",
-        category: "Urate Oxidase",
-        class: "Uric Acid Metabolizer", 
-        dosage: "0.2",
-        unit: "mg/kg",
-        route: "IV",
-        timing: "Once daily x 1-5 days",
-        indication: "Severe hyperuricemia treatment",
-        rationale: "Rapidly metabolizes existing uric acid in high-risk TLS patients",
-        isRequired: false,
-        isStandard: false,
-        evidenceLevel: "IA",
-        notes: "For high TLS risk, contraindicated in G6PD deficiency"
-      }
-    ]
-  },
-  {
-    id: "growth_factors",
-    name: "Hematologic Growth Factors",
-    description: "Support for bone marrow function and blood cell recovery",
-    icon: Users,
+    id: "electrolyte",
+    name: "Electrolyte & Metabolic Support",
+    description: "Electrolyte replacement and metabolic support agents",
+    icon: Beaker,
     color: "bg-cyan-50 border-cyan-200 text-cyan-800",
     agents: [
       {
-        name: "Pegfilgrastim",
-        category: "G-CSF",
-        class: "Granulocyte Colony Stimulating Factor",
-        dosage: "6",
-        unit: "mg",
-        route: "SQ",
-        timing: "24-72 hours after chemotherapy completion",
-        indication: "Neutropenia prevention",
-        rationale: "Reduces incidence and duration of severe neutropenia",
-        isRequired: false,
-        isStandard: true,
-        evidenceLevel: "IA",
-        notes: "Use when neutropenia risk >20%"
-      },
-      {
-        name: "Filgrastim",
-        category: "G-CSF",
-        class: "Granulocyte Colony Stimulating Factor",
-        dosage: "5",
-        unit: "mcg/kg",
-        route: "SQ",
-        timing: "Daily starting 24-72h after chemotherapy until ANC recovery",
-        indication: "Neutropenia prevention/treatment",
-        rationale: "Stimulates neutrophil production and function",
-        isRequired: false,
-        isStandard: true,
-        evidenceLevel: "IA"
-      }
-    ]
-  },
-  {
-    id: "nutrition",
-    name: "Nutritional and Vitamin Support",
-    description: "Adjunctive amino acids and vitamins for supportive care",
-    icon: BookOpen,
-    color: "bg-teal-50 border-teal-200 text-teal-800",
-    agents: [
-      {
-        name: "Arginine Sorbitol",
-        category: "Amino Acid Solution",
-        class: "Nutritional Support",
-        dosage: "100",
-        unit: "mL",
-        route: "IV",
-        timing: "During chemotherapy as prescribed",
-        indication: "Nutritional support",
-        rationale: "Adjunctive nutritional support in selected patients",
-        isRequired: false,
-        isStandard: false,
-        evidenceLevel: "IIA"
-      },
-      {
-        name: "Aminosterin N-hepa",
-        category: "Amino Acid Solution",
-        class: "Nutritional Support",
-        dosage: "250",
-        unit: "mL",
-        route: "IV",
-        timing: "As prescribed",
-        indication: "Parenteral nutrition support",
-        rationale: "Amino acids for hepatic patients",
-        isRequired: false,
-        isStandard: false,
-        evidenceLevel: "IIB"
-      },
-      {
-        name: "Aspatofort",
-        category: "Hepatoprotective",
-        class: "Amino acids",
-        dosage: "1-2",
-        unit: "amp",
-        route: "IV",
-        timing: "As prescribed",
-        indication: "Hepatic support",
-        rationale: "Supportive hepatic protection",
-        isRequired: false,
-        isStandard: false,
-        evidenceLevel: "IIB"
-      },
-      {
-        name: "Vitamin B1 (Thiamine)",
-        category: "Vitamin",
-        class: "Water-soluble vitamin",
-        dosage: "100",
-        unit: "mg",
-        route: "IV",
-        timing: "Before/after chemotherapy",
-        indication: "Vitamin supplementation",
-        rationale: "Thiamine repletion",
-        isRequired: false,
-        isStandard: false,
-        evidenceLevel: "IIIA"
-      },
-      {
-        name: "Vitamin B6 (Pyridoxine)",
-        category: "Vitamin",
-        class: "Water-soluble vitamin",
-        dosage: "50",
-        unit: "mg",
-        route: "IV",
-        timing: "As prescribed",
-        indication: "Vitamin supplementation",
-        rationale: "Pyridoxine supplementation",
-        isRequired: false,
-        isStandard: false,
-        evidenceLevel: "IIIA"
-      },
-      {
-        name: "Vitamin C (Ascorbic Acid)",
-        category: "Vitamin",
-        class: "Antioxidant",
+        name: "Magnesium Sulfate",
+        category: "Electrolyte Replacement",
+        class: "Mineral Supplement",
         dosage: "1-2",
         unit: "g",
         route: "IV",
-        timing: "As prescribed",
-        indication: "Vitamin supplementation",
-        rationale: "Antioxidant support",
+        timing: "Pre- and post-platinum therapy",
+        indication: "Hypomagnesemia prevention/treatment",
+        rationale: "Prevents platinum-induced hypomagnesemia and associated symptoms",
         isRequired: false,
-        isStandard: false,
-        evidenceLevel: "IIIA"
+        isStandard: true,
+        evidenceLevel: "IIA",
+        notes: "Monitor serum Mg levels",
+        solvent: null
       },
       {
-        name: "Solu-Vit",
-        category: "Multivitamin",
-        class: "Parenteral Multivitamin",
-        dosage: "1",
-        unit: "vial",
+        name: "Leucovorin",
+        category: "Folate Analog",
+        class: "Antidote/Rescue Agent",
+        dosage: "20",
+        unit: "mg/m²",
         route: "IV",
-        timing: "Added to infusion as prescribed",
-        indication: "Multivitamin support",
-        rationale: "Parenteral multivitamin preparation",
+        timing: "24 hours after methotrexate",
+        indication: "Methotrexate rescue",
+        rationale: "Bypasses methotrexate-induced folate antagonism",
         isRequired: false,
         isStandard: false,
-        evidenceLevel: "IIB"
+        evidenceLevel: "IA",
+        notes: "Dose depends on MTX level and clearance",
+        solvent: null
       }
     ]
   }
 ];
 
-export const UnifiedProtocolSelector = ({
-  drugNames,
-  drugs,
-  emetogenicRiskLevel,
-  selectedPremedications,
-  selectedAntiemetics,
-  onPremedSelectionsChange,
-  onAntiemeticProtocolChange,
+export default function UnifiedProtocolSelector({
+  drugNames = [],
+  emetogenicRisk,
+  selectedAgents = [],
+  onSelectionChange,
+  onRecommendationApplied,
   onGroupingChange,
-  weight
-}: UnifiedProtocolSelectorProps) => {
-  const [selectedAgents, setSelectedAgents] = useState<PremedAgent[]>([]);
-  const [expandedCategories, setExpandedCategories] = useState<string[]>(["cinv"]);
+  patientWeight
+}: UnifiedProtocolSelectorProps) {
+  const { t } = useTranslation();
+  const [localSelectedAgents, setLocalSelectedAgents] = useState<LocalPremedAgent[]>(selectedAgents);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const [activeTab, setActiveTab] = useState("recommendations");
   const [solventSelections, setSolventSelections] = useState<Record<string, SolventType>>({});
   const [groupedPremedications, setGroupedPremedications] = useState<GroupedPremedications>({
     groups: [],
     individual: []
   });
-  const { t } = useTranslation();
 
-  // Notify parent component when selected agents change
+  // Notify parent component when selection changes
   useEffect(() => {
-    onAntiemeticProtocolChange(selectedAgents);
-  }, [selectedAgents, onAntiemeticProtocolChange]);
+    onSelectionChange?.(localSelectedAgents);
+  }, [localSelectedAgents, onSelectionChange]);
 
-  // Get recommendations based on drugs and emetogenic risk
-  const recommendations = useMemo(() => {
-    const recs: LocalPremedAgent[] = [];
-    
-    premedCategories.forEach(category => {
-      category.agents.forEach(agent => {
-        // Check if agent is recommended for current drugs
-        const isRecommendedForDrugs = !agent.drugSpecific || 
-          agent.drugSpecific.some(drug => 
-            drugNames.some(drugName => 
-              drugName.toLowerCase().includes(drug.toLowerCase()) ||
-              drug.toLowerCase().includes(drugName.toLowerCase())
-            )
-          );
-
-        // Check emetogenic risk requirements
-        const isRecommendedForRisk = 
-          (category.id === "cinv" && (emetogenicRiskLevel === "high" || emetogenicRiskLevel === "moderate")) ||
-          category.id !== "cinv";
-
-        if (isRecommendedForDrugs && isRecommendedForRisk) {
-          recs.push(agent);
-        }
-      });
-    });
-
-    return recs;
-  }, [drugNames, emetogenicRiskLevel]);
-
-  const validateGrouping = (): { isValid: boolean; errors: string[] } => {
-    const errors: string[] = [];
-    
-    groupedPremedications.groups.forEach((group, index) => {
-      if (!group.solvent || !group.solvent.trim()) {
-        errors.push(t('solventGroups.validation.noSolvent', { pev: index + 1 }));
-      }
-      if (group.medications.length === 0) {
-        errors.push(t('solventGroups.validation.emptyPev', { pev: index + 1 }));
-      }
-    });
-    
-    return { isValid: errors.length === 0, errors };
-  };
-
-  // Handle grouping changes
-  const handleGroupingChange = (grouping: GroupedPremedications) => {
-    setGroupedPremedications(grouping);
-    if (onGroupingChange) {
-      onGroupingChange(grouping);
-    }
-  };
-
-  // Update grouped medications when selected agents change
+  // Update grouped medications when selection changes
   useEffect(() => {
-    // Auto-assign new agents to individual category
-    const allGroupedMedications = [
-      ...groupedPremedications.individual,
-      ...groupedPremedications.groups.flatMap(group => group.medications)
-    ];
-    
-    const newMedications = selectedAgents.filter(agent => 
-      !allGroupedMedications.some(grouped => grouped.name === agent.name)
-    );
-    
-    if (newMedications.length > 0) {
-      setGroupedPremedications(prev => ({
-        ...prev,
-        individual: [...prev.individual, ...newMedications]
-      }));
-    }
-  }, [selectedAgents, groupedPremedications]);
-
-  const handleAgentToggle = (agent: LocalPremedAgent, isSelected: boolean) => {
-    if (isSelected) {
-      const agentWithSolvent = { ...agent, solvent: solventSelections[agent.name] };
-      setSelectedAgents(prev => [...prev, agentWithSolvent]);
-    } else {
-      setSelectedAgents(prev => prev.filter(a => a.name !== agent.name));
-    }
-  };
-
-  const handleSolventChange = (agentName: string, solvent: string) => {
-    const newSolventSelections = {
-      ...solventSelections,
-      [agentName]: solvent
+    const updatedGrouped = {
+      ...groupedPremedications,
+      individual: localSelectedAgents.filter(agent => 
+        !groupedPremedications.groups.some(group => 
+          group.medications.some(med => med.name === agent.name)
+        )
+      )
     };
-    setSolventSelections(newSolventSelections);
+    setGroupedPremedications(updatedGrouped);
+    onGroupingChange?.(updatedGrouped);
+  }, [localSelectedAgents, groupedPremedications.groups, onGroupingChange]);
 
-    // Update the selected agents with solvent
-    setSelectedAgents(prev => 
+  // Calculate recommendations based on drug names and emetogenic risk
+  const recommendations = useMemo(() => {
+    const recommendedAgents: LocalPremedAgent[] = [];
+    
+    // Get all agents from categories
+    const allAgents = premedCategories.flatMap(category => category.agents);
+    
+    // Risk-based recommendations
+    if (emetogenicRisk === 'high') {
+      recommendedAgents.push(
+        ...allAgents.filter(agent => 
+          ['Ondansetron', 'Aprepitant', 'Dexamethasone', 'Olanzapine'].includes(agent.name)
+        )
+      );
+    } else if (emetogenicRisk === 'moderate') {
+      recommendedAgents.push(
+        ...allAgents.filter(agent => 
+          ['Ondansetron', 'Dexamethasone'].includes(agent.name)
+        )
+      );
+    }
+
+    // Drug-specific recommendations
+    drugNames.forEach(drugName => {
+      const drugLower = drugName.toLowerCase();
+      const specificAgents = allAgents.filter(agent => 
+        agent.drugSpecific?.some(specificDrug => drugLower.includes(specificDrug.toLowerCase()))
+      );
+      recommendedAgents.push(...specificAgents);
+    });
+
+    // Remove duplicates
+    const uniqueRecommendations = recommendedAgents.filter((agent, index, self) => 
+      index === self.findIndex(a => a.name === agent.name)
+    );
+
+    return uniqueRecommendations;
+  }, [drugNames, emetogenicRisk]);
+
+  const handleAgentToggle = useCallback((agent: LocalPremedAgent, isSelected: boolean) => {
+    setLocalSelectedAgents(prev => {
+      if (isSelected) {
+        return [...prev, { ...agent, solvent: solventSelections[agent.name] || null }];
+      } else {
+        // Remove from both local selection and solvent selections
+        setSolventSelections(prevSolvents => {
+          const newSolvents = { ...prevSolvents };
+          delete newSolvents[agent.name];
+          return newSolvents;
+        });
+        return prev.filter(a => a.name !== agent.name);
+      }
+    });
+  }, [solventSelections]);
+
+  const handleSolventChange = useCallback((agentName: string, solvent: SolventType) => {
+    setSolventSelections(prev => ({
+      ...prev,
+      [agentName]: solvent
+    }));
+
+    setLocalSelectedAgents(prev => 
       prev.map(agent => 
         agent.name === agentName 
-          ? { ...agent, solvent: solvent || undefined }
+          ? { ...agent, solvent }
           : agent
       )
     );
-  };
+  }, []);
 
-  const applyRecommendations = () => {
-    setSelectedAgents(recommendations);
-  };
+  const applyRecommendations = useCallback(() => {
+    const recommendationsWithSolvents = recommendations.map(rec => ({
+      ...rec,
+      solvent: solventSelections[rec.name] || null
+    }));
+    
+    setLocalSelectedAgents(recommendationsWithSolvents);
+    onRecommendationApplied?.(recommendationsWithSolvents);
+    toast.success(t('unifiedSelector.recommendationsApplied'));
+  }, [recommendations, solventSelections, onRecommendationApplied, t]);
 
-  const clearSelections = () => {
-    setSelectedAgents([]);
+  const clearAllSelections = useCallback(() => {
+    setLocalSelectedAgents([]);
     setSolventSelections({});
-  };
+    setGroupedPremedications({ groups: [], individual: [] });
+    toast.success(t('unifiedSelector.selectionsCleared'));
+  }, [t]);
 
-  const toggleCategory = (categoryId: string) => {
-    setExpandedCategories(prev => 
-      prev.includes(categoryId) 
-        ? prev.filter(id => id !== categoryId)
-        : [...prev, categoryId]
-    );
-  };
+  const toggleCategoryExpansion = useCallback((categoryId: string) => {
+    setExpandedCategories(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(categoryId)) {
+        newSet.delete(categoryId);
+      } else {
+        newSet.add(categoryId);
+      }
+      return newSet;
+    });
+  }, []);
+
+  const isAgentSelected = useCallback((agentName: string) => {
+    return localSelectedAgents.some(agent => agent.name === agentName);
+  }, [localSelectedAgents]);
+
+  const validateGrouping = useCallback(() => {
+    // Validation logic for PEV groups
+    const errors: string[] = [];
+    
+    groupedPremedications.groups.forEach((group, index) => {
+      if (!group.solvent) {
+        errors.push(t('unifiedSelector.errors.groupNeedsSolvent', { groupNumber: index + 1 }));
+      }
+      if (group.medications.length === 0) {
+        errors.push(t('unifiedSelector.errors.groupNeedsMedications', { groupNumber: index + 1 }));
+      }
+    });
+
+    if (errors.length > 0) {
+      errors.forEach(error => toast.error(error));
+      return false;
+    }
+    
+    return true;
+  }, [groupedPremedications, t]);
 
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-primary">
-            <Shield className="h-5 w-5" />
-            {t('unifiedSelector.title')}
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={clearSelections}>
-              {t('premedSelector.clearAll')}
-            </Button>
-          </div>
-        </CardTitle>
-        <div className="flex flex-wrap gap-2">
-          {drugNames.map(drug => (
-            <Badge key={drug} variant="outline" className="text-xs">
-              {drug}
-            </Badge>
-          ))}
-          <Badge variant="secondary" className="text-xs">
-            {t('unifiedSelector.riskBadge', { level: emetogenicRiskLevel.toUpperCase() })}
-          </Badge>
-          <Badge variant="default" className="text-xs">
-            {t('unifiedSelector.selectedCount', { count: selectedAgents.length })}
-          </Badge>
-        </div>
-      </CardHeader>
+    <div className="space-y-6">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <TabsList className="grid w-full grid-cols-5">
+          <TabsTrigger value="recommendations" className="flex items-center gap-2">
+            <Lightbulb className="h-4 w-4" />
+            {t('unifiedSelector.tabs.recommendations')}
+          </TabsTrigger>
+          <TabsTrigger value="categories" className="flex items-center gap-2">
+            <ShoppingCart className="h-4 w-4" />
+            {t('unifiedSelector.tabs.categories')}
+          </TabsTrigger>
+          <TabsTrigger value="solvents" className="flex items-center gap-2">
+            <Beaker className="h-4 w-4" />
+            {t('unifiedSelector.tabs.solvents')}
+          </TabsTrigger>
+          <TabsTrigger value="grouping" className="flex items-center gap-2">
+            <Settings className="h-4 w-4" />
+            {t('unifiedSelector.tabs.grouping')}
+          </TabsTrigger>
+          <TabsTrigger value="selected" className="flex items-center gap-2">
+            <User className="h-4 w-4" />
+            {t('unifiedSelector.tabs.selected')} ({localSelectedAgents.length})
+          </TabsTrigger>
+        </TabsList>
 
-      <CardContent>
-        <Tabs defaultValue="recommendations" className="w-full">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="recommendations">{t('unifiedSelector.tabs.recommendations')}</TabsTrigger>
-            <TabsTrigger value="categories">{t('unifiedSelector.tabs.categories')}</TabsTrigger>
-            <TabsTrigger value="solvents">{t('unifiedSelector.tabs.solvents')}</TabsTrigger>
-            <TabsTrigger value="grouping">{t('unifiedSelector.tabs.grouping')}</TabsTrigger>
-            <TabsTrigger value="selected">{t('unifiedSelector.tabs.selected')}</TabsTrigger>
-          </TabsList>
+        <TabsContent value="recommendations" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Lightbulb className="h-5 w-5" />
+                {t('unifiedSelector.recommendations.title')}
+              </CardTitle>
+              <CardDescription>
+                {t('unifiedSelector.recommendations.description', { 
+                  risk: emetogenicRisk, 
+                  drugs: drugNames.join(', ') 
+                })}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {recommendations.length === 0 ? (
+                <p className="text-muted-foreground text-sm">
+                  {t('unifiedSelector.recommendations.noRecommendations')}
+                </p>
+              ) : (
+                <>
+                  <div className="space-y-2">
+                    {recommendations.map((agent) => (
+                      <div
+                        key={agent.name}
+                        className="flex items-center justify-between p-3 border rounded-lg"
+                      >
+                        <div className="flex items-center space-x-3">
+                          <Checkbox
+                            checked={isAgentSelected(agent.name)}
+                            onCheckedChange={(checked) => 
+                              handleAgentToggle(agent, checked as boolean)
+                            }
+                          />
+                          <div>
+                            <div className="font-medium">{agent.name}</div>
+                            <div className="text-sm text-muted-foreground">
+                              {agent.dosage} {agent.unit} {agent.route} - {agent.indication}
+                            </div>
+                          </div>
+                        </div>
+                        <Badge 
+                          variant={agent.isRequired ? "default" : "secondary"}
+                          className="ml-2"
+                        >
+                          {agent.isRequired ? t('unifiedSelector.required') : t('unifiedSelector.optional')}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button onClick={applyRecommendations} className="flex-1">
+                      {t('unifiedSelector.recommendations.apply')}
+                    </Button>
+                    <Button onClick={clearAllSelections} variant="outline">
+                      {t('unifiedSelector.recommendations.clear')}
+                    </Button>
+                  </div>
+                </>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-          <TabsContent value="recommendations" className="space-y-4">
-            <Alert>
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>
-                {t('unifiedSelector.recommendationsDesc', { drugs: drugNames.join(", "), risk: emetogenicRiskLevel })}
-              </AlertDescription>
-            </Alert>
-
-            <div className="flex gap-2 mb-4">
-              <Button onClick={applyRecommendations} className="flex-1">
-                {t('unifiedSelector.applyAll', { count: recommendations.length })}
-              </Button>
-            </div>
-
-            <div className="grid gap-3">
-              {recommendations.map((agent, idx) => {
-                const isSelected = selectedAgents.some(a => a.name === agent.name);
-                const category = premedCategories.find(cat => 
-                  cat.agents.some(a => a.name === agent.name)
-                );
-                
-                return (
-                  <Card key={idx} className={`border-2 transition-all ${
-                    isSelected ? "border-primary bg-primary/5" : "border-muted"
-                  }`}>
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
+        <TabsContent value="categories" className="space-y-4">
+          {premedCategories.map((category) => (
+            <Card key={category.id}>
+              <CardHeader 
+                className="cursor-pointer"
+                onClick={() => toggleCategoryExpansion(category.id)}
+              >
+                <CardTitle className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <category.icon className="h-5 w-5" />
+                    {category.name}
+                  </div>
+                  {expandedCategories.has(category.id) ? (
+                    <ChevronDown className="h-4 w-4" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4" />
+                  )}
+                </CardTitle>
+                <CardDescription>{category.description}</CardDescription>
+              </CardHeader>
+              
+              {expandedCategories.has(category.id) && (
+                <CardContent className="space-y-3">
+                  {category.agents.map((agent) => (
+                    <div
+                      key={agent.name}
+                      className="flex items-start justify-between p-3 border rounded-lg hover:bg-muted/50"
+                    >
+                      <div className="flex items-start space-x-3">
                         <Checkbox
-                          checked={isSelected}
-                          onCheckedChange={(checked) => handleAgentToggle(agent, checked as boolean)}
+                          checked={isAgentSelected(agent.name)}
+                          onCheckedChange={(checked) => 
+                            handleAgentToggle(agent, checked as boolean)
+                          }
                           className="mt-1"
                         />
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-2">
-                            <h4 className="font-semibold">{agent.name}</h4>
-                            <Badge variant="outline" className="text-xs">
-                              {agent.category}
-                            </Badge>
-                            {agent.evidenceLevel && (
-                              <Badge variant="secondary" className="text-xs">
-                                {agent.evidenceLevel}
-                              </Badge>
-                            )}
-                            {agent.isRequired && (
-                              <Badge variant="destructive" className="text-xs">
-                                {t('premedSelector.required')}
-                              </Badge>
-                            )}
+                        <div className="space-y-1">
+                          <div className="font-medium">{agent.name}</div>
+                          <div className="text-sm text-muted-foreground">
+                            <strong>{agent.dosage} {agent.unit}</strong> {agent.route} - {agent.timing}
                           </div>
-                          <div className="text-sm space-y-1">
-                            <p><strong>{t('clinicalSheet.dose')}:</strong> {agent.dosage} {agent.unit} {agent.route}</p>
-                            <p><strong>{t('printableProtocol.timing')}:</strong> {agent.timing}</p>
-                            <p><strong>{t('clinicalSheet.indication')}:</strong> {agent.indication}</p>
-                            <p className="text-muted-foreground">{agent.rationale}</p>
-                            {agent.notes && (
-                              <p className="text-xs text-orange-600 font-medium">{agent.notes}</p>
-                            )}
+                          <div className="text-sm text-muted-foreground">
+                            <em>{agent.indication}</em>
                           </div>
+                          {agent.rationale && (
+                            <div className="text-xs text-muted-foreground bg-muted p-2 rounded">
+                              <strong>{t('unifiedSelector.rationale')}:</strong> {agent.rationale}
+                            </div>
+                          )}
+                          {agent.notes && (
+                            <div className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
+                              <strong>{t('unifiedSelector.notes')}:</strong> {agent.notes}
+                            </div>
+                          )}
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="categories" className="space-y-4">
-            {premedCategories.map(category => {
-              const Icon = category.icon;
-              const isExpanded = expandedCategories.includes(category.id);
-              
-              return (
-                <Card key={category.id} className="border">
-                  <CardHeader 
-                    className="cursor-pointer"
-                    onClick={() => toggleCategory(category.id)}
-                  >
-                    <CardTitle className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded ${category.color}`}>
-                          <Icon className="h-4 w-4" />
-                        </div>
-                        <div>
-                          <h3 className="text-lg">{t(`unifiedSelector.categories.${category.id}.name`, { defaultValue: category.name })}</h3>
-                          <p className="text-sm text-muted-foreground font-normal">
-                            {t(`unifiedSelector.categories.${category.id}.description`, { defaultValue: category.description })}
-                          </p>
-                        </div>
+                      <div className="flex flex-col gap-1">
+                        <Badge 
+                          variant={agent.isRequired ? "default" : "secondary"}
+                          className="text-xs"
+                        >
+                          {agent.isRequired ? t('unifiedSelector.required') : t('unifiedSelector.optional')}
+                        </Badge>
+                        {agent.evidenceLevel && (
+                          <Badge variant="outline" className="text-xs">
+                            {agent.evidenceLevel}
+                          </Badge>
+                        )}
                       </div>
-                      <ChevronDown className={`h-5 w-5 transition-transform ${
-                        isExpanded ? "rotate-180" : ""
-                      }`} />
-                    </CardTitle>
-                  </CardHeader>
+                    </div>
+                  ))}
+                </CardContent>
+              )}
+            </Card>
+          ))}</TabsContent>
 
-                  {isExpanded && (
-                    <CardContent className="space-y-3">
-                      {category.agents.map((agent, idx) => {
-                        const isSelected = selectedAgents.some(a => a.name === agent.name);
-                        
-                        return (
-                          <Card key={idx} className={`border ${
-                            isSelected ? "border-primary bg-primary/5" : "border-muted"
-                          }`}>
-                            <CardContent className="p-4">
-                              <div className="flex items-start gap-3">
-                                <Checkbox
-                                  checked={isSelected}
-                                  onCheckedChange={(checked) => handleAgentToggle(agent, checked as boolean)}
-                                  className="mt-1"
-                                />
-                                <div className="flex-1">
-                                  <div className="flex items-center gap-2 mb-2">
-                                    <h4 className="font-semibold">{agent.name}</h4>
-                                    <Badge variant="outline" className="text-xs">
-                                      {agent.class}
-                                    </Badge>
-                                    {agent.evidenceLevel && (
-                                      <Badge variant="secondary" className="text-xs">
-                                        {agent.evidenceLevel}
-                                      </Badge>
-                                    )}
-                                  </div>
-                                  <div className="text-sm space-y-1">
-                                    <p><strong>{t('clinicalSheet.dose')}:</strong> {agent.dosage} {agent.unit} {agent.route}</p>
-                                    <p><strong>{t('printableProtocol.timing')}:</strong> {agent.timing}</p>
-                                    <p><strong>{t('clinicalSheet.indication')}:</strong> {agent.indication}</p>
-                                    <p className="text-muted-foreground">{agent.rationale}</p>
-                                    {agent.drugSpecific && (
-                                      <p className="text-xs"><strong>{t('unifiedSelector.specificFor')}:</strong> {agent.drugSpecific.join(", ")}</p>
-                                    )}
-                                    {agent.notes && (
-                                      <p className="text-xs text-orange-600 font-medium">{agent.notes}</p>
-                                    )}
-                                  </div>
-                                </div>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        );
-                      })}
-                    </CardContent>
-                  )}
-                </Card>
-              );
-            })}
-          </TabsContent>
-
-          <TabsContent value="solvents" className="space-y-4">
-            {selectedAgents.length === 0 ? (
-              <Alert>
-                <AlertDescription>
-                  {t('unifiedSelector.noAgentsForSolvents')}
-                </AlertDescription>
-              </Alert>
-            ) : (
-              <div className="space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  {t('solventGroups.selectSolventDescription')}
+        <TabsContent value="solvents" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Beaker className="h-5 w-5" />
+                {t('solventGroups.title')}
+              </CardTitle>
+              <CardDescription>
+                {t('solventGroups.selectSolventDescription')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {localSelectedAgents.length === 0 ? (
+                <p className="text-muted-foreground text-sm">
+                  {t('solventGroups.noAgentsSelected')}
                 </p>
-                
-                {selectedAgents.map((agent, idx) => (
-                  <Card key={idx} className="border border-muted">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-3">
-                          <div className="flex-1">
-                            <h4 className="font-semibold">{agent.name}</h4>
-                            <p className="text-sm text-muted-foreground">
-                              {agent.dosage} {agent.unit} {agent.route}
-                            </p>
-                          </div>
-                        </div>
-                        
-                        <div className="min-w-[200px]">
-                          <Label className="text-muted-foreground font-semibold text-sm">
-                            {t('solventGroups.solvent')}
-                          </Label>
-                          <Select 
-                            value={solventSelections[agent.name] || ''} 
-                            onValueChange={(value) => handleSolventChange(agent.name, value)}
-                          >
-                            <SelectTrigger className="mt-1">
-                              <SelectValue placeholder={t('doseCalculator.selectSolvent')} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {AVAILABLE_SOLVENTS.map(solvent => (
-                                <SelectItem key={solvent} value={solvent}>
-                                  {t(`solvents.${solvent?.toLowerCase().replace(/[\s%.]/g, '').replace('injection', 'Injection')}` as any) || solvent}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+              ) : (
+                <div className="space-y-4">
+                  {localSelectedAgents.map((agent) => (
+                    <div
+                      key={agent.name}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
+                      <div>
+                        <div className="font-medium">{agent.name}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {agent.dosage} {agent.unit} {agent.route}
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="grouping" className="space-y-4">
-            {selectedAgents.length === 0 ? (
-              <Alert>
-                <AlertDescription>
-                  {t('unifiedSelector.noAgentsForSolvents')}
-                </AlertDescription>
-              </Alert>
-            ) : (
-              <SolventGroupManager
-                selectedAgents={selectedAgents}
-                groupedPremedications={groupedPremedications}
-                onGroupingChange={handleGroupingChange}
-              />
-            )}
-          </TabsContent>
-
-          <TabsContent value="selected" className="space-y-4">
-            {selectedAgents.length === 0 ? (
-              <Alert>
-                <AlertDescription>
-                  {t('unifiedSelector.emptySelected')}
-                </AlertDescription>
-              </Alert>
-            ) : (
-              <>
-              <Alert className="mb-4">
-                <FileText className="h-4 w-4" />
-                <AlertDescription>
-                  {t('unifiedSelector.selectedHeader', { drugs: drugNames.join(", "), count: selectedAgents.length })}
-                </AlertDescription>
-                </Alert>
-
-                <div className="space-y-4">
-                  {premedCategories.map(category => {
-                    const categoryAgents = selectedAgents.filter(agent => 
-                      category.agents.some(catAgent => catAgent.name === agent.name)
-                    );
-
-                    if (categoryAgents.length === 0) return null;
-
-                    const Icon = category.icon;
-
-                    return (
-                      <Card key={category.id} className="border">
-                        <CardHeader className="pb-3">
-                          <CardTitle className="flex items-center gap-2 text-base">
-                            <div className={`p-2 rounded ${category.color}`}>
-                              <Icon className="h-4 w-4" />
-                            </div>
-                            {t(`unifiedSelector.categories.${category.id}.name`, { defaultValue: category.name })} ({categoryAgents.length})
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-3">
-                          {categoryAgents.map((agent, idx) => (
-                            <div key={idx} className="border rounded p-3 bg-muted/30">
-                              <div className="flex justify-between items-start mb-2">
-                                <h4 className="font-semibold">{agent.name}</h4>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm"
-                                  onClick={() => handleAgentToggle(agent, false)}
-                                  className="h-6 w-6 p-0"
-                                >
-                                  ×
-                                </Button>
-                              </div>
-                              <div className="text-sm space-y-1">
-                                <p><strong>{t('clinicalSheet.dose')}:</strong> {agent.dosage} {agent.unit} {agent.route}</p>
-                                <p><strong>{t('printableProtocol.timing')}:</strong> {agent.timing}</p>
-                                <p><strong>{t('clinicalSheet.indication')}:</strong> {agent.indication}</p>
-                                {agent.notes && (
-                                  <p className="text-xs text-orange-600 font-medium">{agent.notes}</p>
-                                )}
-                              </div>
-                            </div>
+                      <Select
+                        value={solventSelections[agent.name] || ""}
+                        onValueChange={(value: SolventType) => 
+                          handleSolventChange(agent.name, value)
+                        }
+                      >
+                        <SelectTrigger className="w-48">
+                          <SelectValue 
+                            placeholder={t('solventGroups.selectSolvent')}
+                          />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {AVAILABLE_SOLVENTS.map((solvent) => (
+                            <SelectItem key={solvent} value={solvent}>
+                              {t(`solvents.${solvent.toLowerCase().replace(/[^a-z0-9]/g, '')}`)}
+                            </SelectItem>
                           ))}
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ))}
+                  <Button 
+                    onClick={() => setSolventSelections({})}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    {t('solventGroups.clearAll')}
+                  </Button>
                 </div>
-              </>
-            )}
-          </TabsContent>
-        </Tabs>
-      </CardContent>
-    </Card>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="grouping" className="space-y-4">
+        <SolventGroupManager
+          selectedAgents={localSelectedAgents}
+          groupedPremedications={groupedPremedications}
+          onGroupingChange={(newGrouping) => {
+            setGroupedPremedications(newGrouping);
+            onGroupingChange?.(newGrouping);
+          }}
+        />
+        </TabsContent>
+
+        <TabsContent value="selected" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CheckCircle className="h-5 w-5" />
+                {t('unifiedSelector.selected.title')} ({localSelectedAgents.length})
+              </CardTitle>
+              <CardDescription>
+                {t('unifiedSelector.selected.description')}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {localSelectedAgents.length === 0 ? (
+                <p className="text-muted-foreground text-sm">
+                  {t('unifiedSelector.selected.noAgents')}
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {localSelectedAgents.map((agent) => (
+                    <div
+                      key={agent.name}
+                      className="flex items-center justify-between p-3 border rounded-lg"
+                    >
+                      <div>
+                        <div className="font-medium">{agent.name}</div>
+                        <div className="text-sm text-muted-foreground">
+                          {agent.dosage} {agent.unit} {agent.route} - {agent.indication}
+                        </div>
+                        {agent.solvent && (
+                          <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded mt-1">
+                            {t('solventGroups.solvent')}: {t(`solvents.${agent.solvent.toLowerCase().replace(/[^a-z0-9]/g, '')}`)}
+                          </div>
+                        )}
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleAgentToggle(agent, false)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button 
+                    onClick={clearAllSelections}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    {t('unifiedSelector.selected.clearAll')}
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
   );
-};
+}
