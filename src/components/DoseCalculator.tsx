@@ -8,7 +8,7 @@ import { Separator } from "@/components/ui/separator";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calculator, Edit, Save, FileText, Download, Printer, FileCheck, Shield, AlertTriangle, Calendar } from "lucide-react";
+import { Calculator, Edit, Save, FileText, Download, Printer, FileCheck, Shield, Calendar } from "lucide-react";
 import { Regimen, Drug, Premedication } from "@/types/regimens";
 import { SafetyAlertsPanel } from "./SafetyAlertsPanel";
 import { DatePickerField } from "./DatePickerField";
@@ -32,6 +32,9 @@ import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { SolventType, AVAILABLE_SOLVENTS } from "@/types/solvents";
 import { useSmartNav } from '@/context/SmartNavContext';
+import { drugLimits, checkDoseLimit } from "@/data/drugLimits";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertTriangle, CheckCircle } from "lucide-react";
 
 interface DoseCalculatorProps {
   regimen: Regimen | null;
@@ -64,6 +67,13 @@ interface DoseCalculation {
   reductionPercentage: number;
   administrationDuration?: string;
   solvent?: string;
+  selectedSolventType?: string;
+  selectedVolume?: number;
+  doseAlert?: {
+    isExceeded: boolean;
+    warning?: string;
+    suggestedAction?: string;
+  };
 }
 
 export const DoseCalculator = ({ 
@@ -155,12 +165,16 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
             calculatedDose *= 0.9; // 10% reduction for elderly
           }
 
+          // Check dose limits and create alert
+          const doseAlert = checkDoseLimit(drug.name, calculatedDose, regimen.schedule);
+
         } catch (error) {
           logger.error("Error calculating dose for drug", {
             component: "DoseCalculator",
             data: { drugName: drug.name, error: error.message }
           });
           calculatedDose = 0;
+          const doseAlert = { isExceeded: false };
         }
 
         // Preserve existing user modifications if this drug already exists
@@ -187,6 +201,9 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
             reductionPercentage: existingCalc.reductionPercentage, // Preserve user's reduction
             administrationDuration: existingCalc.administrationDuration ?? drug.administrationDuration,
             solvent: existingCalc.solvent,
+            selectedSolventType: existingCalc.selectedSolventType,
+            selectedVolume: existingCalc.selectedVolume,
+            doseAlert: existingCalc.doseAlert || doseAlert,
           };
         }
 
@@ -201,6 +218,9 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
           reductionPercentage: 0,
           administrationDuration: drug.administrationDuration,
           solvent: undefined,
+          selectedSolventType: drug.availableSolvents?.[0],
+          selectedVolume: drug.availableVolumes?.[0],
+          doseAlert: doseAlert,
         };
       });
       
@@ -376,6 +396,18 @@ useEffect(() => {
     setCalculations(updated);
   };
 
+  const handleSolventTypeChange = (index: number, solventType: string) => {
+    const updated = [...calculations];
+    updated[index].selectedSolventType = solventType;
+    setCalculations(updated);
+  };
+
+  const handleVolumeChange = (index: number, volume: number) => {
+    const updated = [...calculations];
+    updated[index].selectedVolume = volume;
+    setCalculations(updated);
+  };
+
   const handleSolventChange = (index: number, value: string) => {
     const updated = [...calculations];
     updated[index].solvent = value || undefined;
@@ -402,6 +434,25 @@ useEffect(() => {
   const handleAntiemeticProtocolChange = (agents: AntiemeticAgent[]) => {
     logger.debug("Antiemetic agents selected", { component: 'DoseCalculator', action: 'selectAntiemetics', count: agents.length });
     setSelectedAntiemetics(agents);
+  };
+
+  const validateSolventConcentration = (drug: Drug, dose: number, volume: number): string | null => {
+    // Validate concentration limits for specific drugs
+    if (drug.name === "Paclitaxel") {
+      const concentration = dose / volume;
+      if (concentration > 1.2) {
+        return `Concentrația Paclitaxel (${concentration.toFixed(2)} mg/mL) depășește limita de 1.2 mg/mL`;
+      }
+      if (concentration < 0.3) {
+        return `Concentrația Paclitaxel (${concentration.toFixed(2)} mg/mL) este sub limita minimă de 0.3 mg/mL`;
+      }
+    }
+    
+    if (drug.name === "Oxaliplatin" && volume < 250) {
+      return "Volumul minim pentru Oxaliplatin este 250 mL";
+    }
+    
+    return null;
   };
 
   const handlePercentageReduction = (index: number, percentage: string) => {

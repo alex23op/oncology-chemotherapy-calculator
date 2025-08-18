@@ -26,6 +26,10 @@ export interface Drug {
   drugClass?: "chemotherapy" | "targeted" | "immunotherapy" | "hormone" | "supportive";
   mechanismOfAction?: string;
   monitoring?: string[];
+  availableSolvents?: string[];
+  availableVolumes?: number[];
+  solvent?: string;
+  volume?: number;
 }
 
 export interface Premedication {
