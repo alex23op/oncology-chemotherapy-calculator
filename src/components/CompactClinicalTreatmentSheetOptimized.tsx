@@ -254,14 +254,14 @@ const CompactClinicalTreatmentSheetCore = forwardRef<HTMLDivElement, CompactClin
     const { t } = useTranslation();
     const { patient, regimen, calculatedDrugs, emetogenicRisk, premedications } = treatmentData;
 
-    // Memoized calculations for performance
+    // Memoized calculations for performance - with defensive checks
     const drugNotes = useMemo(() => 
-      calculatedDrugs.filter(drug => drug.adjustmentNotes || drug.preparationInstructions || drug.notes),
+      calculatedDrugs?.filter(drug => drug.adjustmentNotes || drug.preparationInstructions || drug.notes) || [],
       [calculatedDrugs]
     );
 
     const hasImportantAlerts = useMemo(() => 
-      calculatedDrugs.some(drug => drug.adjustmentNotes?.includes('ALERT') || drug.notes?.includes('WARNING')),
+      calculatedDrugs?.some(drug => drug.adjustmentNotes?.includes('ALERT') || drug.notes?.includes('WARNING')) || false,
       [calculatedDrugs]
     );
 
