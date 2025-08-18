@@ -355,7 +355,6 @@
   "sheetGenerated": "Treatment sheet generated successfully",
   "dataExported": "Data exported successfully"
 }
-  },
   "safetyAlerts": {
     "allClear": "All safety checks passed",
     "title": "Clinical Safety Alerts",
