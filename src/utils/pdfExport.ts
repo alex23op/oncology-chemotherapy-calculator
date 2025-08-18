@@ -3,6 +3,7 @@ import html2canvas from 'html2canvas';
 import { TreatmentData } from '@/types/clinicalTreatment';
 import i18n from '@/i18n';
 import { formatDate } from '@/utils/dateFormat';
+import { logger } from '@/utils/logger';
 
 interface ProtocolData {
   selectedAgents: any[];
@@ -100,7 +101,7 @@ export const generateClinicalTreatmentPDF = async (
     const filename = `treatment-protocol-${treatmentData.patient.cnp}-${treatmentData.regimen.name.toLowerCase().replace(/\s+/g, '-')}-cycle${treatmentData.patient.cycleNumber}-${new Date().toISOString().split('T')[0]}.pdf`;
     pdf.save(filename);
   } catch (error) {
-    console.error('Error generating treatment protocol PDF:', error);
+    logger.error('Error generating treatment protocol PDF', { component: 'pdfExport', error });
     throw new Error('Failed to generate treatment protocol PDF. Please try again.');
   }
 };
@@ -177,7 +178,7 @@ export const generateProtocolPDF = async (
     const filename = `premedication-protocol-${protocolData.regimenName?.toLowerCase().replace(/\s+/g, '-') || 'protocol'}-${new Date().toISOString().split('T')[0]}.pdf`;
     pdf.save(filename);
   } catch (error) {
-    console.error('Error generating PDF:', error);
+    logger.error('Error generating PDF', { component: 'pdfExport', error });
     throw new Error('Failed to generate PDF. Please try again.');
   }
 };

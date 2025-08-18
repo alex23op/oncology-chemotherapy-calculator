@@ -11,6 +11,7 @@ import { validatePatientData, sanitizeInput, showValidationToast, ValidationResu
 import { ClinicalErrorBoundary } from "@/components/ClinicalErrorBoundary";
 import { useDebouncedCalculation, usePerformanceMonitoring } from "@/hooks/usePerformanceOptimization";
 import { toKg } from "@/utils/units";
+import { logger } from '@/utils/logger';
 
 interface PatientData {
   weight: string;
@@ -64,7 +65,7 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
       const safeBSA = Math.max(0.3, Math.min(3.5, bsa));
       return Math.round(safeBSA * 100) / 100; // Round to 2 decimal places
     } catch (error) {
-      console.error('BSA calculation error:', error);
+      logger.error('BSA calculation error', { component: 'PatientForm', action: 'calculateBSA', error });
       return 0;
     }
   }, []);
@@ -97,7 +98,7 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
       const safeCrCl = Math.max(0, Math.min(300, crCl)); // Reasonable bounds
       return Math.round(safeCrCl * 100) / 100;
     } catch (error) {
-      console.error('Creatinine clearance calculation error:', error);
+      logger.error('Creatinine clearance calculation error', { component: 'PatientForm', action: 'calculateCrCl', error });
       return 0;
     }
   }, []);
@@ -134,7 +135,7 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
         }
       }
     } catch (error) {
-      console.error('Patient data calculation error:', error);
+      logger.error('Patient data calculation error', { component: 'PatientForm', action: 'calculatePatientData', error });
       setValidation({
         isValid: false,
         errors: ['Calculation error occurred'],

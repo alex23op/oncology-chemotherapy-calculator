@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useRef, useEffect } from 'react';
 import { debounce } from 'lodash-es';
+import { logger } from '@/utils/logger';
 
 export interface PerformanceMetrics {
   renderCount: number;
@@ -62,15 +63,16 @@ export const usePerformanceMonitoring = (componentName: string) => {
     
     if (renderTime > 100) { // Consider >100ms as slow
       metrics.slowRenders++;
-      console.warn(`🐌 Slow render detected in ${componentName}: ${renderTime.toFixed(2)}ms`);
+      logger.warn(`Slow render detected in ${componentName}`, { component: 'usePerformanceOptimization', renderTime: renderTime.toFixed(2) });
     }
 
     if (process.env.NODE_ENV === 'development' && metrics.renderCount % 10 === 0) {
-      console.log(`📊 Performance metrics for ${componentName}:`, {
+      logger.info(`Performance metrics for ${componentName}`, { 
+        component: 'usePerformanceOptimization',
         renders: metrics.renderCount,
-        avgTime: metrics.averageRenderTime.toFixed(2) + 'ms',
+        avgTime: metrics.averageRenderTime.toFixed(2),
         slowRenders: metrics.slowRenders,
-        lastRender: metrics.lastRenderTime.toFixed(2) + 'ms'
+        lastRender: metrics.lastRenderTime.toFixed(2)
       });
     }
   });
@@ -107,9 +109,10 @@ export const useHeavyComputation = <T>(
       const duration = endTime - startTime;
       
       if (duration > warningThreshold) {
-        console.warn(`⚠️ Heavy computation detected: ${duration.toFixed(2)}ms`, {
+        logger.warn(`Heavy computation detected`, { 
+          component: 'usePerformanceOptimization', 
+          duration: duration.toFixed(2),
           computation: computation.name || 'anonymous',
-          duration: duration.toFixed(2) + 'ms',
           dependencies
         });
       }
@@ -163,14 +166,14 @@ export const useMemoryLeakDetection = (componentName: string) => {
         try {
           cleanup();
         } catch (error) {
-          console.warn(`Failed to cleanup listener in ${componentName}:`, error);
+          logger.warn(`Failed to cleanup listener in ${componentName}`, { component: 'usePerformanceOptimization', error });
         }
       });
       listenersRef.current.clear();
 
       const lifespan = Date.now() - mountTimeRef.current;
       if (process.env.NODE_ENV === 'development') {
-        console.log(`🧹 Cleaned up ${componentName} after ${lifespan}ms`);
+        logger.info(`Cleaned up ${componentName}`, { component: 'usePerformanceOptimization', lifespan });
       }
     };
   }, [componentName]);

@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { AlertTriangle, RefreshCw, Bug } from 'lucide-react';
 import { toast } from "@/hooks/use-toast";
 import i18n from '@/i18n';
+import { logger } from '@/utils/logger';
 
 interface Props {
   children: ReactNode;
@@ -40,7 +41,7 @@ export class ClinicalErrorBoundary extends Component<Props, State> {
     
     // Log clinical errors with context
     const context = this.props.context || 'Unknown Component';
-    console.error(`🏥 Clinical Error in ${context}:`, error, errorInfo);
+    logger.error(`Clinical Error in ${context}`, { component: 'ClinicalErrorBoundary', error, errorInfo });
     
     // Notify clinical team of critical errors
     if (this.isCriticalError(error)) {

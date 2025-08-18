@@ -6,6 +6,7 @@ interface LogContext {
   component?: string;
   action?: string;
   data?: any;
+  [key: string]: any; // Allow additional properties
 }
 
 class Logger {

@@ -18,7 +18,7 @@ export interface SafetyCheckResult {
 }
 
 // Safe calculation utilities with null/undefined protection
-export const safeParseFloat = (value: any, defaultValue: number = 0): number => {
+export const safeParseFloat = (value: unknown, defaultValue: number = 0): number => {
   if (value === null || value === undefined || value === '') return defaultValue;
   const parsed = parseFloat(String(value));
   return isNaN(parsed) ? defaultValue : parsed;

@@ -15,6 +15,7 @@ import { DatePickerField } from "./DatePickerField";
 import { MobileActionBar } from "./MobileActionBar";
 import { getSolventI18nKey } from '@/types/ui';
 import { logger } from '@/utils/logger';
+import { DraftCalculation, LocalPremedAgent } from '@/types/enhanced';
 
 const TreatmentCalendarLazy = lazy(() => import("./TreatmentCalendar").then(m => ({ default: m.TreatmentCalendar })));
 const ClinicalTreatmentSheetLazy = lazy(() => import("./ClinicalTreatmentSheet").then(m => ({ default: m.ClinicalTreatmentSheet })));
@@ -219,7 +220,7 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
         performSafetyChecks(regimen, newCalculations);
       }
     } else {
-      console.log("Clearing calculations - no regimen or invalid BSA");
+      logger.debug("Clearing calculations - no regimen or invalid BSA", { component: 'DoseCalculator', action: 'clearCalculations' });
       setCalculations([]);
       setSafetyAlerts([]);
     }
@@ -245,7 +246,7 @@ useEffect(() => {
         if (!raw) return;
         const draft = JSON.parse(raw);
         if (Array.isArray(draft.calculations)) {
-          draft.calculations = draft.calculations.map((c: any) => ({
+          draft.calculations = draft.calculations.map((c: DraftCalculation) => ({
             ...c,
             solvent: typeof c?.solvent === 'string' ? c.solvent : undefined,
             administrationDuration: typeof c?.administrationDuration === 'string' ? c.administrationDuration : undefined,
@@ -296,7 +297,7 @@ useEffect(() => {
     // Always reset CNP when switching regimens to prevent persistence between patients
     setCnp('');
   } catch (e) {
-    console.warn('Failed to load draft:', e);
+    logger.warn('Failed to load draft', { component: 'DoseCalculator', action: 'loadDraft', error: e });
   }
 }, [regimen]);
 
@@ -355,7 +356,7 @@ useEffect(() => {
   };
 
   const handleDoseAdjustment = (index: number, newDose: string) => {
-    console.log("Dose adjustment:", index, newDose);
+    logger.debug("Dose adjustment", { component: 'DoseCalculator', action: 'adjustDose', index, newDose });
     const updatedCalculations = [...calculations];
     const dose = parseFloat(newDose) || 0;
     updatedCalculations[index].adjustedDose = dose;
@@ -382,24 +383,24 @@ useEffect(() => {
   };
 
   const handleDrugSelection = (index: number, selected: boolean) => {
-    console.log("Drug selection changed:", index, selected);
+    logger.debug("Drug selection changed", { component: 'DoseCalculator', action: 'selectDrug', index, selected });
     const updatedCalculations = [...calculations];
     updatedCalculations[index].selected = selected;
     setCalculations(updatedCalculations);
   };
 
   const handlePremedSelectionsChange = (premedications: Premedication[]) => {
-    console.log("Premedications changed:", premedications);
+    logger.debug("Premedications changed", { component: 'DoseCalculator', action: 'changePremedications', count: premedications.length });
     setSelectedPremedications(premedications);
   };
 
   const handleEmetogenicRiskChange = (riskLevel: "high" | "moderate" | "low" | "minimal") => {
-    console.log("Emetogenic risk level changed:", riskLevel);
+    logger.debug("Emetogenic risk level changed", { component: 'DoseCalculator', action: 'changeEmetogenicRisk', riskLevel });
     setEmetogenicRiskLevel(riskLevel);
   };
 
   const handleAntiemeticProtocolChange = (agents: AntiemeticAgent[]) => {
-    console.log("Antiemetic agents selected:", agents);
+    logger.debug("Antiemetic agents selected", { component: 'DoseCalculator', action: 'selectAntiemetics', count: agents.length });
     setSelectedAntiemetics(agents);
   };
 
@@ -454,7 +455,7 @@ useEffect(() => {
       return unit ? `${dosage} ${unit}` : dosage;
     };
 
-    const categorizeAgent = (agent: any) => {
+    const categorizeAgent = (agent: AntiemeticAgent) => {
       const category = agent.category?.toLowerCase() || '';
       const indication = agent.indication?.toLowerCase() || '';
       
@@ -551,7 +552,7 @@ useEffect(() => {
 
 const handleExportTreatmentPDF = async () => {
   try {
-    console.log('Export PDF clicked', { cnp, calculations: calculations.length });
+    logger.info('Export PDF clicked', { component: 'DoseCalculator', action: 'exportPDF', cnp, calculationsCount: calculations.length });
     if (!cnp.trim()) {
       toast.error(t('doseCalculator.toasts.enterCnpBeforeExport'));
       return;
@@ -580,7 +581,7 @@ const handleExportTreatmentPDF = async () => {
     });
     toast.success(t('doseCalculator.toasts.exportSuccess'));
   } catch (error) {
-    console.error('Export error:', error);
+    logger.error('Export error', { component: 'DoseCalculator', action: 'exportPDF', error });
     toast.error(t('doseCalculator.toasts.exportFailed'));
   }
 };
@@ -594,17 +595,19 @@ const handlePrintTreatmentSheet = () => {
 };
 
 const handleGenerateTreatmentSheet = () => {
-  console.log('=== Generate Sheet Button Clicked ===');
-  console.log('cnp:', cnp);
-  console.log('calculations length:', calculations.length);
-  console.log('calculations:', calculations);
-  console.log('regimen:', regimen);
-  console.log('bsa:', bsa);
-  console.log('weight:', weight);
-  console.log('creatinineClearance:', creatinineClearance);
+  logger.info('Generate Sheet Button Clicked', { 
+    component: 'DoseCalculator', 
+    action: 'generateSheet',
+    cnp, 
+    calculationsCount: calculations.length,
+    regimen: regimen?.name,
+    bsa,
+    weight,
+    creatinineClearance
+  });
   
   if (!cnp.trim()) {
-    console.log('ERROR: No CNP');
+    logger.warn('Generate sheet failed - No CNP', { component: 'DoseCalculator', action: 'generateSheet' });
     toast.error(t('doseCalculator.toasts.generateSheetNeedCnp'));
     return;
   }
@@ -615,11 +618,11 @@ const handleGenerateTreatmentSheet = () => {
       return;
     }
     if (calculations.length === 0) {
-      console.log('ERROR: No calculations available');
+      logger.warn('Generate sheet failed - No calculations available', { component: 'DoseCalculator', action: 'generateSheet' });
       toast.error(t('doseCalculator.toasts.generateSheetNeedCalcs'));
       return;
     }
-    console.log('Setting showTreatmentSheet to true');
+    logger.debug('Setting showTreatmentSheet to true', { component: 'DoseCalculator', action: 'generateSheet' });
     setShowTreatmentSheet(true);
     const data = prepareTreatmentData();
     try { onFinalize?.(data); } catch {}
@@ -637,10 +640,10 @@ const handleExportData = () => {
   onExport?.(calculations);
   toast.success(t('doseCalculator.toasts.dataExported'));
 };
-  console.log("DoseCalculator rendering - regimen:", regimen?.name, "calculations:", calculations.length);
+  logger.debug("DoseCalculator rendering", { component: 'DoseCalculator', regimen: regimen?.name, calculationsCount: calculations.length });
 
   if (!regimen) {
-    console.log("No regimen selected, showing placeholder");
+    logger.debug("No regimen selected, showing placeholder", { component: 'DoseCalculator' });
     return (
 <Card className="w-full">
   <CardContent className="pt-6">
@@ -818,11 +821,11 @@ const handleExportData = () => {
             alerts={safetyAlerts}
             onAlertDismiss={(alertId, justification) => {
               setSafetyAlerts(prev => prev.filter(alert => alert.id !== alertId));
-              console.log(`Alert ${alertId} dismissed with justification: ${justification}`);
+              logger.info('Safety alert dismissed', { component: 'DoseCalculator', action: 'dismissAlert', alertId, justification });
             }}
             onAlertAcknowledge={(alertId) => {
               setSafetyAlerts(prev => prev.filter(alert => alert.id !== alertId));
-              console.log(`Alert ${alertId} acknowledged`);
+              logger.info('Safety alert acknowledged', { component: 'DoseCalculator', action: 'acknowledgeAlert', alertId });
             }}
           />
         )}

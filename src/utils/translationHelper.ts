@@ -1,4 +1,4 @@
-type TFunction = (key: string, options?: any) => string;
+export type TFunction = (key: string, options?: { defaultValue?: string; [key: string]: unknown }) => string;
 
 /**
  * Translation helper with fallback support

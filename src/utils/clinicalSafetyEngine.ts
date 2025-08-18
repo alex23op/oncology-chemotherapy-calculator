@@ -1,5 +1,6 @@
-import { Drug, Regimen, Biomarker } from '@/types/regimens';
+import { Drug, Regimen } from '@/types/regimens';
 import { PatientInfo } from '@/types/clinicalTreatment';
+import { ClinicalData } from '@/types/enhanced';
 
 export interface SafetyAlert {
   id: string;
@@ -163,7 +164,7 @@ export class ClinicalSafetyEngine {
   /**
    * Check contraindications based on patient data
    */
-  static checkContraindications(drugs: Drug[], patient: PatientInfo, clinicalData: any = {}): SafetyAlert[] {
+  static checkContraindications(drugs: Drug[], patient: PatientInfo, clinicalData: ClinicalData = {}): SafetyAlert[] {
     const alerts: SafetyAlert[] = [];
     
     drugs.forEach(drug => {
@@ -177,10 +178,10 @@ export class ClinicalSafetyEngine {
             isContraindicated = patient.creatinineClearance < 60;
             break;
           case 'baseline_ejection_fraction_low':
-            isContraindicated = clinicalData.ejectionFraction && clinicalData.ejectionFraction < 50;
+            isContraindicated = (clinicalData as any).ejectionFraction && (clinicalData as any).ejectionFraction < 50;
             break;
           case 'her2_negative':
-            isContraindicated = clinicalData.her2Status === 'negative';
+            isContraindicated = (clinicalData as any).her2Status === 'negative';
             break;
           default:
             break;
@@ -309,7 +310,7 @@ export class ClinicalSafetyEngine {
     calculatedDoses: Record<string, number>,
     biomarkerStatus: Record<string, string> = {},
     currentMedications: string[] = [],
-    clinicalData: any = {}
+    clinicalData: ClinicalData = {}
   ): SafetyAlert[] {
     const allAlerts: SafetyAlert[] = [];
     

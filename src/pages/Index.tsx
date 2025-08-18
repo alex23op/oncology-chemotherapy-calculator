@@ -19,6 +19,8 @@ import { CompactClinicalTreatmentSheet } from "@/components/CompactClinicalTreat
 import { AntiemeticAgent } from "@/types/emetogenicRisk";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toKg } from "@/utils/units";
+import { logger } from '@/utils/logger';
+import { TreatmentData } from '@/types/clinicalTreatment';
 
 
 interface PatientData {
@@ -85,7 +87,7 @@ const IndexContent = () => {
       calculations,
       timestamp: new Date().toISOString(),
     };
-    console.log("Export data:", exportData);
+    logger.info("Export data", { component: 'Index', data: exportData });
     toast({
       title: t("index.toasts.exportSuccess.title"),
       description: t("index.toasts.exportSuccess.description"),
@@ -186,7 +188,7 @@ const IndexContent = () => {
             sex={patientData?.sex || ""}
             creatinineClearance={patientData?.creatinineClearance || 0}
             onExport={handleExport}
-            onFinalize={(data: any) => setTreatmentData(data)}
+            onFinalize={(data: TreatmentData) => setTreatmentData(data)}
             onGoToReview={() => goTo('review')}
             supportiveCare={{
               emetogenicRiskLevel,

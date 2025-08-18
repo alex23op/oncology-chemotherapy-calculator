@@ -15,7 +15,7 @@ export interface ValidationResult<T = any> {
   errors: ValidationError[];
 }
 
-export const validateRequired = (value: any, fieldName: string): ValidationError | null => {
+export const validateRequired = (value: unknown, fieldName: string): ValidationError | null => {
   if (value === null || value === undefined || value === '') {
     return {
       field: fieldName,

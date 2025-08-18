@@ -1,5 +1,6 @@
 import { useRef, useCallback } from 'react';
 import { useReactToPrint } from 'react-to-print';
+import { logger } from '@/utils/logger';
 
 export const usePrint = (documentTitle?: string, options?: { orientation?: 'portrait' | 'landscape' }) => {
   const componentRef = useRef<HTMLDivElement>(null);
@@ -173,13 +174,13 @@ export const usePrint = (documentTitle?: string, options?: { orientation?: 'port
       }
     `,
     onAfterPrint: () => {
-      console.log('Print completed');
+      logger.info('Print completed', { component: 'usePrint' });
     },
   });
 
   const printProtocol = useCallback(() => {
     if (!componentRef.current) {
-      console.error('No printable content found');
+      logger.warn('No printable content found', { component: 'usePrint', action: 'print' });
       return;
     }
     handlePrint();
@@ -187,7 +188,7 @@ export const usePrint = (documentTitle?: string, options?: { orientation?: 'port
 
   const printTreatmentSheet = useCallback(() => {
     if (!componentRef.current) {
-      console.error('No printable content found');
+      logger.warn('No printable content found', { component: 'usePrint', action: 'getContentToPrint' });
       return;
     }
     handlePrint();

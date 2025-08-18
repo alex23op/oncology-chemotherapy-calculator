@@ -2,7 +2,7 @@ import React from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslation } from 'react-i18next';
-import { GroupedPremedications } from '@/types/clinicalTreatment';
+import { GroupedPremedications, PremedAgent } from '@/types/clinicalTreatment';
 
 interface PrintableProtocolProps {
   selectedAgents: any[];
@@ -132,7 +132,7 @@ export const PrintableProtocol = React.forwardRef<HTMLDivElement, PrintableProto
                 <CardTitle className="text-lg print:text-base">{category === 'Other' ? t('printableProtocol.otherCategory') : category}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3 print:space-y-2">
-                {(agents as any[]).map((agent, index) => (
+                {(agents as PremedAgent[]).map((agent, index) => (
                   <div key={index} className="border-l-4 border-primary pl-4 print:border-l-2 print:border-gray-400">
                     <div className="flex flex-wrap items-start gap-2 mb-2">
                       <h4 className="font-semibold text-base print:text-sm">{agent.name}</h4>

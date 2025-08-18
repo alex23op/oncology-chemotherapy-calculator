@@ -30,7 +30,7 @@ function readJson(filePath: string) {
   }
 }
 
-function flatten(obj: any, prefix = ''): Record<string, unknown> {
+function flatten(obj: Record<string, unknown>, prefix = ''): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   if (obj == null) return result;
   for (const [k, v] of Object.entries(obj)) {
