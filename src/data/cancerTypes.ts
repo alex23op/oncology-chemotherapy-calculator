@@ -3,8 +3,6 @@ import { breastCancerRegimens } from "./regimens/breastCancer";
 import { breastCancerTargetedRegimens } from "./regimens/breastCancerTargeted";
 import { lungCancerRegimens } from "./regimens/lungCancer";
 import { lungCancerTargetedRegimens } from "./regimens/lungCancerTargeted";
-import { colorectalCancerRegimens } from "./regimens/colorectalCancer";
-import { colorectalTargetedRegimens } from "./regimens/colorectalTargeted";
 import { headNeckRegimens } from "./regimens/headNeck";
 import { 
   cervicalCancerRegimens, 
@@ -13,7 +11,7 @@ import {
   ovarianCancerRegimens 
 } from "./regimens/gynaecology";
 import { allGenitourinaryRegimens } from "./regimens/genitourinaryCancer";
-import { gastrointestinalCancerRegimens } from "./regimens/gastrointestinalCancer";
+import { gastrointestinalCancerRegimens } from "./regimens/gastrointestinalCancerConsolidated";
 
 // Add subtype to gynecological regimens
 const cervicalRegimensWithSubtype = cervicalCancerRegimens.map(regimen => ({
@@ -48,12 +46,6 @@ export const cancerTypes: CancerType[] = [
     name: "Lung Cancer",
     category: "Lung Cancer", 
     regimens: [...lungCancerRegimens, ...lungCancerTargetedRegimens]
-  },
-  {
-    id: "colorectal",
-    name: "Colorectal Cancer",
-    category: "Solid Tumor",
-    regimens: [...colorectalCancerRegimens, ...colorectalTargetedRegimens]
   },
   {
     id: "headneck",

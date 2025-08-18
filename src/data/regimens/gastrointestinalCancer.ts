@@ -1,13 +1,108 @@
 import { Regimen } from "@/types/regimens";
 
 export const gastrointestinalCancerRegimens: Regimen[] = [
-  // COLORECTAL CANCER REGIMENS
+  // COLORECTAL CANCER REGIMENS - Consolidated from separate colorectal category
+  
+  // Neoadjuvant Regimens
   {
-    id: "gi-001",
-    name: "mFOLFOX6",
+    id: "gi-colorectal-001",
+    name: "FOLFOX (Neoadjuvant)",
     subtype: "Colorectal",
-    category: "metastatic",
-    description: "Colorectal metastatic or adjuvant (HSE/NCCP, NCCN 3.2025)",
+    category: "neoadjuvant",
+    lineOfTherapy: "first-line",
+    description: "Neoadjuvant FOLFOX for locally advanced rectal cancer (HSE/NCCP, NCCN 3.2025)",
+    schedule: "q14d",
+    cycles: 6,
+    drugs: [
+      {
+        name: "Oxaliplatin",
+        dosage: "85",
+        unit: "mg/m²",
+        route: "IV",
+        day: "Day 1",
+        drugClass: "chemotherapy",
+        mechanismOfAction: "Platinum alkylating agent",
+        administrationDuration: "2 h",
+        dilution: "250-500 mL D5W",
+        availableSolvents: ["D5W"],
+        availableVolumes: [250, 500],
+        notes: "Neurotoxicity monitoring, use only Glucose 5%"
+      },
+      {
+        name: "Leucovorin",
+        dosage: "400",
+        unit: "mg/m²",
+        route: "IV",
+        day: "Day 1",
+        drugClass: "chemotherapy",
+        mechanismOfAction: "Folate analog",
+        administrationDuration: "2 h",
+        dilution: "250 mL NS",
+        availableSolvents: ["NS", "D5W"],
+        availableVolumes: [100, 250, 500]
+      },
+      {
+        name: "5-Fluorouracil",
+        dosage: "400",
+        unit: "mg/m²",
+        route: "IV",
+        day: "Day 1",
+        drugClass: "chemotherapy",
+        mechanismOfAction: "Antimetabolite",
+        administrationDuration: "2-5 minutes",
+        dilution: "10-20 mL NS",
+        notes: "Bolus, omit if hematologic toxicity"
+      },
+      {
+        name: "5-Fluorouracil",
+        dosage: "2400",
+        unit: "mg/m²",
+        route: "IV",
+        day: "Days 1-3",
+        drugClass: "chemotherapy",
+        mechanismOfAction: "Antimetabolite",
+        administrationDuration: "46 h",
+        notes: "Continuous infusion, DPD testing recommended"
+      }
+    ],
+    eligibilityCriteria: {
+      ecogStatus: [0, 1, 2],
+      contraindications: ["Severe neuropathy", "Renal impairment CrCl <30"]
+    },
+    premedications: [
+      {
+        name: "Ondansetron",
+        dosage: "8",
+        unit: "mg",
+        route: "IV",
+        timing: "30 min before",
+        category: "antiemetic",
+        indication: "CINV prevention",
+        isRequired: true,
+        isStandard: true
+      },
+      {
+        name: "Dexamethasone",
+        dosage: "8",
+        unit: "mg",
+        route: "IV",
+        timing: "30 min before",
+        category: "corticosteroid",
+        indication: "CINV prevention",
+        isRequired: true,
+        isStandard: true
+      }
+    ]
+  },
+
+  // Adjuvant Regimens
+  {
+    id: "gi-colorectal-002",
+    name: "FOLFOX (Adjuvant)",
+    subtype: "Colorectal",
+    category: "adjuvant",
+    lineOfTherapy: "first-line",
+    description: "Standard adjuvant therapy for stage III colon cancer (HSE/NCCP, NCCN 3.2025)",
     schedule: "q14d",
     cycles: 12,
     drugs: [
@@ -17,7 +112,73 @@ export const gastrointestinalCancerRegimens: Regimen[] = [
         unit: "mg/m²",
         route: "IV",
         day: "Day 1",
+        drugClass: "chemotherapy",
+        mechanismOfAction: "Platinum alkylating agent",
         administrationDuration: "2 h",
+        dilution: "250-500 mL D5W",
+        availableSolvents: ["D5W"],
+        availableVolumes: [250, 500],
+        notes: "Neurotoxicity monitoring"
+      },
+      {
+        name: "Leucovorin",
+        dosage: "400",
+        unit: "mg/m²",
+        route: "IV",
+        day: "Day 1",
+        drugClass: "chemotherapy",
+        administrationDuration: "2 h",
+        availableSolvents: ["NS", "D5W"],
+        availableVolumes: [100, 250, 500]
+      },
+      {
+        name: "5-Fluorouracil",
+        dosage: "400",
+        unit: "mg/m²",
+        route: "IV",
+        day: "Day 1",
+        drugClass: "chemotherapy",
+        administrationDuration: "2-5 minutes",
+        notes: "Bolus"
+      },
+      {
+        name: "5-Fluorouracil",
+        dosage: "2400",
+        unit: "mg/m²",
+        route: "IV",
+        day: "Days 1-3",
+        drugClass: "chemotherapy",
+        administrationDuration: "46 h",
+        notes: "Continuous infusion"
+      }
+    ],
+    eligibilityCriteria: {
+      ecogStatus: [0, 1, 2]
+    }
+  },
+
+  // First-line Metastatic Regimens
+  {
+    id: "gi-colorectal-003",
+    name: "mFOLFOX6",
+    subtype: "Colorectal",
+    category: "metastatic",
+    lineOfTherapy: "first-line",
+    description: "Colorectal metastatic first-line (HSE/NCCP, NCCN 3.2025)",
+    schedule: "q14d",
+    cycles: 12,
+    drugs: [
+      {
+        name: "Oxaliplatin",
+        dosage: "85",
+        unit: "mg/m²",
+        route: "IV",
+        day: "Day 1",
+        drugClass: "chemotherapy",
+        administrationDuration: "2 h",
+        dilution: "250-500 mL D5W",
+        availableSolvents: ["D5W"],
+        availableVolumes: [250, 500],
         notes: "Use only Glucose 5%, neurotoxicity monitoring"
       },
       {
@@ -26,7 +187,10 @@ export const gastrointestinalCancerRegimens: Regimen[] = [
         unit: "mg/m²",
         route: "IV",
         day: "Day 1",
-        administrationDuration: "2 h"
+        drugClass: "chemotherapy",
+        administrationDuration: "2 h",
+        availableSolvents: ["NS", "D5W"],
+        availableVolumes: [100, 250, 500]
       },
       {
         name: "5-Fluorouracil",
@@ -34,6 +198,7 @@ export const gastrointestinalCancerRegimens: Regimen[] = [
         unit: "mg/m²",
         route: "IV",
         day: "Day 1",
+        drugClass: "chemotherapy",
         notes: "Bolus, omit if hematologic toxicity"
       },
       {
@@ -42,6 +207,7 @@ export const gastrointestinalCancerRegimens: Regimen[] = [
         unit: "mg/m²",
         route: "IV",
         day: "Days 1-3",
+        drugClass: "chemotherapy",
         administrationDuration: "46 h",
         notes: "Continuous infusion, DPD testing recommended"
       }
@@ -50,12 +216,14 @@ export const gastrointestinalCancerRegimens: Regimen[] = [
       ecogStatus: [0, 1, 2]
     }
   },
+
   {
-    id: "gi-002",
+    id: "gi-colorectal-004",
     name: "FOLFIRI",
     subtype: "Colorectal",
     category: "metastatic",
-    description: "Colorectal metastatic 2L or 1L (HSE/NCCP, NCCN 3.2025)",
+    lineOfTherapy: "first-line",
+    description: "Colorectal metastatic 1L or 2L (HSE/NCCP, NCCN 3.2025)",
     schedule: "q14d",
     cycles: 12,
     drugs: [
@@ -65,7 +233,12 @@ export const gastrointestinalCancerRegimens: Regimen[] = [
         unit: "mg/m²",
         route: "IV",
         day: "Day 1",
+        drugClass: "chemotherapy",
+        mechanismOfAction: "Topoisomerase I inhibitor",
         administrationDuration: "90 min",
+        dilution: "250-500 mL D5W or NS",
+        availableSolvents: ["NS", "D5W"],
+        availableVolumes: [250, 500],
         notes: "UGT1A1*28 testing, atropine premedication"
       },
       {
@@ -74,7 +247,11 @@ export const gastrointestinalCancerRegimens: Regimen[] = [
         unit: "mg/m²",
         route: "IV",
         day: "Day 1",
-        administrationDuration: "2 h"
+        drugClass: "chemotherapy",
+        mechanismOfAction: "Folate analog",
+        administrationDuration: "2 h",
+        availableSolvents: ["NS", "D5W"],
+        availableVolumes: [100, 250, 500]
       },
       {
         name: "5-Fluorouracil",
@@ -82,6 +259,8 @@ export const gastrointestinalCancerRegimens: Regimen[] = [
         unit: "mg/m²",
         route: "IV",
         day: "Day 1",
+        drugClass: "chemotherapy",
+        mechanismOfAction: "Antimetabolite",
         notes: "Bolus"
       },
       {
@@ -90,6 +269,8 @@ export const gastrointestinalCancerRegimens: Regimen[] = [
         unit: "mg/m²",
         route: "IV",
         day: "Days 1-3",
+        drugClass: "chemotherapy",
+        mechanismOfAction: "Antimetabolite",
         administrationDuration: "46 h",
         notes: "Continuous infusion"
       }
