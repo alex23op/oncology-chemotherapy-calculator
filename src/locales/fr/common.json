@@ -1,0 +1,23 @@
+{
+  "unifiedSelector": {
+    "recommendations": {
+      "title": "Protocoles Recommandés",
+      "description": "Recommandations basées sur des preuves pour {{drugs}} avec risque émétogène {{risk}}",
+      "noRecommendations": "Aucune recommandation spécifique disponible pour ce régime",
+      "apply": "Appliquer Toutes les Recommandations",
+      "clear": "Effacer Toutes les Sélections"
+    }
+  },
+  "cancerSelector": {
+    "filter": "Filtrer par environnement de traitement",
+    "categories": {
+      "all": "Toutes",
+      "neoadjuvant": "Néoadjuvant",
+      "adjuvant": "Adjuvant",
+      "advanced": "Avancé",
+      "metastatic": "Métastatique"
+    },
+    "subtype": "Sous-type",
+    "selectSubtype": "Sélectionner le sous-type"
+  }
+}

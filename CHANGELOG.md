@@ -1,6 +1,68 @@
 # Changelog - Chemotherapy Application Code Review & Improvements
 
-## Version 2.1.0 - Critical Bug Fixes & Component Deduplication (2025-08-18)
+## Version 2.1.1 - i18n Bug Fix & Translation Enhancement (2025-08-18)
+
+### 🔥 Critical i18n Bug Fixes
+- **Missing Translation Keys**: Added all missing translation keys for `unifiedSelector.recommendations.*` and `cancerSelector.*` sections
+- **Fixed Invalid Key Formats**: Corrected keys with trailing `:` (e.g., `cancerSelector.filter:` → `cancerSelector.filter`)
+- **Enhanced Schema Structure**: Added proper nested structure for `recommendations`, `categories`, and `subtype` keys
+- **Build Compatibility**: Fixed all translation key import errors that were causing raw keys to display in UI
+
+### 🌐 Translation Improvements
+- **Complete English Translations**: Added comprehensive translations for all missing keys including recommendations, filters, and category selections
+- **Complete Romanian Translations**: Added full Romanian translations maintaining medical terminology accuracy
+- **Extended Language Support**: Added initial French (`fr`) and Spanish (`es`) translation scaffolding
+- **Safe Translation Utility**: Created `useSafeTranslation` hook with fallback handling and development warnings
+
+### 🔧 Enhanced i18n Infrastructure
+- **Upgraded check-i18n.js**: Enhanced script with multi-language support, invalid key detection, and automatic correction suggestions
+- **Key Format Validation**: Added detection for invalid key patterns (trailing `:`, double dots, etc.)
+- **Automatic Fixes**: Enhanced `--fix` flag to automatically populate missing keys with English fallbacks
+- **Development Warnings**: Added console warnings and toast notifications for missing keys in development mode
+
+### 🧪 Testing & Validation
+- **E2E Translation Tests**: Added comprehensive Playwright tests for translation key validation across languages
+- **Key Format Testing**: Added tests to detect invalid key formats and ensure proper translation loading
+- **Multi-language Navigation**: Added tests for language switching and proper translation display
+- **Missing Key Detection**: Added automated detection of missing translation keys during navigation
+
+### 📁 Files Added
+- `src/utils/i18nUtils.ts` - Safe translation utility with fallback handling
+- `src/test/e2e/i18n-translation-keys.spec.ts` - Comprehensive E2E tests for translation validation
+- `src/locales/fr/common.json` - French translation scaffolding
+- `src/locales/es/common.json` - Spanish translation scaffolding
+
+### 📁 Files Enhanced
+- `src/locales/en/common.json` - Added missing `unifiedSelector.recommendations.*` and enhanced `cancerSelector.*` keys
+- `src/locales/ro/common.json` - Added complete Romanian translations for all missing keys
+- `scripts/check-i18n.js` - Complete rewrite with multi-language support and validation enhancements
+
+### 🎯 Translation Keys Fixed
+**UnifiedProtocolSelector:**
+- `unifiedSelector.recommendations.title` → "Recommended Protocols"
+- `unifiedSelector.recommendations.description` → "Evidence-based recommendations for {{drugs}} with {{risk}} emetogenic risk"
+- `unifiedSelector.recommendations.noRecommendations` → "No specific recommendations available for this regimen"
+- `unifiedSelector.recommendations.apply` → "Apply All Recommendations"
+- `unifiedSelector.recommendations.clear` → "Clear All Selections"
+
+**CancerTypeSelectorOptimized:**
+- `cancerSelector.filter` → "Filter by Treatment Setting" (fixed from invalid `cancerSelector.filter:`)
+- `cancerSelector.subtype` → "Subtype"
+- `cancerSelector.selectSubtype` → "Select subtype"
+- `cancerSelector.categories.*` → Complete category translation set
+
+### ⚠️ Breaking Changes
+- Fixed invalid key formats may require component updates if hardcoded keys were used
+- Enhanced validation may catch previously ignored translation issues
+
+### 🎯 Next Steps
+1. **Complete French & Spanish**: Fully populate French and Spanish translation files
+2. **Component Integration**: Update any remaining components to use `useSafeTranslation` utility
+3. **CI Integration**: Add i18n validation to GitHub Actions workflow
+4. **Medical Terminology Review**: Review medical translations with healthcare professionals
+5. **RTL Support**: Consider adding RTL language support for Arabic, Hebrew, etc.
+
+---
 
 ### 🔥 Critical Bug Fixes
 - **Component Deduplication**: Removed duplicate components (`DoseCalculator.tsx`, `CompactClinicalTreatmentSheet.tsx`, `CancerTypeSelector.tsx`) and updated all imports to use optimized versions

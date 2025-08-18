@@ -200,7 +200,17 @@
     "searchPlaceholder": "Căutați după tip de cancer sau categorie...",
     "select": "Selectează",
     "selected": "Selectat",
+    "filter": "Filtrați după mediul de tratament",
     "filterLabel": "Filtrați după mediul de tratament:",
+    "subtype": "Subtip",
+    "selectSubtype": "Selectați subtipul",
+    "categories": {
+      "all": "Toate",
+      "neoadjuvant": "Neoadjuvant",
+      "adjuvant": "Adjuvant",
+      "advanced": "Avansat",
+      "metastatic": "Metastatic"
+    },
     "tabs": {
       "all": "Toate",
       "neoadjuvant": "Neoadjuvant",
@@ -425,24 +435,31 @@
     }
   },
   "unifiedSelector": {
-    "title": "Premedicație și profilaxie suportivă",
-    "riskBadge": "Risc emetogen {{level}}",
-    "selectedCount": "{{count}} selectate",
+    "title": "Protocol de premedicație și îngrijiri suportive",
     "tabs": {
       "recommendations": "Recomandări",
-      "categories": "Categorii",
+      "categories": "Toate Categoriile",
       "solvents": "Solvenți",
       "grouping": "Grupare",
-      "selected": "Selectate"
+      "selected": "Protocol Selectat"
     },
-    "recommendationsDesc": "Recomandări pe baza medicamentelor ({{drugs}}) și a riscului {{risk}}.",
-    "applyAll": "Aplică toate ({{count}})",
+    "recommendations": {
+      "title": "Protocoale Recomandate",
+      "description": "Recomandări bazate pe dovezi pentru {{drugs}} cu risc emetogen {{risk}}",
+      "noRecommendations": "Nu există recomandări specifice pentru acest regim",
+      "apply": "Aplică Toate Recomandările",
+      "clear": "Șterge Toate Selecțiile"
+    },
+    "riskBadge": "Risc {{level}}",
+    "selectedCount": "{{count}} Selectate",
+    "recommendationsDesc": "Recomandări bazate pe dovezi pentru {{drugs}} cu risc emetogen {{risk}}.",
+    "applyAll": "Aplică Toate Recomandările ({{count}})",
+    "emptySelected": "Nu sunt selectați agenți. Alegeți din recomandări sau răsfoiți categoriile pentru a construi protocolul.",
+    "selectedHeader": "Protocol selectat pentru {{drugs}} - {{count}} agenți",
     "specificFor": "Specific pentru",
-    "emptySelected": "Nu ați selectat încă agenți.",
-    "selectedHeader": "Agenți selectați pentru {{drugs}} ({{count}})",
-    "selectSolventDesc": "Selectează un solvent pentru fiecare agent de premedicație.",
-    "solvent": "Solvent",
-    "noAgentsForSolvents": "Nu ați selectat agenți. Selectați mai întâi agenți din tab-urile de recomandări sau categorii.",
+    "noAgentsForSolvents": "Nu sunt selectați agenți pentru solvenți.",
+    "required": "Necesar",
+    "optional": "Opțional",
     "categories": {
       "cinv": {
         "name": "Agenți antiemetici pentru CINV",
@@ -594,4 +611,3 @@
     "completeRequired": "Finalizează testările necesare"
   }
 }
-

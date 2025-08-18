@@ -198,7 +198,17 @@
     "searchPlaceholder": "Search by cancer type or category...",
     "select": "Select",
     "selected": "Selected",
+    "filter": "Filter by Treatment Setting",
     "filterLabel": "Filter by Treatment Setting:",
+    "subtype": "Subtype",
+    "selectSubtype": "Select subtype",
+    "categories": {
+      "all": "All",
+      "neoadjuvant": "Neoadjuvant",
+      "adjuvant": "Adjuvant",
+      "advanced": "Advanced",
+      "metastatic": "Metastatic"
+    },
     "tabs": {
       "all": "All",
       "neoadjuvant": "Neoadjuvant",
@@ -429,6 +439,13 @@
       "grouping": "Grouping",
       "selected": "Selected Protocol"
     },
+    "recommendations": {
+      "title": "Recommended Protocols",
+      "description": "Evidence-based recommendations for {{drugs}} with {{risk}} emetogenic risk",
+      "noRecommendations": "No specific recommendations available for this regimen",
+      "apply": "Apply All Recommendations",
+      "clear": "Clear All Selections"
+    },
     "riskBadge": "{{level}} Risk",
     "selectedCount": "{{count}} Selected",
     "recommendationsDesc": "Evidence-based recommendations for {{drugs}} with {{risk}} emetogenic risk.",
@@ -436,7 +453,9 @@
     "emptySelected": "No agents selected. Choose from recommendations or browse categories to build your protocol.",
     "selectedHeader": "Selected protocol for {{drugs}} - {{count}} agents",
     "specificFor": "Specific for",
-    "noAgentsForSolvents": "No agents selected for solvents."
+    "noAgentsForSolvents": "No agents selected for solvents.",
+    "required": "Required",
+    "optional": "Optional"
   },
   "solventGroups": {
     "selectSolventDescription": "Select a solvent for each premedication agent.",
