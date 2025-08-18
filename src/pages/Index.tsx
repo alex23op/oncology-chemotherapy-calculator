@@ -15,7 +15,8 @@ import { useSmartNav } from "@/context/SmartNavContext";
 import { EmetogenicRiskClassifier } from "@/components/EmetogenicRiskClassifier";
 import { PatientSummaryPanel } from "@/components/PatientSummaryPanel";
 import UnifiedProtocolSelector from "@/components/UnifiedProtocolSelector";
-import { CompactClinicalTreatmentSheet } from "@/components/CompactClinicalTreatmentSheet";
+import { CompactClinicalTreatmentSheetOptimized } from "@/components/CompactClinicalTreatmentSheetOptimized";
+import { useMonitoring } from "@/hooks/useMonitoring";
 import { AntiemeticAgent } from "@/types/emetogenicRisk";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toKg } from "@/utils/units";
@@ -40,6 +41,9 @@ const IndexContent = () => {
   const { t } = useTranslation();
   const { autoJumpEnabled } = useSmartNav();
   const { goTo } = useWizard();
+  
+  // Performance monitoring
+  useMonitoring();
 
   const [patientData, setPatientData] = useState<PatientData | null>(null);
   const [selectedRegimen, setSelectedRegimen] = useState<Regimen | null>(null);
@@ -205,7 +209,7 @@ const IndexContent = () => {
           {treatmentData ? (
             <div className="space-y-4">
               <div id="protocol-print">
-                <CompactClinicalTreatmentSheet treatmentData={treatmentData} />
+                <CompactClinicalTreatmentSheetOptimized treatmentData={treatmentData} />
               </div>
               <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
                 <Select value={reviewOrientation} onValueChange={(v) => setReviewOrientation(v as 'portrait' | 'landscape')}>
