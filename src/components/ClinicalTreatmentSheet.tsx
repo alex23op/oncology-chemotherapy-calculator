@@ -183,7 +183,7 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
           </CardHeader>
           <CardContent className="space-y-3 print:space-y-2">
             <div className="flex items-center gap-3">
-              <Badge variant={getRiskBadgeVariant(emetogenicRisk.level) as any} className="text-sm">
+              <Badge variant={getRiskBadgeVariant(emetogenicRisk.level)} className="text-sm">
                 {t('clinicalSheet.riskBadge', { level: emetogenicRisk.level.toUpperCase() })}
               </Badge>
               <span className="text-sm text-muted-foreground print:text-foreground">

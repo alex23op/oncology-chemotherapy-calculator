@@ -10,11 +10,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calculator, Edit, Save, FileText, Download, Printer, FileCheck, Shield, AlertTriangle, Calendar } from "lucide-react";
 import { Regimen, Drug, Premedication } from "@/types/regimens";
-
-
 import { SafetyAlertsPanel } from "./SafetyAlertsPanel";
 import { DatePickerField } from "./DatePickerField";
 import { MobileActionBar } from "./MobileActionBar";
+import { getSolventI18nKey } from '@/types/ui';
+import { logger } from '@/utils/logger';
 
 const TreatmentCalendarLazy = lazy(() => import("./TreatmentCalendar").then(m => ({ default: m.TreatmentCalendar })));
 const ClinicalTreatmentSheetLazy = lazy(() => import("./ClinicalTreatmentSheet").then(m => ({ default: m.ClinicalTreatmentSheet })));
@@ -118,7 +118,10 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
 
 
   useEffect(() => {
-    console.log("DoseCalculator useEffect triggered - regimen:", regimen?.name, "bsa:", bsa);
+    logger.debug("DoseCalculator useEffect triggered", { 
+      component: "DoseCalculator",
+      data: { regimen: regimen?.name, bsa }
+    });
     
     if (regimen && bsa > 0) {
       const effectiveBsa = useBsaCap ? Math.min(bsa, bsaCap) : bsa;
@@ -152,18 +155,25 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
           }
 
         } catch (error) {
-          console.error("Error calculating dose for drug:", drug.name, error);
+          logger.error("Error calculating dose for drug", {
+            component: "DoseCalculator",
+            data: { drugName: drug.name, error: error.message }
+          });
           calculatedDose = 0;
         }
 
         // Preserve existing user modifications if this drug already exists
         const existingCalc = calculations.find(calc => calc.drug.name === drug.name);
         if (existingCalc) {
-          console.log("Preserving user modifications for:", drug.name, {
-            selected: existingCalc.selected,
-            adjustedDose: existingCalc.adjustedDose,
-            notes: existingCalc.notes,
-            reductionPercentage: existingCalc.reductionPercentage
+          logger.debug("Preserving user modifications", {
+            component: "DoseCalculator", 
+            data: { 
+              drugName: drug.name,
+              selected: existingCalc.selected,
+              adjustedDose: existingCalc.adjustedDose,
+              notes: existingCalc.notes,
+              reductionPercentage: existingCalc.reductionPercentage
+            }
           });
           
           return {
@@ -193,7 +203,10 @@ const getCycleLengthDays = (schedule: string | undefined): number => {
         };
       });
       
-      console.log("Calculated doses with preserved user modifications:", newCalculations);
+      logger.debug("Calculated doses with preserved user modifications", {
+        component: "DoseCalculator",
+        data: { calculationsCount: newCalculations.length }
+      });
       setCalculations(newCalculations);
       
       // Initialize with existing regimen premedications if any (only if not already set)
@@ -885,11 +898,11 @@ const handleExportData = () => {
                 <SelectValue placeholder={t('doseCalculator.selectSolvent')} />
               </SelectTrigger>
               <SelectContent>
-                {AVAILABLE_SOLVENTS.map(solvent => (
-                  <SelectItem key={solvent} value={solvent}>
-                    {t(`solvents.${solvent?.toLowerCase().replace(/[\s%.]/g, '').replace('injection', 'Injection')}` as any) || solvent}
-                  </SelectItem>
-                ))}
+                  {AVAILABLE_SOLVENTS.map(solvent => (
+                    <SelectItem key={solvent} value={solvent}>
+                      {t(getSolventI18nKey(solvent)) || solvent}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
             {calc.drug.dilution && (
