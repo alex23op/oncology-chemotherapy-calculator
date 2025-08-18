@@ -11,7 +11,7 @@ import {
   ovarianCancerRegimens 
 } from "./regimens/gynaecology";
 import { allGenitourinaryRegimens } from "./regimens/genitourinaryCancer";
-import { gastrointestinalCancerRegimens } from "./regimens/gastrointestinalCancerConsolidated";
+import { gastrointestinalCancerRegimens } from "./regimens/gastrointestinalCancer";
 
 // Add subtype to gynecological regimens
 const cervicalRegimensWithSubtype = cervicalCancerRegimens.map(regimen => ({
