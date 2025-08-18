@@ -1,25 +1,6 @@
 // Improved type definitions for better type safety
 
-export interface PatientData {
-  weight: string;
-  height: string;
-  age: string;
-  sex: string;
-  creatinine: string;
-  weightUnit: string;
-  heightUnit: string;
-  creatinineUnit: string;
-  bsa: number;
-  creatinineClearance: number;
-}
-
-export interface CancerTypeWithRegimens {
-  id: string;
-  name: string;
-  category: string;
-  regimens: any[];
-}
-
+// Remove conflicting PatientData type and use the existing one from PatientForm
 export interface ValidationResult {
   isValid: boolean;
   errors: ValidationError[];
@@ -63,8 +44,9 @@ export interface LocalPremedAgent {
   solvent?: string | null;
 }
 
+// Remove references to undefined PatientData type
 export interface TreatmentExportData {
-  patient: PatientData | null;
+  patient: any | null;
   regimen: any | null;
   calculations: any[];
   timestamp: string;
@@ -95,19 +77,7 @@ export interface SafetyCheckOptions {
   enableProfiling?: boolean;
 }
 
-// Type guards for better type safety
-export const isValidPatientData = (data: unknown): data is PatientData => {
-  const patient = data as PatientData;
-  return (
-    typeof patient?.weight === 'string' &&
-    typeof patient?.height === 'string' &&
-    typeof patient?.age === 'string' &&
-    typeof patient?.sex === 'string' &&
-    typeof patient?.bsa === 'number' &&
-    typeof patient?.creatinineClearance === 'number'
-  );
-};
-
+// Remove type guards that reference undefined types
 export const isValidCalculation = (calc: unknown): calc is DraftCalculation => {
   const calculation = calc as DraftCalculation;
   return (

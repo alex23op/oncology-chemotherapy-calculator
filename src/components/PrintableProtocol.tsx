@@ -159,9 +159,9 @@ export const PrintableProtocol = React.forwardRef<HTMLDivElement, PrintableProto
                           <span className="font-medium">{t('printableProtocol.timing')}:</span> {agent.timing}
                         </div>
                       )}
-                      {agent.duration && (
+                      {agent.administrationDuration && (
                         <div>
-                          <span className="font-medium">{t('printableProtocol.duration')}:</span> {agent.duration}
+                          <span className="font-medium">{t('printableProtocol.duration')}:</span> {agent.administrationDuration}
                         </div>
                       )}
                     </div>

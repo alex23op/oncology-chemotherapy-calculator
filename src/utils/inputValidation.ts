@@ -1,5 +1,4 @@
 import { toast } from "@/hooks/use-toast";
-import { PatientData } from '@/types/enhanced';
 import i18n from '@/i18n';
 
 export interface ValidationResult {
@@ -26,7 +25,7 @@ export const VALIDATION_RULES: PatientValidationRules = {
   creatinine: { min: 0.1, max: 15, unit: 'mg/dL' }
 };
 
-export const validatePatientData = (data: PatientData): ValidationResult => {
+export const validatePatientData = (data: any): ValidationResult => {
   const errors: string[] = [];
   const warnings: string[] = [];
 

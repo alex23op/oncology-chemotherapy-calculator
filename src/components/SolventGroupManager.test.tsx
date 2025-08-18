@@ -8,7 +8,7 @@ import { PremedAgent, GroupedPremedications } from '@/types/clinicalTreatment';
 // Mock react-i18next
 vi.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key: string, params?: Record<string, unknown>) => {
+    t: (key: string, params?: Record<string, any>) => {
       const translations: { [key: string]: string } = {
         'solventGroups.description': 'Group medications that can be administered in the same solvent bag.',
         'solventGroups.pevTitle': 'Intravenous Infusions (PEV)',
@@ -42,7 +42,7 @@ vi.mock('react-i18next', () => ({
 // Mock @hello-pangea/dnd
 vi.mock('@hello-pangea/dnd', () => ({
   DragDropContext: ({ children }: { children: React.ReactNode }) => <div data-testid="drag-drop-context">{children}</div>,
-  Droppable: ({ children }: { children: (provided: DroppableProvided) => React.ReactNode }) => (
+  Droppable: ({ children }: { children: (provided: any) => React.ReactNode }) => (
     <div data-testid="droppable">
       {children({
         innerRef: vi.fn(),
@@ -51,7 +51,7 @@ vi.mock('@hello-pangea/dnd', () => ({
       })}
     </div>
   ),
-  Draggable: ({ children }: { children: (provided: DraggableProvided, snapshot: DraggableStateSnapshot) => React.ReactNode }) => (
+  Draggable: ({ children }: { children: (provided: any, snapshot: any) => React.ReactNode }) => (
     <div data-testid="draggable">
       {children(
         {
