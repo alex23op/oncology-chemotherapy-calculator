@@ -230,6 +230,9 @@
     "globalSearchHelp": "Search for cancer types and categories",
     "noResults": "No regimens found for \"{term}\" in {subcategory}",
     "noSearchResults": "No regimens found for \"{term}\" in {subcategory}",
+    "dataError": "Failed to load cancer types data",
+    "loading": "Loading cancer types...",
+    "retry": "Retry",
     "meta": {
       "schedule": "Schedule",
       "cycles": "Cycles",

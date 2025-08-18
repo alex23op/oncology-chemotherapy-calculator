@@ -232,6 +232,9 @@
     "globalSearchHelp": "Căutați tipuri de cancer și categorii",
     "noResults": "Niciun regim găsit pentru \"{term}\" în {subcategory}",
     "noSearchResults": "Niciun regim găsit pentru \"{term}\" în {subcategory}",
+    "dataError": "Eroare la încărcarea datelor despre tipurile de cancer",
+    "loading": "Se încarcă tipurile de cancer...",
+    "retry": "Reîncercați",
     "meta": {
       "schedule": "Program",
       "cycles": "Cicluri",

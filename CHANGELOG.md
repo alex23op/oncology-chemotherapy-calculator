@@ -1,5 +1,26 @@
 # Changelog - Chemotherapy Application Code Review & Improvements
 
+## Version 2.6.0 - Component Error Handling and Data Loading (2025-08-18)
+### 🔧 Bug Fixes
+- **Fixed Critical Loading Error**: Resolved "can't access property 'filter', c is undefined" error in `CancerTypeSelectorOptimized.tsx`
+- **Defensive Programming**: Added comprehensive null/undefined checks for `cancerTypes` data before filtering operations
+- **Data Validation**: Enhanced component initialization with proper data validation using existing Zod schemas
+
+### 🛡️ Error Handling & Robustness  
+- **Error Boundary Integration**: Wrapped component with `ErrorBoundary` for graceful error handling and recovery
+- **Loading States**: Added proper loading indicators during data initialization and validation
+- **Error UI**: Implemented user-friendly error state with retry functionality when data loading fails
+- **Enhanced Logging**: Improved error logging with structured context for better debugging
+
+### 🔍 Data Integrity
+- **Runtime Validation**: Added runtime checks to ensure all cancer type data conforms to expected schema
+- **Safe localStorage**: Enhanced localStorage operations with proper error handling for favorites functionality
+- **Component Resilience**: Made component robust against undefined data, import failures, and timing issues
+
+### 🌐 Translations
+- **Error Messages**: Added comprehensive error handling translations in English and Romanian
+- **Loading States**: Added loading and retry button translations for both languages
+
 ## Version 2.5.0 - Contextual Search for All Subcategories (2025-08-18)
 ### 🔍 Advanced Search Functionality
 - **Contextual Search Input**: Added sophisticated search functionality that filters regimens by name or drug within selected subcategory
