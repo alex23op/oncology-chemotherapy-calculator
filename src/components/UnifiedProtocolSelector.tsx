@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Shield, AlertTriangle, Clock, Pill, ChevronDown, BookOpen, Edit, Heart, Activity, Zap, Droplet, Users, FileText } from "lucide-react";
 import { Drug } from "@/types/regimens";
 import { PremedAgent, GroupedPremedications } from "@/types/clinicalTreatment";
+import { SolventType, AVAILABLE_SOLVENTS, validateSolventType } from "@/types/solvents";
 import { useTranslation } from 'react-i18next';
 import { SolventGroupManager } from './SolventGroupManager';
 
@@ -44,7 +45,7 @@ interface LocalPremedAgent {
   notes?: string;
   evidenceLevel?: string;
   drugSpecific?: string[];
-  solvent?: string;
+  solvent: SolventType;
 }
 
 interface CategoryData {
@@ -547,7 +548,7 @@ export const UnifiedProtocolSelector = ({
 }: UnifiedProtocolSelectorProps) => {
   const [selectedAgents, setSelectedAgents] = useState<PremedAgent[]>([]);
   const [expandedCategories, setExpandedCategories] = useState<string[]>(["cinv"]);
-  const [solventSelections, setSolventSelections] = useState<Record<string, string>>({});
+  const [solventSelections, setSolventSelections] = useState<Record<string, SolventType>>({});
   const [groupedPremedications, setGroupedPremedications] = useState<GroupedPremedications>({
     groups: [],
     individual: []
@@ -592,7 +593,7 @@ export const UnifiedProtocolSelector = ({
     const errors: string[] = [];
     
     groupedPremedications.groups.forEach((group, index) => {
-      if (!group.solvent.trim()) {
+      if (!group.solvent || !group.solvent.trim()) {
         errors.push(t('solventGroups.validation.noSolvent', { pev: index + 1 }));
       }
       if (group.medications.length === 0) {
@@ -872,7 +873,7 @@ export const UnifiedProtocolSelector = ({
             ) : (
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">
-                  {t('unifiedSelector.selectSolventDesc')}
+                  {t('solventGroups.selectSolventDescription')}
                 </p>
                 
                 {selectedAgents.map((agent, idx) => (
@@ -890,7 +891,7 @@ export const UnifiedProtocolSelector = ({
                         
                         <div className="min-w-[200px]">
                           <Label className="text-muted-foreground font-semibold text-sm">
-                            {t('unifiedSelector.solvent')}
+                            {t('solventGroups.solvent')}
                           </Label>
                           <Select 
                             value={solventSelections[agent.name] || ''} 
@@ -900,10 +901,11 @@ export const UnifiedProtocolSelector = ({
                               <SelectValue placeholder={t('doseCalculator.selectSolvent')} />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="Normal Saline 0.9%">{t('doseCalculator.solvents.normalSaline')}</SelectItem>
-                              <SelectItem value="Dextrose 5%">{t('doseCalculator.solvents.dextrose5')}</SelectItem>
-                              <SelectItem value="Ringer Solution">{t('doseCalculator.solvents.ringer')}</SelectItem>
-                              <SelectItem value="Water for Injection">{t('doseCalculator.solvents.waterForInjection')}</SelectItem>
+                              {AVAILABLE_SOLVENTS.map(solvent => (
+                                <SelectItem key={solvent} value={solvent}>
+                                  {t(`solvents.${solvent?.toLowerCase().replace(/[\s%.]/g, '').replace('injection', 'Injection')}` as any) || solvent}
+                                </SelectItem>
+                              ))}
                             </SelectContent>
                           </Select>
                         </div>

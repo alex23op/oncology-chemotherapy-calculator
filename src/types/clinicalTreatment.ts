@@ -1,4 +1,5 @@
 import { Drug, Regimen } from './regimens';
+import { SolventType } from './solvents';
 
 export interface PatientInfo {
   cnp: string;
@@ -22,7 +23,7 @@ export interface CalculatedDrug extends Drug {
   adjustmentNotes?: string;
   preparationInstructions?: string;
   administrationDuration?: string;
-  solvent?: string;
+  solvent: SolventType;
 }
 
 export interface PremedAgent {
@@ -42,7 +43,7 @@ export interface PremedAgent {
   notes?: string;
   evidenceLevel?: string;
   drugSpecific?: string[];
-  solvent?: string;
+  solvent: SolventType;
 }
 
 export interface PremedSolventGroup {

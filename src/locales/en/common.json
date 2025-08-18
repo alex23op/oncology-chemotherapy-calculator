@@ -436,9 +436,24 @@
     "emptySelected": "No agents selected. Choose from recommendations or browse categories to build your protocol.",
     "selectedHeader": "Selected protocol for {{drugs}} - {{count}} agents",
     "specificFor": "Specific for",
-    "selectSolventDesc": "Select a solvent for each premedication agent.",
+    "noAgentsForSolvents": "No agents selected for solvents."
+  },
+  "solventGroups": {
+    "selectSolventDescription": "Select a solvent for each premedication agent.",
     "solvent": "Solvent",
-    "noAgentsForSolvents": "No agents selected. Please select agents from the recommendations or categories tabs first.",
+    "validation": {
+      "noSolvent": "Please select a solvent for PEV {{pev}}",
+      "emptyPev": "PEV {{pev}} must contain at least one medication",
+      "orphanedMedication": "This medication is not included in any PEV group"
+    }
+  },
+  "solvents": {
+    "normalSaline": "Normal Saline 0.9%",
+    "dextrose5": "Dextrose 5%",
+    "ringer": "Ringer Solution",
+    "waterForInjection": "Water for injection"
+  },
+  "unifiedSelector": {
     "categories": {
       "cinv": {
         "name": "Antiemetic Agents for CINV",

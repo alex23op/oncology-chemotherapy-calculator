@@ -28,7 +28,8 @@ import { toISODate, parseISODate } from "@/utils/dateFormat";
 import { ClinicalSafetyEngine, SafetyAlert } from "@/utils/clinicalSafetyEngine";
 import { getMonitoringParametersForRegimen } from "@/data/monitoringProtocols";
 import { toast } from "sonner";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
+import { SolventType, AVAILABLE_SOLVENTS } from "@/types/solvents";
 import { useSmartNav } from '@/context/SmartNavContext';
 
 interface DoseCalculatorProps {
@@ -251,44 +252,53 @@ useEffect(() => {
     const raw = localStorage.getItem(`draft:doseCalc:${regimen.id}`);
     if (raw) {
       const draft = JSON.parse(raw);
-      // CNP is deliberately excluded from draft loading to prevent persistence between patients
-      setFoNumber(draft.foNumber || '');
-      setCycleNumber(draft.cycleNumber || 1);
-      setTreatmentDate(draft.treatmentDate || toISODate(new Date()));
-      setClinicalNotes(typeof draft.clinicalNotes === 'string' ? draft.clinicalNotes : '');
-      setSelectedPremedications(draft.selectedPremedications || []);
-      setSelectedAntiemetics(draft.selectedAntiemetics || []);
-      if (Array.isArray(draft.calculations)) {
-        const sanitized = draft.calculations.map((c: any) => ({
-          ...c,
-          solvent: typeof c?.solvent === 'string' ? c.solvent : undefined,
-          administrationDuration: typeof c?.administrationDuration === 'string' ? c.administrationDuration : undefined,
-          notes: typeof c?.notes === 'string' ? c.notes : '',
+// Reset CNP to empty when loading a new regimen
+      if (draft.patientFullName) setPatientFullName(draft.patientFullName);
+      if (draft.foNumber) setFoNumber(draft.foNumber);
+      if (draft.cycleNumber) setCycleNumber(draft.cycleNumber);
+      if (draft.treatmentDate) setTreatmentDate(draft.treatmentDate);
+      if (draft.nextCycleDate) setNextCycleDate(draft.nextCycleDate);
+      if (draft.autoNextCycle !== undefined) setAutoNextCycle(draft.autoNextCycle);
+      if (draft.clinicalNotes) setClinicalNotes(draft.clinicalNotes);
+      if (draft.bsaCap !== undefined) setBsaCap(draft.bsaCap);
+
+      // Validate and sanitize calculations
+      if (draft.calculations && Array.isArray(draft.calculations)) {
+        const sanitizedCalculations = draft.calculations.map(c => ({
+          ...c, 
+          finalDose: parseFloat(c.finalDose) || 0,
+          adjustedDose: parseFloat(c.adjustedDose) || 0,
+          notes: typeof c.notes === 'string' ? c.notes : ''
         }));
-        setCalculations(sanitized);
+        setCalculations(sanitizedCalculations);
+        
         // persist sanitized draft back to storage (without CNP)
         try { 
-          const draftToSave = { ...draft, calculations: sanitized };
+          const draftToSave = { ...draft, calculations: sanitizedCalculations };
           delete draftToSave.cnp; // Remove CNP from saved draft
           localStorage.setItem(`draft:doseCalc:${regimen.id}`, JSON.stringify(draftToSave)); 
-        } catch {}
+        } catch {} 
       }
     }
-  } catch {}
-}, [regimen?.id]);
+    // Always reset CNP when switching regimens to prevent persistence between patients
+    setCnp('');
+  } catch (e) {
+    console.warn('Failed to load draft:', e);
+  }
+}, [regimen]);
 
 // Autosave draft when key fields change (excluding CNP to prevent persistence between patients)
 useEffect(() => {
   if (!regimen) return;
   const payload = {
     // CNP is deliberately excluded from autosave to prevent persistence between patients
-    foNumber, cycleNumber, treatmentDate, clinicalNotes,
-    selectedPremedications, selectedAntiemetics, calculations
+    patientFullName, foNumber, cycleNumber, treatmentDate, nextCycleDate, autoNextCycle, 
+    clinicalNotes, bsaCap, selectedPremedications, selectedAntiemetics, calculations
   };
   try {
     localStorage.setItem(`draft:doseCalc:${regimen.id}`, JSON.stringify(payload));
   } catch {}
-}, [regimen?.id, foNumber, cycleNumber, treatmentDate, clinicalNotes, selectedPremedications, selectedAntiemetics, calculations]);
+}, [regimen?.id, patientFullName, foNumber, cycleNumber, treatmentDate, nextCycleDate, autoNextCycle, clinicalNotes, bsaCap, selectedPremedications, selectedAntiemetics, calculations]);
 
 
 // Auto-calculate next cycle date based on regimen schedule and treatment date
@@ -870,9 +880,11 @@ const handleExportData = () => {
                 <SelectValue placeholder={t('doseCalculator.selectSolvent')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Normal Saline 0.9%">{t('doseCalculator.solvents.normalSaline')}</SelectItem>
-                <SelectItem value="Dextrose 5%">{t('doseCalculator.solvents.dextrose5')}</SelectItem>
-                <SelectItem value="Ringer Solution">{t('doseCalculator.solvents.ringer')}</SelectItem>
+                {AVAILABLE_SOLVENTS.map(solvent => (
+                  <SelectItem key={solvent} value={solvent}>
+                    {t(`solvents.${solvent?.toLowerCase().replace(/[\s%.]/g, '').replace('injection', 'Injection')}` as any) || solvent}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
             {calc.drug.dilution && (
