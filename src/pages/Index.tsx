@@ -14,7 +14,7 @@ import { ProgressBar } from "@/components/wizard/ProgressBar";
 import { useSmartNav } from "@/context/SmartNavContext";
 import { EmetogenicRiskClassifier } from "@/components/EmetogenicRiskClassifier";
 import { PatientSummaryPanel } from "@/components/PatientSummaryPanel";
-import { UnifiedProtocolSelector } from "@/components/UnifiedProtocolSelector";
+import UnifiedProtocolSelector from "@/components/UnifiedProtocolSelector";
 import { CompactClinicalTreatmentSheet } from "@/components/CompactClinicalTreatmentSheet";
 import { AntiemeticAgent } from "@/types/emetogenicRisk";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -92,6 +92,49 @@ const IndexContent = () => {
     });
   };
 
+  // Convert AntiemeticAgent to LocalPremedAgent
+  const convertToLocalPremedAgents = (agents: AntiemeticAgent[]) => {
+    return agents.map(agent => ({
+      name: agent.name,
+      category: agent.category || 'antiemetic',
+      class: agent.class,
+      dosage: agent.dosage,
+      unit: agent.unit,
+      route: agent.route,
+      timing: agent.timing,
+      indication: agent.indication,
+      rationale: agent.rationale,
+      isRequired: true, // Default value
+      isStandard: true, // Default value
+      evidenceLevel: agent.evidenceLevel,
+      drugSpecific: [], // Default empty array
+      administrationDuration: agent.administrationDuration,
+      weightBased: false, // Default value
+      notes: agent.notes,
+      solvent: null
+    }));
+  };
+
+  // Convert LocalPremedAgent back to AntiemeticAgent
+  const convertFromLocalPremedAgents = (agents: any[]) => {
+    return agents.map(agent => ({
+      name: agent.name,
+      class: agent.class,
+      mechanism: agent.mechanism || agent.class || '',
+      dosage: agent.dosage,
+      unit: agent.unit,
+      route: agent.route,
+      timing: agent.timing,
+      duration: agent.duration,
+      indication: agent.indication,
+      evidenceLevel: agent.evidenceLevel,
+      notes: agent.notes,
+      category: agent.category,
+      rationale: agent.rationale,
+      administrationDuration: agent.administrationDuration
+    }));
+  };
+
   const weightKg = patientData ? toKg(parseFloat(patientData.weight), (patientData.weightUnit as 'kg' | 'lbs')) : 0;
 
   return (
@@ -118,14 +161,12 @@ const IndexContent = () => {
               <EmetogenicRiskClassifier drugs={selectedRegimen.drugs} onRiskLevelChange={setEmetogenicRiskLevel} />
               <UnifiedProtocolSelector
                 drugNames={selectedRegimen.drugs.map(drug => drug.name)}
-                drugs={selectedRegimen.drugs}
-                emetogenicRiskLevel={emetogenicRiskLevel}
-                selectedPremedications={selectedPremedications}
-                selectedAntiemetics={selectedAntiemetics}
-                onPremedSelectionsChange={setSelectedPremedications}
-                onAntiemeticProtocolChange={setSelectedAntiemetics}
+                emetogenicRisk={emetogenicRiskLevel}
+                selectedAgents={convertToLocalPremedAgents(selectedAntiemetics)}
+                onSelectionChange={(agents) => setSelectedAntiemetics(convertFromLocalPremedAgents(agents))}
+                onRecommendationApplied={(agents) => setSelectedAntiemetics(convertFromLocalPremedAgents(agents))}
                 onGroupingChange={setGroupedPremedications}
-                weight={weightKg}
+                patientWeight={weightKg}
               />
             </div>
           ) : (

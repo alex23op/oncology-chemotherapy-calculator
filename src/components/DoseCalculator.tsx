@@ -433,7 +433,7 @@ useEffect(() => {
         adjustmentNotes: calc.notes,
         preparationInstructions: calc.drug.dilution,
         administrationDuration: calc.administrationDuration || calc.drug.administrationDuration,
-        solvent: calc.solvent,
+        solvent: (calc.solvent && AVAILABLE_SOLVENTS.includes(calc.solvent as SolventType)) ? calc.solvent as SolventType : null,
       }));
 
     const toDoseWithUnit = (dosage?: string, unit?: string) => {
@@ -472,6 +472,7 @@ useEffect(() => {
         timing: agent.timing || '',
         isRequired: false,
         isStandard: true,
+        solvent: null,
       })),
       infusionReactionProphylaxis: effectiveAntiemetics.filter(agent => categorizeAgent(agent) === 'infusionReactionProphylaxis').map(agent => ({
         ...agent,
@@ -481,6 +482,7 @@ useEffect(() => {
         timing: agent.timing || '',
         isRequired: false,
         isStandard: true,
+        solvent: null,
       })),
       gastroprotection: effectiveAntiemetics.filter(agent => categorizeAgent(agent) === 'gastroprotection').map(agent => ({
         ...agent,
@@ -490,6 +492,7 @@ useEffect(() => {
         timing: agent.timing || '',
         isRequired: false,
         isStandard: true,
+        solvent: null,
       })),
       organProtection: effectiveAntiemetics.filter(agent => categorizeAgent(agent) === 'organProtection').map(agent => ({
         ...agent,
@@ -499,6 +502,7 @@ useEffect(() => {
         timing: agent.timing || '',
         isRequired: false,
         isStandard: true,
+        solvent: null,
       })),
       other: effectiveAntiemetics.filter(agent => categorizeAgent(agent) === 'other').map(agent => ({
         ...agent,
@@ -508,6 +512,7 @@ useEffect(() => {
         timing: agent.timing || '',
         isRequired: false,
         isStandard: true,
+        solvent: null,
       })),
     };
 
