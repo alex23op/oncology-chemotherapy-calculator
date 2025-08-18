@@ -12,6 +12,7 @@ import { ClinicalErrorBoundary } from "@/components/ClinicalErrorBoundary";
 import { useDebouncedCalculation, usePerformanceMonitoring } from "@/hooks/usePerformanceOptimization";
 import { toKg } from "@/utils/units";
 import { logger } from '@/utils/logger';
+import { useDataPersistence } from '@/context/DataPersistenceContext';
 
 interface PatientData {
   weight: string;
@@ -30,15 +31,32 @@ interface PatientFormProps {
 
 export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
   const { t } = useTranslation();
-  const [patientData, setPatientData] = useState<PatientData>({
-    weight: "",
-    height: "",
-    age: "",
-    sex: "",
-    creatinine: "",
-    weightUnit: "kg",
-    heightUnit: "cm",
-    creatinineUnit: "mg/dL"
+  const { state } = useDataPersistence();
+  
+  // Initialize with persistent data if available
+  const [patientData, setPatientData] = useState<PatientData>(() => {
+    if (state.patientData) {
+      return {
+        weight: state.patientData.weight || "",
+        height: state.patientData.height || "",
+        age: state.patientData.age || "",
+        sex: state.patientData.sex || "",
+        creatinine: state.patientData.creatinine || "",
+        weightUnit: state.patientData.weightUnit || "kg",
+        heightUnit: state.patientData.heightUnit || "cm",
+        creatinineUnit: state.patientData.creatinineUnit || "mg/dL"
+      };
+    }
+    return {
+      weight: "",
+      height: "",
+      age: "",
+      sex: "",
+      creatinine: "",
+      weightUnit: "kg",
+      heightUnit: "cm",
+      creatinineUnit: "mg/dL"
+    };
   });
 
   const [validation, setValidation] = useState<ValidationResult>({ isValid: true, errors: [], warnings: [] });
@@ -103,7 +121,7 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
     }
   }, []);
 
-  // Debounced calculation to prevent excessive re-renders
+  // Debounced calculation to prevent excessive re-renders (only for validation)
   const debouncedCalculation = useDebouncedCalculation((data: PatientData) => {
     setIsCalculating(true);
     
@@ -111,40 +129,17 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
       // Validate input data
       const validationResult = validatePatientData(data);
       setValidation(validationResult);
-      
-      if (data.weight && data.height) {
-        const weight = parseFloat(data.weight);
-        const height = parseFloat(data.height);
-        const age = parseFloat(data.age);
-        const creatinine = parseFloat(data.creatinine);
-        
-        if (!isNaN(weight) && !isNaN(height)) {
-          const bsa = calculateBSA(weight, height, data.weightUnit, data.heightUnit);
-          
-          let creatinineClearance = 0;
-          if (!isNaN(age) && !isNaN(creatinine) && data.sex) {
-            creatinineClearance = calculateCreatinineClearance(
-              age, weight, creatinine, data.sex, 
-              data.weightUnit, data.creatinineUnit
-            );
-          }
-          
-          const weightNum = parseFloat(data.weight);
-          const normalizedWeightKg = toKg(weightNum, data.weightUnit as 'kg' | 'lbs');
-          onPatientDataChange({ ...data, weight: String(normalizedWeightKg), weightUnit: "kg", bsa, creatinineClearance });
-        }
-      }
     } catch (error) {
-      logger.error('Patient data calculation error', { component: 'PatientForm', action: 'calculatePatientData', error });
+      logger.error('Patient data validation error', { component: 'PatientForm', action: 'validatePatientData', error });
       setValidation({
         isValid: false,
-        errors: ['Calculation error occurred'],
+        errors: ['Validation error occurred'],
         warnings: []
       });
     } finally {
       setIsCalculating(false);
     }
-  }, 300, [calculateBSA, calculateCreatinineClearance, onPatientDataChange]);
+  }, 300, []);
 
   const handleInputChange = useCallback((field: keyof PatientData, value: string) => {
     // Sanitize input to prevent XSS
@@ -152,9 +147,37 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
     const newData = { ...patientData, [field]: sanitizedValue };
     setPatientData(newData);
     
-    // Trigger debounced calculation
+    // Immediately call parent callback for real-time updates
+    const weight = parseFloat(newData.weight || "0");
+    const height = parseFloat(newData.height || "0");
+    const age = parseFloat(newData.age || "0");
+    const creatinine = parseFloat(newData.creatinine || "0");
+    
+    const bsa = newData.weight && newData.height ? 
+      calculateBSA(weight, height, newData.weightUnit, newData.heightUnit) : 0;
+    
+    let creatinineClearance = 0;
+    if (newData.age && newData.weight && newData.creatinine && newData.sex) {
+      creatinineClearance = calculateCreatinineClearance(
+        age, weight, creatinine, newData.sex, 
+        newData.weightUnit, newData.creatinineUnit
+      );
+    }
+    
+    // Always call parent callback immediately
+    const weightNum = parseFloat(newData.weight || "0");
+    const normalizedWeightKg = newData.weight ? toKg(weightNum, newData.weightUnit as 'kg' | 'lbs') : 0;
+    onPatientDataChange({ 
+      ...newData, 
+      weight: newData.weight ? String(normalizedWeightKg) : newData.weight, 
+      weightUnit: "kg", 
+      bsa, 
+      creatinineClearance 
+    });
+    
+    // Trigger debounced validation
     debouncedCalculation(newData);
-  }, [patientData, debouncedCalculation]);
+  }, [patientData, debouncedCalculation, calculateBSA, calculateCreatinineClearance, onPatientDataChange]);
 
   // Show validation toast when validation changes
   useEffect(() => {
@@ -162,6 +185,37 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
       showValidationToast(validation, t('patientForm.title'));
     }
   }, [validation]);
+
+  // Initialize parent with existing data on mount
+  useEffect(() => {
+    if (state.patientData && patientData.weight && patientData.height) {
+      const weight = parseFloat(patientData.weight || "0");
+      const height = parseFloat(patientData.height || "0");
+      const age = parseFloat(patientData.age || "0");
+      const creatinine = parseFloat(patientData.creatinine || "0");
+      
+      const bsa = patientData.weight && patientData.height ? 
+        calculateBSA(weight, height, patientData.weightUnit, patientData.heightUnit) : 0;
+      
+      let creatinineClearance = 0;
+      if (patientData.age && patientData.weight && patientData.creatinine && patientData.sex) {
+        creatinineClearance = calculateCreatinineClearance(
+          age, weight, creatinine, patientData.sex, 
+          patientData.weightUnit, patientData.creatinineUnit
+        );
+      }
+      
+      const weightNum = parseFloat(patientData.weight || "0");
+      const normalizedWeightKg = patientData.weight ? toKg(weightNum, patientData.weightUnit as 'kg' | 'lbs') : 0;
+      onPatientDataChange({ 
+        ...patientData, 
+        weight: patientData.weight ? String(normalizedWeightKg) : patientData.weight, 
+        weightUnit: "kg", 
+        bsa, 
+        creatinineClearance 
+      });
+    }
+  }, []); // Run only on mount - empty dependency array
 
   const isFormValid = patientData.weight && patientData.height && patientData.age && patientData.sex;
 

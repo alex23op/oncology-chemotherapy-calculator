@@ -122,7 +122,26 @@ const IndexContent = () => {
   };
 
   const handleRegimenSelect = (regimen: Regimen) => {
-    if (!patientData) {
+    // Check persistent state first, then local state
+    const persistentPatientData = state.patientData;
+    const hasValidPatientData = persistentPatientData && (
+      persistentPatientData.weight && 
+      persistentPatientData.height && 
+      persistentPatientData.age && 
+      persistentPatientData.sex
+    );
+    
+    console.debug('[RegimenSelect] Patient data check:', { 
+      persistentPatientData: !!persistentPatientData,
+      localPatientData: !!patientData,
+      hasValidFields: hasValidPatientData,
+      weight: persistentPatientData?.weight,
+      height: persistentPatientData?.height,
+      age: persistentPatientData?.age,
+      sex: persistentPatientData?.sex
+    });
+    
+    if (!hasValidPatientData) {
       toast({
         title: t("index.toasts.patientDataRequired.title"),
         description: t("index.toasts.patientDataRequired.description"),
@@ -206,7 +225,9 @@ const IndexContent = () => {
 
       <WizardStep id="patient" title={t('wizard.steps.patient', { defaultValue: 'Patient data' })}>
         <SafeComponentWrapper componentName="Patient Form" fallbackMessage={t('errors.patientFormFailed')}>
-          <PatientForm onPatientDataChange={handlePatientDataChange} />
+          <PatientForm 
+            onPatientDataChange={handlePatientDataChange}
+          />
         </SafeComponentWrapper>
       </WizardStep>
 
