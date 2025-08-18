@@ -136,5 +136,22 @@ export const drugEmetogenicClassification: EmetogenicClassification[] = [
   { drugName: "Vincristine", riskLevel: "minimal" },
   { drugName: "Olaparib", riskLevel: "minimal" },
   { drugName: "Niraparib", riskLevel: "low" },
-  { drugName: "Rucaparib", riskLevel: "minimal" }
+  { drugName: "Rucaparib", riskLevel: "minimal" },
+  
+  // Additional lung cancer drugs
+  { drugName: "Osimertinib", riskLevel: "low" },
+  { drugName: "Alectinib", riskLevel: "minimal" },
+  { drugName: "Repotrectinib", riskLevel: "low" },
+  { drugName: "Adagrasib", riskLevel: "low" },
+  { drugName: "Sotorasib", riskLevel: "low" },
+  { drugName: "Tepotinib", riskLevel: "low" },
+  { drugName: "Capmatinib", riskLevel: "low" },
+  { drugName: "Dabrafenib", riskLevel: "low" },
+  { drugName: "Trametinib", riskLevel: "low" },
+  { drugName: "Nivolumab", riskLevel: "minimal" },
+  { drugName: "Ipilimumab", riskLevel: "low" },
+  { drugName: "Durvalumab", riskLevel: "minimal" },
+  { drugName: "Ramucirumab", riskLevel: "minimal" },
+  { drugName: "Lurbinectedin", riskLevel: "moderate" },
+  { drugName: "Amivantamab", riskLevel: "low" }
 ];

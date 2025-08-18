@@ -35,8 +35,8 @@ export const CancerTypeSelector = ({ onRegimenSelect }: CancerTypeSelectorProps)
       regimens = regimens.filter((regimen: Regimen) => regimen.category === category);
     }
     
-    // Filter by subtype (only for gynecological cancers)
-    if (cancer.id === "gyn-all" && subtype !== "all") {
+    // Filter by subtype (for gynecological and lung cancers)
+    if ((cancer.id === "gyn-all" || cancer.id === "lung-all") && subtype !== "all") {
       regimens = regimens.filter((regimen: Regimen) => regimen.subtype === subtype);
     }
     
@@ -101,19 +101,27 @@ export const CancerTypeSelector = ({ onRegimenSelect }: CancerTypeSelectorProps)
                     <h4 className="font-medium text-sm text-foreground">{t('cancerSelector.filterLabel')}</h4>
                   </div>
 
-                  {/* Subtype selector for gynecological cancers */}
-                  {cancer.id === "gyn-all" && (
+                  {/* Subtype selector for gynecological and lung cancers */}
+                  {(cancer.id === "gyn-all" || cancer.id === "lung-all") && (
                     <div className="mb-4">
-                      <Label className="text-sm font-medium text-foreground mb-2 block">Cancer Subtype</Label>
+                      <Label className="text-sm font-medium text-foreground mb-2 block">
+                        {cancer.id === "gyn-all" ? "Cancer Subtype" : "Lung Cancer Subtype"}
+                      </Label>
                       <Select value={selectedSubtype} onValueChange={setSelectedSubtype}>
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select cancer subtype" />
+                          <SelectValue placeholder={`Select ${cancer.id === "gyn-all" ? "cancer" : "lung cancer"} subtype`} />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="all">All Subtypes</SelectItem>
-                          {getAvailableSubtypes(cancer).map((subtype: string) => (
+                          {cancer.id === "gyn-all" && getAvailableSubtypes(cancer).map((subtype: string) => (
                             <SelectItem key={subtype} value={subtype}>{subtype}</SelectItem>
                           ))}
+                          {cancer.id === "lung-all" && (
+                            <>
+                              <SelectItem value="NSCLC">NSCLC</SelectItem>
+                              <SelectItem value="SCLC">SCLC</SelectItem>
+                            </>
+                          )}
                         </SelectContent>
                       </Select>
                     </div>

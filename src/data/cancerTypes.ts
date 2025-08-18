@@ -42,9 +42,9 @@ export const cancerTypes: CancerType[] = [
     regimens: [...breastCancerRegimens, ...breastCancerTargetedRegimens]
   },
   {
-    id: "lung",
-    name: "Lung Cancer (NSCLC/SCLC)",
-    category: "Solid Tumor", 
+    id: "lung-all",
+    name: "Lung Cancer",
+    category: "Lung Cancer", 
     regimens: [...lungCancerRegimens, ...lungCancerTargetedRegimens]
   },
   {

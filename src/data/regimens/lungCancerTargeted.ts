@@ -1,9 +1,142 @@
 import { Regimen } from "@/types/regimens";
 
 export const lungCancerTargetedRegimens: Regimen[] = [
+  // NCCN 3.2025 Oncogene-driven NSCLC
+  {
+    id: "nccn-osimertinib",
+    name: "Osimertinib",
+    subtype: "NSCLC",
+    description: "EGFR exon 19del/L858R first-line, FLAURA study (NCCN 3.2025)",
+    category: "advanced",
+    lineOfTherapy: "first-line",
+    biomarkerRequirements: [
+      {
+        name: "EGFR",
+        status: "mutated",
+        testingMethod: "NGS/PCR",
+        threshold: "Exon 19 deletion or L858R mutation",
+        required: true,
+        turnaroundTime: "3-7 days"
+      }
+    ],
+    eligibilityCriteria: {
+      ecogStatus: [0, 1, 2],
+      biomarkers: ["EGFR exon 19 deletion or L858R mutation"],
+      contraindications: ["QTc >470ms", "Severe hepatic impairment"]
+    },
+    drugs: [
+      {
+        name: "Osimertinib",
+        dosage: "80",
+        unit: "mg",
+        route: "PO",
+        day: "Daily",
+        drugClass: "targeted",
+        mechanismOfAction: "Third-generation EGFR TKI",
+        monitoring: ["ECG", "LFTs", "Pulmonary symptoms", "Ophthalmologic exams"],
+        notes: "Once daily, can be taken with or without food"
+      }
+    ],
+    schedule: "Continuous daily dosing",
+    cycles: 999,
+    mechanismOfAction: "Irreversible EGFR and T790M inhibition",
+    responseRates: {
+      overall: 80,
+      progressionFreeSurvival: "18.9 months"
+    }
+  },
+  {
+    id: "nccn-alectinib",
+    name: "Alectinib",
+    subtype: "NSCLC",
+    description: "ALK-positive first-line, ALEX study (NCCN 3.2025)",
+    category: "advanced",
+    lineOfTherapy: "first-line",
+    biomarkerRequirements: [
+      {
+        name: "ALK",
+        status: "positive",
+        testingMethod: "IHC/FISH/NGS",
+        threshold: "ALK rearrangement detected",
+        required: true,
+        turnaroundTime: "3-7 days"
+      }
+    ],
+    eligibilityCriteria: {
+      ecogStatus: [0, 1, 2],
+      biomarkers: ["ALK rearrangement"],
+      contraindications: ["Severe hepatic impairment", "Severe bradycardia"]
+    },
+    drugs: [
+      {
+        name: "Alectinib",
+        dosage: "600",
+        unit: "mg",
+        route: "PO",
+        day: "Twice daily",
+        drugClass: "targeted",
+        mechanismOfAction: "Second-generation ALK/RET inhibitor",
+        monitoring: ["LFTs", "Heart rate", "CPK", "Pulmonary symptoms"],
+        notes: "Twice daily with food"
+      }
+    ],
+    schedule: "Continuous twice daily dosing",
+    cycles: 999,
+    mechanismOfAction: "ALK kinase domain inhibition with CNS penetration",
+    responseRates: {
+      overall: 83,
+      progressionFreeSurvival: "34.8 months"
+    }
+  },
+  {
+    id: "nccn-repotrectinib",
+    name: "Repotrectinib",
+    subtype: "NSCLC",
+    description: "ROS1-positive post-entrectinib/crizotinib, NCCN 2.2024 update",
+    category: "advanced",
+    lineOfTherapy: "second-line",
+    biomarkerRequirements: [
+      {
+        name: "ROS1",
+        status: "positive",
+        testingMethod: "FISH/NGS",
+        threshold: "ROS1 rearrangement detected",
+        required: true,
+        turnaroundTime: "7-14 days"
+      }
+    ],
+    eligibilityCriteria: {
+      ecogStatus: [0, 1, 2],
+      biomarkers: ["ROS1 rearrangement", "Prior entrectinib or crizotinib"],
+      contraindications: ["Severe hepatic impairment"]
+    },
+    drugs: [
+      {
+        name: "Repotrectinib",
+        dosage: "160",
+        unit: "mg",
+        route: "PO",
+        day: "Daily",
+        drugClass: "targeted",
+        mechanismOfAction: "Multi-kinase inhibitor (ROS1, TRK, ALK)",
+        monitoring: ["LFTs", "CNS effects", "Dizziness"],
+        notes: "Once daily with food"
+      }
+    ],
+    schedule: "Continuous daily dosing",
+    cycles: 999,
+    mechanismOfAction: "ROS1/TRK/ALK kinase inhibition",
+    responseRates: {
+      overall: 79,
+      progressionFreeSurvival: "14.8 months"
+    }
+  },
+
+  // Existing regimens with subtype added
   {
     id: "lung-adagrasib-kras-g12c",
     name: "Adagrasib (KRAS G12C)",
+    subtype: "NSCLC",
     description: "KRAS G12C inhibitor for KRAS G12C-mutated NSCLC",
     category: "advanced",
     lineOfTherapy: "second-line",
@@ -60,6 +193,7 @@ export const lungCancerTargetedRegimens: Regimen[] = [
   {
     id: "lung-sotorasib-kras-g12c",
     name: "Sotorasib (KRAS G12C)",
+    subtype: "NSCLC",
     description: "KRAS G12C inhibitor for KRAS G12C-mutated NSCLC",
     category: "advanced",
     lineOfTherapy: "second-line",
@@ -102,6 +236,7 @@ export const lungCancerTargetedRegimens: Regimen[] = [
   {
     id: "lung-tepotinib-met-ex14",
     name: "Tepotinib (MET exon 14)",
+    subtype: "NSCLC",
     description: "MET inhibitor for MET exon 14 skipping NSCLC",
     category: "advanced",
     lineOfTherapy: "first-line",
@@ -144,6 +279,7 @@ export const lungCancerTargetedRegimens: Regimen[] = [
   {
     id: "lung-capmatinib-met-ex14",
     name: "Capmatinib (MET exon 14)",
+    subtype: "NSCLC",
     description: "MET inhibitor for MET exon 14 skipping NSCLC",
     category: "advanced",
     lineOfTherapy: "first-line",
@@ -186,6 +322,7 @@ export const lungCancerTargetedRegimens: Regimen[] = [
   {
     id: "lung-osimertinib-egfr",
     name: "Osimertinib (EGFR-mutated)",
+    subtype: "NSCLC",
     description: "Third-generation EGFR TKI for EGFR-mutated NSCLC",
     category: "advanced",
     lineOfTherapy: "first-line",
@@ -227,6 +364,7 @@ export const lungCancerTargetedRegimens: Regimen[] = [
   {
     id: "lung-alectinib-alk",
     name: "Alectinib (ALK-rearranged)",
+    subtype: "NSCLC",
     description: "Second-generation ALK inhibitor for ALK+ NSCLC",
     category: "advanced",
     lineOfTherapy: "first-line",
@@ -268,6 +406,7 @@ export const lungCancerTargetedRegimens: Regimen[] = [
   {
     id: "lung-sotorasib-krasg12c",
     name: "Sotorasib (KRAS G12C)",
+    subtype: "NSCLC",
     description: "KRAS G12C inhibitor for previously treated NSCLC",
     category: "advanced",
     lineOfTherapy: "second-line",
@@ -310,6 +449,7 @@ export const lungCancerTargetedRegimens: Regimen[] = [
   {
     id: "lung-pembrolizumab-mono",
     name: "Pembrolizumab Monotherapy",
+    subtype: "NSCLC",
     description: "Anti-PD-1 monotherapy for high PD-L1 NSCLC",
     category: "advanced",
     lineOfTherapy: "first-line",
@@ -352,6 +492,7 @@ export const lungCancerTargetedRegimens: Regimen[] = [
   {
     id: "lung-dabrafenib-trametinib",
     name: "Dabrafenib + Trametinib",
+    subtype: "NSCLC",
     description: "BRAF/MEK inhibitor combination for BRAF V600E NSCLC",
     category: "advanced",
     lineOfTherapy: "first-line",
@@ -405,6 +546,7 @@ export const lungCancerTargetedRegimens: Regimen[] = [
   {
     id: "lung-capmatinib-met",
     name: "Capmatinib (MET Exon 14)",
+    subtype: "NSCLC",
     description: "MET inhibitor for MET exon 14 skipping mutations",
     category: "advanced",
     lineOfTherapy: "first-line",
