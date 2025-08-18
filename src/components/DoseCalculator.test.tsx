@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { DoseCalculator } from '@/components/DoseCalculator';
+import { DoseCalculatorEnhanced } from '@/components/DoseCalculatorEnhanced';
 import { SmartNavProvider } from '@/context/SmartNavContext';
 import i18n from '@/i18n';
 
@@ -24,7 +24,7 @@ describe('DoseCalculator Edit/Save buttons', () => {
     await i18n.changeLanguage('en');
 
     const { findAllByRole } = wrap(
-      <DoseCalculator
+      <DoseCalculatorEnhanced
         regimen={mockRegimen}
         bsa={1.8}
         weight={70}

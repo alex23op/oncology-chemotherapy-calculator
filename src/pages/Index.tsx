@@ -2,7 +2,7 @@ import { useState, useEffect, Suspense, lazy } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { PatientForm } from "@/components/PatientForm";
 import { CancerTypeSelectorOptimized } from "@/components/CancerTypeSelectorOptimized";
-import { DoseCalculator } from "@/components/DoseCalculator";
+import { DoseCalculatorEnhanced as DoseCalculator } from "@/components/DoseCalculatorEnhanced";
 import { SafeComponentWrapper } from "@/components/SafeComponentWrapper";
 import { toast } from "@/hooks/use-toast";
 import { Info } from "lucide-react";
@@ -194,12 +194,6 @@ const IndexContent = () => {
             onExport={handleExport}
             onFinalize={(data: TreatmentData) => setTreatmentData(data)}
             onGoToReview={() => goTo('review')}
-            supportiveCare={{
-              emetogenicRiskLevel,
-              selectedPremedications,
-              selectedAntiemetics,
-              groupedPremedications,
-            }}
           />
         </SafeComponentWrapper>
       </WizardStep>

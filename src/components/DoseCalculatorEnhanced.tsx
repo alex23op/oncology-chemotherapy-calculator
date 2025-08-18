@@ -28,6 +28,7 @@ interface DoseCalculatorEnhancedProps {
   currentMedications?: string[];
   onExport?: (calculations: EnhancedDoseCalculation[]) => void;
   onFinalize?: (data: any) => void;
+  onGoToReview?: () => void;
 }
 
 interface EnhancedDoseCalculation extends DoseCalculationResult {

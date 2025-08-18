@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { CompactClinicalTreatmentSheet } from './CompactClinicalTreatmentSheet';
+import { CompactClinicalTreatmentSheetOptimized } from './CompactClinicalTreatmentSheetOptimized';
 import { TreatmentData } from '@/types/clinicalTreatment';
 
 // Mock i18next
@@ -46,18 +46,18 @@ const mockTreatmentData: TreatmentData = {
 
 describe('CompactClinicalTreatmentSheet - PEV Display', () => {
   it('displays PEV groups with sequential numbering', () => {
-    const { getByText } = render(<CompactClinicalTreatmentSheet treatmentData={mockTreatmentData} />);
+    const { getByText } = render(<CompactClinicalTreatmentSheetOptimized treatmentData={mockTreatmentData} />);
     expect(getByText('1 PEV')).toBeInTheDocument();
     expect(getByText('2 PEV')).toBeInTheDocument();
   });
 
   it('displays individual medications as separate PEVs', () => {
-    const { getByText } = render(<CompactClinicalTreatmentSheet treatmentData={mockTreatmentData} />);
+    const { getByText } = render(<CompactClinicalTreatmentSheetOptimized treatmentData={mockTreatmentData} />);
     expect(getByText('Difenhidramină')).toBeInTheDocument();
   });
 
   it('displays PEV section header', () => {
-    const { getByText } = render(<CompactClinicalTreatmentSheet treatmentData={mockTreatmentData} />);
+    const { getByText } = render(<CompactClinicalTreatmentSheetOptimized treatmentData={mockTreatmentData} />);
     expect(getByText('compactSheet.pevGroups')).toBeInTheDocument();
   });
 });

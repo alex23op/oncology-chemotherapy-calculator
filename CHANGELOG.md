@@ -1,5 +1,53 @@
 # Changelog - Chemotherapy Application Code Review & Improvements
 
+## Version 2.1.0 - Critical Bug Fixes & Component Deduplication (2025-08-18)
+
+### 🔥 Critical Bug Fixes
+- **Component Deduplication**: Removed duplicate components (`DoseCalculator.tsx`, `CompactClinicalTreatmentSheet.tsx`, `CancerTypeSelector.tsx`) and updated all imports to use optimized versions
+- **Enhanced Validation**: Added comprehensive Zod validation for `TreatmentData` and patient data with proper error handling
+- **Solvent Compatibility**: Implemented strict drug-solvent compatibility validation to prevent clinical safety issues (e.g., Oxaliplatin requires Dextrose 5%)
+- **Build Errors**: Fixed all TypeScript build errors and test file imports
+- **Props Interface**: Updated `DoseCalculatorEnhanced` to include missing `onGoToReview` prop
+
+### ⚡ Performance Optimizations  
+- **Import Consolidation**: Updated `Index.tsx` to use `DoseCalculatorEnhanced` instead of the basic version
+- **Validation Performance**: Added memoized validation functions to prevent unnecessary re-calculations
+- **Bundle Size**: Reduced bundle size by eliminating duplicate component code
+
+### 🧪 Testing Improvements
+- **Test Updates**: Updated all test files to use optimized components (`CompactClinicalTreatmentSheetOptimized`, `DoseCalculatorEnhanced`)
+- **Validation Tests**: Added comprehensive test suite for validation utilities including solvent compatibility tests
+- **Error Handling**: Enhanced error boundary testing and validation error scenarios
+
+### 🔧 Code Quality
+- **Type Safety**: Enhanced TypeScript strictness with proper Zod schema validation
+- **Error Handling**: Improved error logging and user feedback for validation failures
+- **Documentation**: Added inline documentation for validation functions and compatibility rules
+
+### 📁 Files Added
+- `src/utils/validation.ts` - Enhanced validation with Zod schemas and solvent compatibility
+- `src/utils/solventValidation.ts` - Dedicated solvent validation utilities  
+- `src/test/utils/validation.test.ts` - Comprehensive validation test suite
+
+### 📁 Files Removed
+- `src/components/DoseCalculator.tsx` - Replaced by `DoseCalculatorEnhanced.tsx`
+- `src/components/CompactClinicalTreatmentSheet.tsx` - Replaced by optimized version
+- `src/components/CancerTypeSelector.tsx` - Replaced by optimized version
+
+### ⚠️ Breaking Changes
+- All components now use optimized versions by default
+- Enhanced validation may catch previously ignored data issues
+- Stricter solvent compatibility enforcement
+
+### 🎯 Next Steps
+1. **Accessibility Improvements**: Enhance ARIA labels and keyboard navigation
+2. **Performance Monitoring**: Add comprehensive performance tracking
+3. **API Integration**: Prepare for dynamic data loading from xAI API
+4. **FHIR Export**: Implement healthcare interoperability standards
+5. **Internationalization**: Extend i18n support for additional languages
+
+---
+
 ## Version 2.0.0 - Code Review & Enhancement (2024-01-XX)
 
 ### 🚨 Critical Fixes

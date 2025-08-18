@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import { CompactClinicalTreatmentSheet } from './CompactClinicalTreatmentSheet';
+import { CompactClinicalTreatmentSheetOptimized } from './CompactClinicalTreatmentSheetOptimized';
 import { TreatmentData } from '@/types/clinicalTreatment';
 
 // Mock i18next
@@ -58,7 +58,7 @@ const mockTreatmentDataWithoutPEVs: TreatmentData = {
 
 describe('CompactClinicalTreatmentSheet - Unified PEV Display', () => {
   it('displays PEV groups with sequential numbering', () => {
-    const { getByText } = render(<CompactClinicalTreatmentSheet treatmentData={mockTreatmentDataWithPEVs} />);
+    const { getByText } = render(<CompactClinicalTreatmentSheetOptimized treatmentData={mockTreatmentDataWithPEVs} />);
     
     // Check PEV numbers
     expect(getByText('1 PEV')).toBeInTheDocument();
@@ -67,7 +67,7 @@ describe('CompactClinicalTreatmentSheet - Unified PEV Display', () => {
   });
 
   it('displays grouped medications correctly', () => {
-    const { getByText } = render(<CompactClinicalTreatmentSheet treatmentData={mockTreatmentDataWithPEVs} />);
+    const { getByText } = render(<CompactClinicalTreatmentSheetOptimized treatmentData={mockTreatmentDataWithPEVs} />);
     
     // Check that grouped medications are displayed with + separator
     expect(getByText('Dexametazonă')).toBeInTheDocument();
@@ -76,19 +76,19 @@ describe('CompactClinicalTreatmentSheet - Unified PEV Display', () => {
   });
 
   it('displays individual medications as separate PEVs', () => {
-    const { getByText } = render(<CompactClinicalTreatmentSheet treatmentData={mockTreatmentDataWithPEVs} />);
+    const { getByText } = render(<CompactClinicalTreatmentSheetOptimized treatmentData={mockTreatmentDataWithPEVs} />);
     
     // Check that individual medication appears as separate PEV
     expect(getByText('Difenhidramină')).toBeInTheDocument();
   });
 
   it('displays PEV section header when groups exist', () => {
-    const { getByText } = render(<CompactClinicalTreatmentSheet treatmentData={mockTreatmentDataWithPEVs} />);
+    const { getByText } = render(<CompactClinicalTreatmentSheetOptimized treatmentData={mockTreatmentDataWithPEVs} />);
     expect(getByText('compactSheet.pevGroups')).toBeInTheDocument();
   });
 
   it('falls back to individual medication display when no PEVs exist', () => {
-    const { getByText } = render(<CompactClinicalTreatmentSheet treatmentData={mockTreatmentDataWithoutPEVs} />);
+    const { getByText } = render(<CompactClinicalTreatmentSheetOptimized treatmentData={mockTreatmentDataWithoutPEVs} />);
     
     // Should show fallback section
     expect(getByText('compactSheet.premedSupport')).toBeInTheDocument();
@@ -96,7 +96,7 @@ describe('CompactClinicalTreatmentSheet - Unified PEV Display', () => {
   });
 
   it('does not display individual medication section when PEVs are configured', () => {
-    const { queryByText } = render(<CompactClinicalTreatmentSheet treatmentData={mockTreatmentDataWithPEVs} />);
+    const { queryByText } = render(<CompactClinicalTreatmentSheetOptimized treatmentData={mockTreatmentDataWithPEVs} />);
     
     // Should not show the old individual medications section
     expect(queryByText('compactSheet.individualMeds')).not.toBeInTheDocument();
