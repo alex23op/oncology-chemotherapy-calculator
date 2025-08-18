@@ -126,5 +126,15 @@ export const drugEmetogenicClassification: EmetogenicClassification[] = [
   { drugName: "Rituximab", riskLevel: "minimal" },
   { drugName: "Pembrolizumab", riskLevel: "minimal" },
   { drugName: "Vinorelbine", riskLevel: "minimal" },
-  { drugName: "Capecitabine", riskLevel: "minimal" }
+  { drugName: "Capecitabine", riskLevel: "minimal" },
+  { drugName: "Cemiplimab", riskLevel: "minimal" },
+  { drugName: "Dostarlimab", riskLevel: "minimal" },
+  { drugName: "Atezolizumab", riskLevel: "minimal" },
+  { drugName: "Tisotumab vedotin", riskLevel: "low" }, 
+  { drugName: "Lenvatinib", riskLevel: "low" },
+  { drugName: "Actinomycin D", riskLevel: "moderate" },
+  { drugName: "Vincristine", riskLevel: "minimal" },
+  { drugName: "Olaparib", riskLevel: "minimal" },
+  { drugName: "Niraparib", riskLevel: "low" },
+  { drugName: "Rucaparib", riskLevel: "minimal" }
 ];
