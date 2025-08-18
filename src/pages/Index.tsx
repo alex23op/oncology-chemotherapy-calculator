@@ -193,6 +193,11 @@ const IndexContent = () => {
             creatinineClearance={patientData?.creatinineClearance || 0}
             onExport={handleExport}
             onFinalize={(data: TreatmentData) => setTreatmentData(data)}
+            onGenerateSheet={(data: TreatmentData) => {
+              console.debug('[GenerateSheet] treatmentData', data);
+              setTreatmentData(data);
+              goTo('review');
+            }}
             onGoToReview={() => goTo('review')}
           />
         </SafeComponentWrapper>
@@ -200,11 +205,22 @@ const IndexContent = () => {
 
       <WizardStep id="review" title={t('wizard.steps.review', { defaultValue: 'Review & Print' })}>
         <SafeComponentWrapper componentName="Review & Print" fallbackMessage={t('errors.reviewFailed')}>
-          {treatmentData ? (
-            <div className="space-y-4">
-              <div id="protocol-print">
-                <CompactClinicalTreatmentSheetOptimized treatmentData={treatmentData} />
-              </div>
+          {(() => {
+            const ready = !!selectedRegimen && 
+                         !!treatmentData && 
+                         Array.isArray(treatmentData.calculatedDrugs) && 
+                         treatmentData.calculatedDrugs.length > 0;
+            console.debug('[ReviewCheck]', { 
+              selectedRegimen: !!selectedRegimen, 
+              hasData: !!treatmentData, 
+              drugs: treatmentData?.calculatedDrugs?.length 
+            });
+            
+            return ready ? (
+              <div className="space-y-4">
+                <div id="protocol-print">
+                  <CompactClinicalTreatmentSheetOptimized treatmentData={treatmentData} />
+                </div>
               <div className="flex flex-col sm:flex-row gap-2 sm:justify-end">
                 <Select value={reviewOrientation} onValueChange={(v) => setReviewOrientation(v as 'portrait' | 'landscape')}>
                   <SelectTrigger className="w-[140px]">
@@ -240,9 +256,17 @@ const IndexContent = () => {
                 </button>
               </div>
             </div>
-          ) : (
-            <div className="text-sm text-muted-foreground">{t('doseCalculator.emptyState')}</div>
-          )}
+            ) : (
+              <div className="text-sm text-muted-foreground">
+                {!selectedRegimen 
+                  ? "Selectați un tip de cancer și un regim pentru a calcula dozele."
+                  : !treatmentData 
+                    ? "Completați calculul dozelor pentru a genera fișa de tratament."
+                    : "Se încarcă fișa de tratament..."
+                }
+              </div>
+            );
+          })()}
         </SafeComponentWrapper>
       </WizardStep>
 

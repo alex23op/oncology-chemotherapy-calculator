@@ -184,10 +184,12 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
 
     const treatmentData = {
       patient: {
-        name: patientName,
+        fullName: patientName,
         cnp: patientCNP,
-        observationNumber,
+        foNumber: observationNumber,
         cycleNumber: parseInt(cycleNumber) || 1,
+        treatmentDate: administrationDate.toISOString(),
+        nextCycleDate: nextCycleDate?.toISOString(),
         age,
         weight,
         height,
@@ -196,7 +198,24 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
         sex
       },
       regimen,
-      calculatedDrugs: calculations,
+      calculatedDrugs: Array.isArray(calculations) ? calculations : [],
+      emetogenicRisk: {
+        level: "moderate" as const,
+        justification: "Regim de chimioterapie standard",
+        acuteRisk: "Moderat",
+        delayedRisk: "Moderat"
+      },
+      premedications: {
+        antiemetics: [],
+        infusionReactionProphylaxis: [],
+        gastroprotection: [],
+        organProtection: [],
+        other: []
+      },
+      solventGroups: { groups: [], individual: [] },
+      clinicalNotes: "",
+      preparingPharmacist: "",
+      verifyingNurse: "",
       administrationDate,
       nextCycleDate,
       bsaCapEnabled,
