@@ -172,5 +172,18 @@ export const drugEmetogenicClassification: EmetogenicClassification[] = [
   { drugName: "Axitinib", riskLevel: "low" },
   { drugName: "Cabozantinib", riskLevel: "low" },
   { drugName: "Belzutifan", riskLevel: "low" },
-  { drugName: "Prednisone", riskLevel: "minimal" }
+  { drugName: "Prednisone", riskLevel: "minimal" },
+  
+  // Gastrointestinal Cancer Drugs
+  { drugName: "Leucovorin", riskLevel: "minimal" },
+  { drugName: "Liposomal Irinotecan", riskLevel: "moderate" },
+  { drugName: "Regorafenib", riskLevel: "low" },
+  { drugName: "Trifluridine/Tipiracil", riskLevel: "low" },
+  { drugName: "Fruquintinib", riskLevel: "low" },
+  { drugName: "Encorafenib", riskLevel: "low" },
+  { drugName: "Zolbetuximab", riskLevel: "low" },
+  { drugName: "nab-Paclitaxel", riskLevel: "low" },
+  { drugName: "Sorafenib", riskLevel: "low" },
+  { drugName: "Tislelizumab", riskLevel: "minimal" },
+  { drugName: "Tremelimumab", riskLevel: "minimal" }
 ];
