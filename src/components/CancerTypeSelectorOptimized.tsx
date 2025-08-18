@@ -138,7 +138,7 @@ const RegimenCard = React.memo<{
 
 RegimenCard.displayName = 'RegimenCard';
 
-export const CancerTypeSelector = ({ onRegimenSelect }: CancerTypeSelectorProps) => {
+export const CancerTypeSelectorOptimized = ({ onRegimenSelect }: CancerTypeSelectorProps) => {
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCancer, setSelectedCancer] = useState<string | null>(null);

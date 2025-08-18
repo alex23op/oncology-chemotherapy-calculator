@@ -1,7 +1,7 @@
 import { useState, useEffect, Suspense, lazy } from "react";
 import { AppHeader } from "@/components/AppHeader";
 import { PatientForm } from "@/components/PatientForm";
-import { CancerTypeSelector } from "@/components/CancerTypeSelector";
+import { CancerTypeSelectorOptimized } from "@/components/CancerTypeSelectorOptimized";
 import { DoseCalculator } from "@/components/DoseCalculator";
 import { SafeComponentWrapper } from "@/components/SafeComponentWrapper";
 import { toast } from "@/hooks/use-toast";
@@ -156,7 +156,7 @@ const IndexContent = () => {
 
       <WizardStep id="regimen" title={t('wizard.steps.regimen', { defaultValue: 'Regimen selection' })}>
         <SafeComponentWrapper componentName="Cancer Type Selector" fallbackMessage={t('errors.cancerSelectorFailed')}>
-          <CancerTypeSelector onRegimenSelect={handleRegimenSelect} />
+          <CancerTypeSelectorOptimized onRegimenSelect={handleRegimenSelect} />
         </SafeComponentWrapper>
       </WizardStep>
 
