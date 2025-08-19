@@ -129,13 +129,22 @@ describe('DoseCalculatorEnhanced', () => {
       );
     });
 
-    it('handles dose adjustments', async () => {
+    it('displays and allows editing of administration duration', async () => {
       const user = userEvent.setup();
-      const { getByText } = render(<DoseCalculatorEnhanced {...defaultProps} />);
+      const { getByText, getByLabelText } = render(<DoseCalculatorEnhanced {...defaultProps} />);
+      
+      // Should display administration duration
+      expect(getByText('doseCalculator.administrationDuration')).toBeInTheDocument();
       
       // Enter edit mode
       const editButton = getByText('doseCalculator.edit');
       await user.click(editButton);
+      
+      // Should be able to edit administration duration
+      const durationInput = getByLabelText('doseCalculator.administrationDurationAria');
+      await user.type(durationInput, '2 hours');
+      
+      expect(durationInput).toHaveValue('2 hours');
     });
   });
 

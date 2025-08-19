@@ -201,6 +201,8 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
         calc.selectedSolventType = value;
       } else if (field === 'notes') {
         calc.notes = value;
+      } else if (field === 'administrationDuration') {
+        calc.administrationDuration = value;
       }
       
       updated[index] = calc;
@@ -505,7 +507,7 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
                 <div>
                   <Label className="text-muted-foreground">{t('doseCalculator.calculatedDose', 'Doză calculată')}</Label>
                   <p className="font-medium text-lg">
@@ -544,6 +546,22 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
                   ) : (
                     <p className="font-medium text-lg text-accent">
                       {calc.finalDose.toFixed(1)} mg
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">{t('doseCalculator.administrationDuration', 'Timp de administrare')}</Label>
+                  {isEditing ? (
+                    <Input
+                      value={calc.administrationDuration || calc.drug.administrationDuration || ''}
+                      onChange={(e) => handleEditCalculation(index, 'administrationDuration', e.target.value)}
+                      className="mt-1 h-8"
+                      placeholder={t('doseCalculator.administrationDurationPlaceholder', 'ex: 30 minute, 1-2 ore')}
+                      aria-label={t('doseCalculator.administrationDurationAria', 'Introduceți timpul de administrare pentru {{drug}}', { drug: calc.drug.name })}
+                    />
+                  ) : (
+                    <p className="font-medium">
+                      {calc.administrationDuration || calc.drug.administrationDuration || '-'}
                     </p>
                   )}
                 </div>
