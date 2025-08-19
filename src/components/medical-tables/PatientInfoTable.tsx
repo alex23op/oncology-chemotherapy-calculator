@@ -35,43 +35,51 @@ export const PatientInfoTable: React.FC<PatientInfoTableProps> = ({ patient }) =
     return age;
   };
 
+  // Organize data in 3 columns for compact display
   const patientData = [
-    { label: 'Nume și prenume', value: patient.fullName || 'N/A' },
-    { label: 'CNP', value: patient.cnp || 'N/A' },
-    { label: 'Număr FO', value: patient.foNumber || 'N/A' },
-    { label: 'Vârsta', value: `${calculateAge(patient.cnp)} ani` },
-    { label: 'Greutate (kg)', value: `${patient.weight} kg` },
-    { label: 'Înălțime (cm)', value: `${patient.height} cm` },
-    { label: 'Suprafață corporală (m²)', value: `${patient.bsa.toFixed(2)} m²` },
-    { label: 'Sex', value: patient.sex || 'N/A' },
-    { label: 'Clearance-ul creatininei', value: `${patient.creatinineClearance} ml/min` },
-    { label: 'Data tratament', value: new Date(patient.treatmentDate).toLocaleDateString('ro-RO') },
-    { label: 'Data următorul ciclu', value: patient.nextCycleDate ? new Date(patient.nextCycleDate).toLocaleDateString('ro-RO') : 'N/A' },
-    { label: 'Diagnostic', value: patient.diagnosis || 'N/A' },
-    { label: 'Grupa sanguină', value: patient.bloodType || 'N/A' },
-    { label: 'Ciclu numărul', value: `${patient.cycleNumber}` }
+    [
+      { label: 'CNP', value: patient.cnp || 'N/A' },
+      { label: 'Nr. FO', value: patient.foNumber || 'N/A' },
+      { label: 'Nume complet', value: patient.fullName || 'N/A' },
+      { label: 'Diagnostic', value: patient.diagnosis || 'N/A' },
+      { label: 'Grupa sanguină', value: patient.bloodType || 'N/A' },
+    ],
+    [
+      { label: 'Vârsta', value: patient.cnp ? `${calculateAge(patient.cnp)} ani` : `${patient.age || 0} ani` },
+      { label: 'Sex', value: patient.sex || 'N/A' },
+      { label: 'Greutate', value: `${patient.weight} kg` },
+      { label: 'Înălțime', value: `${patient.height} cm` },
+      { label: 'BSA', value: `${patient.bsa.toFixed(2)} m²` },
+    ],
+    [
+      { label: 'Clearance creatinină', value: `${patient.creatinineClearance} ml/min` },
+      { label: 'Ciclu nr.', value: patient.cycleNumber?.toString() || 'N/A' },
+      { label: 'Data tratament', value: new Date(patient.treatmentDate).toLocaleDateString('ro-RO') },
+      { label: 'Data ciclu următor', value: patient.nextCycleDate ? new Date(patient.nextCycleDate).toLocaleDateString('ro-RO') : 'N/A' },
+      { label: '', value: '' }, // Empty cell for alignment
+    ]
   ];
 
   return (
-    <Table className="border-2 border-foreground">
-      <TableHeader>
-        <TableRow className="bg-muted/50">
-          <TableHead className="border-r border-foreground font-semibold w-1/3">CÂMP</TableHead>
-          <TableHead className="border-r border-foreground font-semibold w-2/3">VALOARE</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {patientData.map((item, index) => (
-          <TableRow key={index} className="border-b border-foreground">
-            <TableCell className="border-r border-foreground font-medium bg-muted/20">
-              {item.label}
-            </TableCell>
-            <TableCell className="border-r border-foreground min-h-[2rem]">
-              {item.value}
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <div className="grid grid-cols-3 gap-2">
+      {patientData.map((column, colIndex) => (
+        <Table key={colIndex} className="w-full border-collapse border border-gray-300">
+          <TableBody>
+            {column.map((item, index) => (
+              item.label ? (
+                <TableRow key={index} className="border-b border-gray-300">
+                  <TableCell className="font-semibold border-r border-gray-300 w-1/2 p-1 text-xs">
+                    {item.label}:
+                  </TableCell>
+                  <TableCell className="p-1 w-1/2 text-xs">
+                    {item.value}
+                  </TableCell>
+                </TableRow>
+              ) : null
+            ))}
+          </TableBody>
+        </Table>
+      ))}
+    </div>
   );
 };

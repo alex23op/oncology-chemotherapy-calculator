@@ -14,64 +14,56 @@ export const ChemotherapyProtocolTable: React.FC<ChemotherapyProtocolTableProps>
   clinicalNotes
 }) => {
   return (
-    <div>
-      <div className="mb-3 p-2 bg-accent/10 rounded border">
-        <p className="font-medium">Protocol: <span className="font-bold">{regimenName}</span></p>
+    <div className="space-y-2">
+      {/* Protocol header - more compact */}
+      <div className="mb-1">
+        <p className="font-semibold text-xs">Regim: {regimenName}</p>
       </div>
-      
-      <Table className="border-2 border-foreground">
+
+      {/* Compact Drugs table */}
+      <Table className="w-full border-collapse border border-gray-300">
         <TableHeader>
-          <TableRow className="bg-muted/50">
-            <TableHead className="border-r border-foreground font-semibold">MEDICAMENT</TableHead>
-            <TableHead className="border-r border-foreground font-semibold">DOZĂ CALCULATĂ</TableHead>
-            <TableHead className="border-r border-foreground font-semibold">DOZĂ FINALĂ</TableHead>
-            <TableHead className="border-r border-foreground font-semibold">SOLVENT / DILUANT</TableHead>
-            <TableHead className="border-r border-foreground font-semibold">TIMP ADMINISTRARE</TableHead>
-            <TableHead className="border-r border-foreground font-semibold">OBSERVAȚII</TableHead>
+          <TableRow className="bg-gray-100">
+            <TableHead className="border border-gray-300 p-1 text-xs font-bold text-center w-24">MEDICAMENT<br/>(Cale, Zi)</TableHead>
+            <TableHead className="border border-gray-300 p-1 text-xs font-bold text-center w-20">DOZĂ CALC.<br/>(mg/m²)</TableHead>
+            <TableHead className="border border-gray-300 p-1 text-xs font-bold text-center w-20">DOZĂ FINALĂ<br/>(mg)</TableHead>
+            <TableHead className="border border-gray-300 p-1 text-xs font-bold text-center w-20">SOLVENT<br/>(ml)</TableHead>
+            <TableHead className="border border-gray-300 p-1 text-xs font-bold text-center w-16">TIMP ADM.<br/>(min)</TableHead>
+            <TableHead className="border border-gray-300 p-1 text-xs font-bold text-center">OBSERVAȚII</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {calculatedDrugs.map((drug, index) => (
-            <TableRow key={index} className="border-b border-foreground">
-              <TableCell className="border-r border-foreground font-medium bg-muted/20">
-                <div>
-                  <div className="font-semibold">{drug.name}</div>
-                  <div className="text-sm text-muted-foreground">{drug.route}</div>
-                  {drug.day && <div className="text-xs">Ziua: {drug.day}</div>}
-                </div>
+            <TableRow key={index}>
+              <TableCell className="border border-gray-300 p-1 text-xs">
+                <div className="font-medium">{drug.name}</div>
+                <div className="text-gray-600">{drug.route}, Z{drug.day}</div>
               </TableCell>
-              <TableCell className="border-r border-foreground">
-                <div className="font-medium">{drug.calculatedDose}</div>
-                <div className="text-sm text-muted-foreground">{drug.unit}</div>
+              <TableCell className="border border-gray-300 p-1 text-xs text-center">
+                {drug.calculatedDose}
               </TableCell>
-              <TableCell className="border-r border-foreground">
-                <div className="font-medium text-accent">{drug.finalDose}</div>
-                <div className="text-sm text-muted-foreground">{drug.unit}</div>
+              <TableCell className="border border-gray-300 p-1 text-xs text-center">
+                <div className="font-medium">{drug.finalDose}</div>
                 {drug.adjustmentNotes && (
-                  <div className="text-xs text-warning mt-1">{drug.adjustmentNotes}</div>
+                  <div className="text-gray-600 text-xs">{drug.adjustmentNotes}</div>
                 )}
               </TableCell>
-              <TableCell className="border-r border-foreground">
+              <TableCell className="border border-gray-300 p-1 text-xs text-center">
                 <div>{drug.solvent}</div>
-                {drug.dilution && (
-                  <div className="text-xs mt-1">{drug.dilution}</div>
-                )}
               </TableCell>
-              <TableCell className="border-r border-foreground">
+              <TableCell className="border border-gray-300 p-1 text-xs text-center">
                 {drug.administrationDuration || 'Standard'}
               </TableCell>
-              <TableCell className="border-r border-foreground">
-                <div className="min-h-[3rem]">
+              <TableCell className="border border-gray-300 p-1 text-xs">
+                <div className="space-y-0.5">
                   {drug.preparationInstructions && (
-                    <div className="text-sm mb-1">{drug.preparationInstructions}</div>
+                    <div>{drug.preparationInstructions}</div>
                   )}
                   {drug.notes && (
-                    <div className="text-sm">{drug.notes}</div>
+                    <div>{drug.notes}</div>
                   )}
-                  {drug.monitoring && drug.monitoring.length > 0 && (
-                    <div className="text-xs text-info mt-1">
-                      Monitorizare: {drug.monitoring.join(', ')}
-                    </div>
+                  {(drug.monitoring && Array.isArray(drug.monitoring) && drug.monitoring.length > 0) && (
+                    <div className="text-gray-600">{drug.monitoring.join(', ')}</div>
                   )}
                 </div>
               </TableCell>
@@ -79,13 +71,12 @@ export const ChemotherapyProtocolTable: React.FC<ChemotherapyProtocolTableProps>
           ))}
         </TableBody>
       </Table>
-      
+
+      {/* Clinical Notes - more compact */}
       {clinicalNotes && (
-        <div className="mt-4 p-3 border rounded bg-muted/10">
-          <h4 className="font-semibold mb-2">COMENTARII ȘI INSTRUCȚIUNI SUPLIMENTARE:</h4>
-          <div className="min-h-[2rem] p-2 bg-background rounded">
-            <div className="text-sm">{clinicalNotes}</div>
-          </div>
+        <div className="mt-2 p-2 bg-gray-50 border border-gray-300 rounded">
+          <h4 className="font-semibold mb-1 text-xs">Notificări clinice:</h4>
+          <p className="text-xs">{clinicalNotes}</p>
         </div>
       )}
     </div>

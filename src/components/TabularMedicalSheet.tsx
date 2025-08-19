@@ -41,17 +41,28 @@ export const TabularMedicalSheet = forwardRef<HTMLDivElement, TabularMedicalShee
         </div>
 
         {/* Patient Information */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold mb-3 bg-muted p-2 rounded">
+        <div className="mb-3">
+          <h2 className="text-lg font-semibold mb-2 bg-muted p-1.5 rounded text-sm">
             1. INFORMAȚII PACIENT
           </h2>
           <PatientInfoTable patient={treatmentData.patient} />
         </div>
 
-        {/* Chemotherapy Protocol */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold mb-3 bg-muted p-2 rounded">
-            2. PROTOCOL CHIMIOTERAPIE
+        {/* Premedication - Moved before chemotherapy */}
+        <div className="mb-3">
+          <h2 className="text-lg font-semibold mb-2 bg-muted p-1.5 rounded text-sm">
+            2. PREMEDICAȚIE ȘI TRATAMENT SUPORTIV
+          </h2>
+          <PremedsTable 
+            premedications={treatmentData.premedications}
+            solventGroups={treatmentData.solventGroups}
+          />
+        </div>
+
+        {/* Chemotherapy Protocol - Moved after premedication */}
+        <div className="mb-3">
+          <h2 className="text-lg font-semibold mb-2 bg-muted p-1.5 rounded text-sm">
+            3. PROTOCOL CHIMIOTERAPIE
           </h2>
           <ChemotherapyProtocolTable 
             calculatedDrugs={treatmentData.calculatedDrugs}
@@ -60,20 +71,9 @@ export const TabularMedicalSheet = forwardRef<HTMLDivElement, TabularMedicalShee
           />
         </div>
 
-        {/* Premedication */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold mb-3 bg-muted p-2 rounded">
-            3. PREMEDICAȚIE ȘI TRATAMENT SUPORTIV
-          </h2>
-          <PremedsTable 
-            premedications={treatmentData.premedications}
-            solventGroups={treatmentData.solventGroups}
-          />
-        </div>
-
         {/* Certification */}
-        <div className="mb-6">
-          <h2 className="text-lg font-semibold mb-3 bg-muted p-2 rounded">
+        <div className="mb-3">
+          <h2 className="text-lg font-semibold mb-2 bg-muted p-1.5 rounded text-sm">
             4. CERTIFICARE ȘI VALIDARE
           </h2>
           <CertificationTable 
