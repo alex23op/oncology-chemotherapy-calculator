@@ -1,12 +1,14 @@
 import React from 'react';
 import { PatientInfo } from '@/types/clinicalTreatment';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { EditableDateField } from './EditableDateField';
 
 interface PatientInfoTableProps {
   patient: PatientInfo;
+  onPatientUpdate?: (updatedPatient: Partial<PatientInfo>) => void;
 }
 
-export const PatientInfoTable: React.FC<PatientInfoTableProps> = ({ patient }) => {
+export const PatientInfoTable: React.FC<PatientInfoTableProps> = ({ patient, onPatientUpdate }) => {
   const calculateAge = (cnp: string): number => {
     if (!cnp || cnp.length < 7) return patient.age;
     
@@ -35,14 +37,14 @@ export const PatientInfoTable: React.FC<PatientInfoTableProps> = ({ patient }) =
     return age;
   };
 
-  // Organize data in 3 columns for compact display
+  // Organize data in 3 columns for compact display - removed Diagnostic and Grupa sanguină
   const patientData = [
     [
       { label: 'CNP', value: patient.cnp || 'N/A' },
       { label: 'Nr. FO', value: patient.foNumber || 'N/A' },
       { label: 'Nume complet', value: patient.fullName || 'N/A' },
-      { label: 'Diagnostic', value: patient.diagnosis || 'N/A' },
-      { label: 'Grupa sanguină', value: patient.bloodType || 'N/A' },
+      { label: '', value: '' }, // Empty for alignment
+      { label: '', value: '' }, // Empty for alignment
     ],
     [
       { label: 'Vârsta', value: patient.cnp ? `${calculateAge(patient.cnp)} ani` : `${patient.age || 0} ani` },
@@ -54,8 +56,18 @@ export const PatientInfoTable: React.FC<PatientInfoTableProps> = ({ patient }) =
     [
       { label: 'Clearance creatinină', value: `${patient.creatinineClearance} ml/min` },
       { label: 'Ciclu nr.', value: patient.cycleNumber?.toString() || 'N/A' },
-      { label: 'Data tratament', value: new Date(patient.treatmentDate).toLocaleDateString('ro-RO') },
-      { label: 'Data ciclu următor', value: patient.nextCycleDate ? new Date(patient.nextCycleDate).toLocaleDateString('ro-RO') : 'N/A' },
+      { 
+        label: 'Data tratament', 
+        value: 'editable-date',
+        editableValue: patient.treatmentDate,
+        onEdit: (newDate: string) => onPatientUpdate?.({ treatmentDate: newDate })
+      },
+      { 
+        label: 'Data ciclu următor', 
+        value: 'editable-date',
+        editableValue: patient.nextCycleDate || '',
+        onEdit: (newDate: string) => onPatientUpdate?.({ nextCycleDate: newDate })
+      },
       { label: '', value: '' }, // Empty cell for alignment
     ]
   ];
@@ -72,7 +84,15 @@ export const PatientInfoTable: React.FC<PatientInfoTableProps> = ({ patient }) =
                     {item.label}:
                   </TableCell>
                   <TableCell className="p-1 w-1/2 text-xs">
-                    {item.value}
+                    {item.value === 'editable-date' ? (
+                      <EditableDateField
+                        value={item.editableValue}
+                        onChange={item.onEdit}
+                        className="w-full"
+                      />
+                    ) : (
+                      item.value
+                    )}
                   </TableCell>
                 </TableRow>
               ) : null
