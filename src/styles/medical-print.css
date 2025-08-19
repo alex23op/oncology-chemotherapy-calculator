@@ -1,0 +1,114 @@
+/* Medical Sheet Print Styles */
+.medical-sheet-print {
+  font-family: 'Times New Roman', Times, serif;
+  line-height: 1.4;
+  color: #000 !important;
+}
+
+@media print {
+  .medical-sheet-print {
+    -webkit-print-color-adjust: exact;
+    color-adjust: exact;
+    margin: 0;
+    padding: 15mm;
+    font-size: 12px;
+  }
+  
+  /* Page breaks */
+  .medical-sheet-print h2 {
+    page-break-after: avoid;
+  }
+  
+  .medical-sheet-print table {
+    page-break-inside: avoid;
+  }
+  
+  /* Table styling for print */
+  .medical-sheet-print table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .medical-sheet-print th,
+  .medical-sheet-print td {
+    border: 1px solid #000 !important;
+    padding: 4px 6px !important;
+    font-size: 11px !important;
+    vertical-align: top !important;
+  }
+  
+  .medical-sheet-print th {
+    background-color: #f5f5f5 !important;
+    font-weight: bold !important;
+    text-align: center !important;
+  }
+  
+  /* Header styles */
+  .medical-sheet-print h1 {
+    font-size: 16px !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .medical-sheet-print h2 {
+    font-size: 14px !important;
+    font-weight: bold !important;
+    margin: 1rem 0 0.5rem 0 !important;
+    background-color: #e9ecef !important;
+    padding: 4px 8px !important;
+    border: 1px solid #000 !important;
+  }
+  
+  .medical-sheet-print h4 {
+    font-size: 12px !important;
+    font-weight: bold !important;
+    margin: 0.5rem 0 0.25rem 0 !important;
+  }
+  
+  /* Hide print button */
+  .print\\:hidden {
+    display: none !important;
+  }
+  
+  /* Ensure minimum row height */
+  .medical-sheet-print tbody tr {
+    min-height: 20px !important;
+  }
+  
+  /* Checkbox styling */
+  .medical-sheet-print input[type="checkbox"] {
+    width: 12px !important;
+    height: 12px !important;
+    border: 2px solid #000 !important;
+  }
+  
+  /* Footer styling */
+  .medical-sheet-print .text-xs {
+    font-size: 10px !important;
+  }
+}
+
+/* Screen display adjustments */
+@media screen {
+  .medical-sheet-print {
+    max-width: 210mm;
+    margin: 0 auto;
+    background: white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    padding: 20px;
+  }
+  
+  .medical-sheet-print h1 {
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+  }
+  
+  .medical-sheet-print h2 {
+    background-color: #f8f9fa;
+    padding: 8px 12px;
+    border-radius: 4px;
+    border-left: 4px solid #007bff;
+  }
+}

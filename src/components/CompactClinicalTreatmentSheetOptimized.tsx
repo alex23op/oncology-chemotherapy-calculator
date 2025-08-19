@@ -2,7 +2,7 @@ import React, { memo, forwardRef } from 'react';
 import { TreatmentData } from '@/types/clinicalTreatment';
 import { useTranslation } from 'react-i18next';
 import { ClinicalErrorBoundary } from './ClinicalErrorBoundary';
-import { TabularClinicalTreatmentSheet } from './TabularClinicalTreatmentSheet';
+import { TabularMedicalSheet } from './TabularMedicalSheet';
 
 interface CompactClinicalTreatmentSheetProps {
   treatmentData: TreatmentData;
@@ -27,7 +27,7 @@ const CompactClinicalTreatmentSheetCore = memo(forwardRef<HTMLDivElement, Compac
     }
 
     return (
-      <TabularClinicalTreatmentSheet 
+      <TabularMedicalSheet 
         treatmentData={treatmentData}
         className={className}
         showPrintButton={showPrintButton}
