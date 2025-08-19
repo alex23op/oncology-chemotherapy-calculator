@@ -5,11 +5,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 interface ChemotherapyProtocolTableProps {
   calculatedDrugs: CalculatedDrug[];
   regimenName: string;
+  clinicalNotes?: string;
 }
 
 export const ChemotherapyProtocolTable: React.FC<ChemotherapyProtocolTableProps> = ({ 
   calculatedDrugs, 
-  regimenName 
+  regimenName,
+  clinicalNotes
 }) => {
   return (
     <div>
@@ -56,7 +58,7 @@ export const ChemotherapyProtocolTable: React.FC<ChemotherapyProtocolTableProps>
                 )}
               </TableCell>
               <TableCell className="border-r border-foreground">
-                {drug.administrationDuration || '___________'}
+                {drug.administrationDuration || 'Standard'}
               </TableCell>
               <TableCell className="border-r border-foreground">
                 <div className="min-h-[3rem]">
@@ -71,47 +73,21 @@ export const ChemotherapyProtocolTable: React.FC<ChemotherapyProtocolTableProps>
                       Monitorizare: {drug.monitoring.join(', ')}
                     </div>
                   )}
-                  <div className="border-t mt-2 pt-1 text-xs text-muted-foreground">
-                    Completare manuală: ___________________________
-                  </div>
                 </div>
-              </TableCell>
-            </TableRow>
-          ))}
-          {/* Empty rows for manual completion */}
-          {[1, 2].map((_, index) => (
-            <TableRow key={`empty-${index}`} className="border-b border-foreground">
-              <TableCell className="border-r border-foreground bg-muted/20 h-16">
-                ___________________
-              </TableCell>
-              <TableCell className="border-r border-foreground h-16">
-                ___________________
-              </TableCell>
-              <TableCell className="border-r border-foreground h-16">
-                ___________________
-              </TableCell>
-              <TableCell className="border-r border-foreground h-16">
-                ___________________
-              </TableCell>
-              <TableCell className="border-r border-foreground h-16">
-                ___________________
-              </TableCell>
-              <TableCell className="border-r border-foreground h-16">
-                ___________________
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
       
-      <div className="mt-4 p-3 border rounded bg-muted/10">
-        <h4 className="font-semibold mb-2">COMENTARII ȘI INSTRUCȚIUNI SUPLIMENTARE:</h4>
-        <div className="min-h-[4rem] border-b-2 border-dotted border-muted-foreground">
-          <div className="text-sm text-muted-foreground mb-2">
-            Spațiu pentru observații clinice, modificări de doze, precauții speciale...
+      {clinicalNotes && (
+        <div className="mt-4 p-3 border rounded bg-muted/10">
+          <h4 className="font-semibold mb-2">COMENTARII ȘI INSTRUCȚIUNI SUPLIMENTARE:</h4>
+          <div className="min-h-[2rem] p-2 bg-background rounded">
+            <div className="text-sm">{clinicalNotes}</div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

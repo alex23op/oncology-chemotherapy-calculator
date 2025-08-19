@@ -122,32 +122,6 @@ export const PremedsTable: React.FC<PremedsTableProps> = ({ premedications, solv
               </TableCell>
             </TableRow>
           ))}
-          {/* Empty rows for manual completion */}
-          {[1, 2, 3].map((_, index) => (
-            <TableRow key={`empty-${index}`} className="border-b border-foreground">
-              <TableCell className="border-r border-foreground bg-muted/20 h-12">
-                ________________
-              </TableCell>
-              <TableCell className="border-r border-foreground h-12">
-                ________________
-              </TableCell>
-              <TableCell className="border-r border-foreground h-12">
-                ________________
-              </TableCell>
-              <TableCell className="border-r border-foreground h-12">
-                ________________
-              </TableCell>
-              <TableCell className="border-r border-foreground h-12">
-                ________________
-              </TableCell>
-              <TableCell className="border-r border-foreground h-12">
-                ________________
-              </TableCell>
-              <TableCell className="border-r border-foreground text-center h-12">
-                <div className="w-6 h-6 border-2 border-foreground rounded"></div>
-              </TableCell>
-            </TableRow>
-          ))}
         </TableBody>
       </Table>
     </div>

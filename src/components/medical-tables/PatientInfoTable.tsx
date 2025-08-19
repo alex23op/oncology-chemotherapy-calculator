@@ -36,20 +36,20 @@ export const PatientInfoTable: React.FC<PatientInfoTableProps> = ({ patient }) =
   };
 
   const patientData = [
-    { label: 'Nume și prenume', value: patient.fullName || '_______________________' },
-    { label: 'CNP', value: patient.cnp || '_______________' },
-    { label: 'Număr FO', value: patient.foNumber || '_______________' },
+    { label: 'Nume și prenume', value: patient.fullName || 'N/A' },
+    { label: 'CNP', value: patient.cnp || 'N/A' },
+    { label: 'Număr FO', value: patient.foNumber || 'N/A' },
     { label: 'Vârsta', value: `${calculateAge(patient.cnp)} ani` },
     { label: 'Greutate (kg)', value: `${patient.weight} kg` },
     { label: 'Înălțime (cm)', value: `${patient.height} cm` },
     { label: 'Suprafață corporală (m²)', value: `${patient.bsa.toFixed(2)} m²` },
-    { label: 'Sex', value: patient.sex || '_______________' },
+    { label: 'Sex', value: patient.sex || 'N/A' },
     { label: 'Clearance-ul creatininei', value: `${patient.creatinineClearance} ml/min` },
     { label: 'Data tratament', value: new Date(patient.treatmentDate).toLocaleDateString('ro-RO') },
-    { label: 'Data următorul ciclu', value: patient.nextCycleDate ? new Date(patient.nextCycleDate).toLocaleDateString('ro-RO') : '_______________' },
-    { label: 'Diagnostic', value: '________________________________________________' },
-    { label: 'Grupa sanguină', value: '_______________' },
-    { label: 'Alte date relevante', value: '________________________________________________' }
+    { label: 'Data următorul ciclu', value: patient.nextCycleDate ? new Date(patient.nextCycleDate).toLocaleDateString('ro-RO') : 'N/A' },
+    { label: 'Diagnostic', value: patient.diagnosis || 'N/A' },
+    { label: 'Grupa sanguină', value: patient.bloodType || 'N/A' },
+    { label: 'Ciclu numărul', value: `${patient.cycleNumber}` }
   ];
 
   return (

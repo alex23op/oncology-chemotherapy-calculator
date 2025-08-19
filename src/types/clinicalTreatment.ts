@@ -14,6 +14,8 @@ export interface PatientInfo {
   cycleNumber: number;
   treatmentDate: string;
   nextCycleDate?: string;
+  diagnosis?: string;
+  bloodType?: string;
 }
 
 

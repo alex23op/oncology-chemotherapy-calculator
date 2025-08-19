@@ -10,26 +10,28 @@ export const CertificationTable: React.FC<CertificationTableProps> = ({
   preparingPharmacist, 
   verifyingNurse 
 }) => {
+  const currentDate = new Date().toLocaleDateString('ro-RO');
+  
   const certificationData = [
     {
       role: 'MEDIC PRESCRIPTOR',
-      name: '___________________________',
+      name: 'N/A',
       signature: '',
-      date: '_______________',
+      date: currentDate,
       responsibilities: 'Prescripție, indicație tratament, monitorizare clinică'
     },
     {
       role: 'FARMACIST PREPARATOR',
-      name: preparingPharmacist || '___________________________',
+      name: preparingPharmacist || 'N/A',
       signature: '',
-      date: '_______________',
+      date: currentDate,
       responsibilities: 'Preparare, verificare doze, control calitate'
     },
     {
       role: 'ASISTENT MEDICAL',
-      name: verifyingNurse || '___________________________',
+      name: verifyingNurse || 'N/A',
       signature: '',
-      date: '_______________',
+      date: currentDate,
       responsibilities: 'Verificare identitate pacient, administrare, monitorizare'
     }
   ];
@@ -96,7 +98,7 @@ export const CertificationTable: React.FC<CertificationTableProps> = ({
       <div className="mt-4 text-xs text-muted-foreground text-center border-t pt-2">
         <p className="font-semibold">IMPORTANT:</p>
         <p>Această fișă trebuie păstrată în dosarul medical al pacientului și arhivată conform reglementărilor în vigoare.</p>
-        <p>Data și ora administrării: ____________________</p>
+        <p>Data și ora administrării: {new Date().toLocaleString('ro-RO')}</p>
       </div>
     </div>
   );

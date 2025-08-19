@@ -56,6 +56,7 @@ export const TabularMedicalSheet = forwardRef<HTMLDivElement, TabularMedicalShee
           <ChemotherapyProtocolTable 
             calculatedDrugs={treatmentData.calculatedDrugs}
             regimenName={treatmentData.regimen.name}
+            clinicalNotes={treatmentData.clinicalNotes}
           />
         </div>
 
