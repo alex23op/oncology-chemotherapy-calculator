@@ -279,8 +279,10 @@
     "patientSummary": "Rezumat Pacient",
     "drugCalculations": "Calculele de doze",
     "calculatedDose": "Doză calculată",
-    "percentageAdjustment": "Ajustare procentuală (%)",
-    "percentageAdjustmentAria": "Introduceți ajustarea procentuală pentru {drug}",
+    "percentageAdjustment": "Reducere (%)",
+    "percentageAdjustmentAria": "Introduceți procentul de reducere pentru {drug}",
+    "reductionPercentage": "Reducere (%)",
+    "reductionPlaceholder": "ex: 10, 25 (pentru reducere)",
     "finalDose": "Doză finală",
     "finalDoseAria": "Introduceți doza finală pentru {drug}",
     "solvent": "Solvent",
@@ -361,6 +363,11 @@
       "generateSheetNeedCalcs": "Nu există calcule de doză. Asigurați-vă că regimul este selectat și datele pacientului sunt introduse.",
       "sheetGenerated": "Fișa de tratament a fost generată cu succes",
       "dataExported": "Date exportate cu succes"
+    },
+    "doseAlert": {
+      "highDose": "Atenție! Doza este cu {{percentage}}% mai mare decât doza calculată",
+      "continueHighDose": "Continuă cu doza dorită",
+      "reviewDose": "Revizuiește doza"
     }
   },
   "safetyAlerts": {

@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calculator, CalendarIcon, FileText, Edit, Save, AlertTriangle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Regimen, Drug } from "@/types/regimens";
 import { calculateCompleteDose, DoseCalculationResult } from "@/utils/doseCalculations";
 import { toast } from "sonner";
@@ -187,15 +188,30 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
       if (field === 'finalDose') {
         const finalDose = parseFloat(value) || 0;
         calc.finalDose = finalDose;
-        // Calculate percentage from final dose: percentage = ((finalDose / calculatedDose) - 1) * 100
+        // Calculate percentage from final dose: percentage = (1 - (finalDose / calculatedDose)) * 100
         if (calc.calculatedDose > 0) {
-          calc.reductionPercentage = Math.round(((finalDose / calc.calculatedDose) - 1) * 100 * 10) / 10;
+          calc.reductionPercentage = Math.round((1 - (finalDose / calc.calculatedDose)) * 100 * 10) / 10;
+        }
+        
+        // Check for dose increase alert (>10% above calculated dose)
+        if (finalDose > calc.calculatedDose * 1.1) {
+          const increasePercentage = Math.round(((finalDose / calc.calculatedDose) - 1) * 100);
+          toast.warning(
+            `Atenție! Doza pentru ${calc.drug.name} este cu ${increasePercentage}% mai mare decât doza calculată. Verificați și confirmați dacă doza este corectă.`,
+            {
+              duration: 8000,
+              action: {
+                label: "Am înțeles",
+                onClick: () => {}
+              }
+            }
+          );
         }
       } else if (field === 'reductionPercentage') {
         const percentage = parseFloat(value) || 0;
         calc.reductionPercentage = percentage;
-        // Calculate final dose from percentage: finalDose = calculatedDose * (1 + percentage / 100)
-        calc.finalDose = Math.round(calc.calculatedDose * (1 + percentage / 100) * 10) / 10;
+        // Calculate final dose from percentage: finalDose = calculatedDose * (1 - percentage / 100)
+        calc.finalDose = Math.round(calc.calculatedDose * (1 - percentage / 100) * 10) / 10;
       } else if (field === 'solvent') {
         calc.solvent = value;
         calc.selectedSolventType = value;
@@ -515,7 +531,7 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
                   </p>
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">{t('doseCalculator.percentageAdjustment', 'Ajustare procentuală (%)')}</Label>
+                  <Label className="text-muted-foreground">Reducere (%)</Label>
                   {isEditing ? (
                     <Input
                       type="number"
@@ -523,11 +539,12 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
                       onChange={(e) => handleEditCalculation(index, 'reductionPercentage', e.target.value)}
                       className="mt-1 h-8"
                       step="0.1"
-                      aria-label={t('doseCalculator.percentageAdjustmentAria', 'Introduceți ajustarea procentuală pentru {{drug}}', { drug: calc.drug.name })}
+                      placeholder="10, 25"
+                      aria-label={`Introduceți procentul de reducere pentru ${calc.drug.name}`}
                     />
                   ) : (
                     <p className="font-medium">
-                      {calc.reductionPercentage ? `${calc.reductionPercentage > 0 ? '+' : ''}${calc.reductionPercentage}%` : '0%'}
+                      {calc.reductionPercentage ? `Reducere: ${Math.abs(calc.reductionPercentage)}%` : '0%'}
                     </p>
                   )}
                 </div>
