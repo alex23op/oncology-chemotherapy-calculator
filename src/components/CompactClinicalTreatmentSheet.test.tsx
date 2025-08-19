@@ -16,7 +16,6 @@ const mockTreatmentData: TreatmentData = {
   patient: { cnp: '123', weight: 70, height: 175, age: 45, sex: 'M', bsa: 1.85, creatinineClearance: 90, cycleNumber: 1, treatmentDate: '2024-01-15' },
   regimen: { id: 'test', name: 'Test', description: 'Test', category: 'adjuvant', drugs: [], schedule: 'Q3W', cycles: 4 },
   calculatedDrugs: [],
-  emetogenicRisk: { level: 'moderate', justification: 'Test', acuteRisk: 'Moderate', delayedRisk: 'Low' },
   premedications: { antiemetics: [{ name: 'Ondansetron', dosage: '8 mg', route: 'IV', timing: '30 min', category: 'Antiemetics', indication: 'CINV', solvent: 'Soluție NaCl 0.9% 250ml', class: '5-HT3 Antagonist', unit: 'mg', isRequired: true, isStandard: true }], infusionReactionProphylaxis: [], gastroprotection: [], organProtection: [], other: [] },
   solventGroups: {
     groups: [

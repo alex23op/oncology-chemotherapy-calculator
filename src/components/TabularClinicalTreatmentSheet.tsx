@@ -18,7 +18,7 @@ interface TabularClinicalTreatmentSheetProps {
 export const TabularClinicalTreatmentSheet = forwardRef<HTMLDivElement, TabularClinicalTreatmentSheetProps>(
   ({ treatmentData, className, showPrintButton, onPrint }, ref) => {
     const { t } = useTranslation();
-    const { patient, regimen, calculatedDrugs, emetogenicRisk, premedications, solventGroups } = treatmentData;
+    const { patient, regimen, calculatedDrugs, premedications, solventGroups } = treatmentData;
 
     const getRiskIcon = (level: string) => {
       switch (level) {
@@ -188,38 +188,7 @@ export const TabularClinicalTreatmentSheet = forwardRef<HTMLDivElement, TabularC
           </CardContent>
         </Card>
 
-        {/* Section 2: Emetogenic Risk Classification */}
-        <Card className="print:border print:border-border print:shadow-none">
-          <CardHeader className="pb-3 print:pb-2">
-            <CardTitle className="flex items-center gap-2 text-primary print:text-foreground">
-              {getRiskIcon(emetogenicRisk.level)}
-              {t('compactSheet.emetogenicRiskSection')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 print:space-y-2">
-            <div className="flex items-center gap-3">
-              <Badge variant={getRiskBadgeVariant(emetogenicRisk.level)} className="text-sm">
-                {t('compactSheet.riskBadge', { level: emetogenicRisk.level.toUpperCase() })}
-              </Badge>
-              <span className="text-sm text-muted-foreground print:text-foreground">
-                {emetogenicRisk.justification}
-              </span>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print:grid-cols-2">
-              <div className="p-3 bg-muted/30 rounded-lg print:bg-background print:border print:border-border">
-                <h5 className="font-medium mb-2">{t('compactSheet.acutePhase')}</h5>
-                <p className="text-sm text-muted-foreground print:text-foreground">{emetogenicRisk.acuteRisk}</p>
-              </div>
-              <div className="p-3 bg-muted/30 rounded-lg print:bg-background print:border print:border-border">
-                <h5 className="font-medium mb-2">{t('compactSheet.delayedPhase')}</h5>
-                <p className="text-sm text-muted-foreground print:text-foreground">{emetogenicRisk.delayedRisk}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Section 3: PEV Groups - Only if they exist */}
+        {/* Section 2: Premedication & Supportive Care Protocol */}
         {hasPevGroups && (
           <Card className="print:border print:border-border print:shadow-none">
             <CardHeader className="pb-3 print:pb-2">
@@ -284,7 +253,7 @@ export const TabularClinicalTreatmentSheet = forwardRef<HTMLDivElement, TabularC
           </Card>
         )}
 
-        {/* Section 4: Premedication & Supportive Care Protocol */}
+        {/* Section 3: PEV Groups - Only if they exist */}
         <Card className="print:border print:border-border print:shadow-none">
           <CardHeader className="pb-3 print:pb-2">
             <CardTitle className="flex items-center gap-2 text-primary print:text-foreground">

@@ -1,18 +1,30 @@
-/* Medical Sheet Print Styles */
+/* Print optimizations for medical sheets - A4 Portrait format */
 .medical-sheet-print {
   font-family: 'Times New Roman', Times, serif;
-  line-height: 1.4;
+  line-height: 1.2;
   color: #000 !important;
+  width: 210mm;
+  min-height: 297mm;
+  padding: 15mm;
+  margin: 0 auto;
+  box-sizing: border-box;
 }
 
 @media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm;
+  }
+  
   .medical-sheet-print {
     -webkit-print-color-adjust: exact;
     color-adjust: exact;
     margin: 0;
-    padding: 10mm;
+    padding: 5mm;
     font-size: 10px;
-    line-height: 1.2;
+    line-height: 1.1;
+    width: 100%;
+    min-height: 100%;
   }
   
   /* Page breaks */
@@ -48,20 +60,22 @@
     font-size: 8px !important;
   }
   
-  /* Compact header styles */
+  /* Compact header styles - Romanian optimized */
   .medical-sheet-print h1 {
-    font-size: 14px !important;
+    font-size: 16px !important;
     font-weight: bold !important;
     text-align: center !important;
-    margin-bottom: 0.25rem !important;
+    margin-bottom: 8px !important;
+    border-bottom: 2px solid #000 !important;
+    padding-bottom: 4px !important;
   }
   
   .medical-sheet-print h2 {
-    font-size: 11px !important;
+    font-size: 12px !important;
     font-weight: bold !important;
-    margin: 0.5rem 0 0.25rem 0 !important;
-    background-color: #e9ecef !important;
-    padding: 2px 4px !important;
+    margin: 8px 0 4px 0 !important;
+    background-color: #f0f0f0 !important;
+    padding: 3px 6px !important;
     border: 1px solid #000 !important;
   }
   
@@ -110,14 +124,17 @@
   }
 }
 
-/* Screen display adjustments */
+/* Screen display adjustments - A4 Preview */
 @media screen {
   .medical-sheet-print {
-    max-width: 210mm;
-    margin: 0 auto;
+    width: 210mm;
+    min-height: 297mm;
+    margin: 20px auto;
+    padding: 15mm;
     background: white;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    border: 1px solid #ddd;
+    box-sizing: border-box;
   }
   
   .medical-sheet-print h1 {

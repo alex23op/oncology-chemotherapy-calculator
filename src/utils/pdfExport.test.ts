@@ -24,12 +24,6 @@ const baseData: TreatmentData = {
     cycles: 6,
   },
   calculatedDrugs: [],
-  emetogenicRisk: {
-    level: 'low',
-    justification: 'test',
-    acuteRisk: '10-30%',
-    delayedRisk: '10-30%',
-  },
   premedications: {
     antiemetics: [],
     infusionReactionProphylaxis: [],

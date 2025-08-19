@@ -15,7 +15,7 @@ interface ClinicalTreatmentSheetProps {
 export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalTreatmentSheetProps>(
   ({ treatmentData, className }, ref) => {
     const { t } = useTranslation();
-    const { patient, regimen, calculatedDrugs, emetogenicRisk, premedications } = treatmentData;
+    const { patient, regimen, calculatedDrugs, premedications } = treatmentData;
 
     const getRiskIcon = (level: string) => {
       switch (level) {
@@ -173,38 +173,7 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
           </CardContent>
         </Card>
 
-        {/* Section 2: Emetogenic Risk Classification */}
-        <Card className="print:border print:border-border print:shadow-none">
-          <CardHeader className="pb-3 print:pb-2">
-            <CardTitle className="flex items-center gap-2 text-primary print:text-foreground">
-              {getRiskIcon(emetogenicRisk.level)}
-              {t('clinicalSheet.emetogenicRiskSection')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 print:space-y-2">
-            <div className="flex items-center gap-3">
-              <Badge variant={getRiskBadgeVariant(emetogenicRisk.level)} className="text-sm">
-                {t('clinicalSheet.riskBadge', { level: emetogenicRisk.level.toUpperCase() })}
-              </Badge>
-              <span className="text-sm text-muted-foreground print:text-foreground">
-                {emetogenicRisk.justification}
-              </span>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print:grid-cols-2">
-              <div className="p-3 bg-muted/30 rounded-lg print:bg-background print:border print:border-border">
-                <h5 className="font-medium mb-2">{t('clinicalSheet.acutePhase')}</h5>
-                <p className="text-sm text-muted-foreground print:text-foreground">{emetogenicRisk.acuteRisk}</p>
-              </div>
-              <div className="p-3 bg-muted/30 rounded-lg print:bg-background print:border print:border-border">
-                <h5 className="font-medium mb-2">{t('clinicalSheet.delayedPhase')}</h5>
-                <p className="text-sm text-muted-foreground print:text-foreground">{emetogenicRisk.delayedRisk}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Section 3: Premedication & Supportive Care Protocol */}
+        {/* Section 2: Premedication & Supportive Care Protocol */}
         <Card className="print:border print:border-border print:shadow-none">
           <CardHeader className="pb-3 print:pb-2">
             <CardTitle className="flex items-center gap-2 text-primary print:text-foreground">

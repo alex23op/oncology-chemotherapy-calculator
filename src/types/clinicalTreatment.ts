@@ -63,12 +63,6 @@ export interface TreatmentData {
   patient: PatientInfo;
   regimen: Regimen;
   calculatedDrugs: CalculatedDrug[];
-  emetogenicRisk: {
-    level: "high" | "moderate" | "low" | "minimal";
-    justification: string;
-    acuteRisk: string;
-    delayedRisk: string;
-  };
   premedications: {
     antiemetics: PremedAgent[];
     infusionReactionProphylaxis: PremedAgent[];
