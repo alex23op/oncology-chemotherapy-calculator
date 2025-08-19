@@ -364,7 +364,6 @@ describe('doseCalculations', () => {
       
       expect(result.calculatedDose).toBe(91.8); // 60 * 1.8 * 0.85 (age adjustment)
       expect(result.finalDose).toBe(91.8);
-      expect(result.adjustedDose).toBe(91.8);
       expect(result.reductionPercentage).toBe(0);
     });
 

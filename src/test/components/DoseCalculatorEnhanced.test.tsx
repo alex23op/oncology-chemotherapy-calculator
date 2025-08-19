@@ -114,7 +114,6 @@ describe('DoseCalculatorEnhanced', () => {
       calculateSpy.mockReturnValue({
         calculatedDose: 153, // 85 * 1.8
         finalDose: 153,
-        adjustedDose: 153,
         reductionPercentage: 0
       });
 
@@ -145,7 +144,6 @@ describe('DoseCalculatorEnhanced', () => {
       const mockCalculation = {
         calculatedDose: 200,
         finalDose: 200,
-        adjustedDose: 200,
         reductionPercentage: 0,
         doseAlert: {
           isExceeded: true,

@@ -178,19 +178,24 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
     }
   }, [validateCycleNumber, t]);
 
-  // Handle editing functions
+  // Handle editing functions with bidirectional synchronization
   const handleEditCalculation = useCallback((index: number, field: string, value: any) => {
     setEditedCalculations(prev => {
       const updated = [...prev];
       const calc = { ...updated[index] };
       
       if (field === 'finalDose') {
-        calc.finalDose = parseFloat(value) || 0;
+        const finalDose = parseFloat(value) || 0;
+        calc.finalDose = finalDose;
+        // Calculate percentage from final dose: percentage = ((finalDose / calculatedDose) - 1) * 100
+        if (calc.calculatedDose > 0) {
+          calc.reductionPercentage = Math.round(((finalDose / calc.calculatedDose) - 1) * 100 * 10) / 10;
+        }
       } else if (field === 'reductionPercentage') {
         const percentage = parseFloat(value) || 0;
         calc.reductionPercentage = percentage;
-        calc.adjustedDose = calc.calculatedDose * (1 - percentage / 100);
-        calc.finalDose = calc.adjustedDose;
+        // Calculate final dose from percentage: finalDose = calculatedDose * (1 + percentage / 100)
+        calc.finalDose = Math.round(calc.calculatedDose * (1 + percentage / 100) * 10) / 10;
       } else if (field === 'solvent') {
         calc.solvent = value;
         calc.selectedSolventType = value;
@@ -500,38 +505,32 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                 <div>
-                  <Label className="text-muted-foreground">Doză calculată</Label>
+                  <Label className="text-muted-foreground">{t('doseCalculator.calculatedDose', 'Doză calculată')}</Label>
                   <p className="font-medium text-lg">
                     {calc.calculatedDose.toFixed(1)} mg
                   </p>
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">Reducere %</Label>
+                  <Label className="text-muted-foreground">{t('doseCalculator.percentageAdjustment', 'Ajustare procentuală (%)')}</Label>
                   {isEditing ? (
                     <Input
                       type="number"
-                      value={calc.reductionPercentage}
+                      value={calc.reductionPercentage || 0}
                       onChange={(e) => handleEditCalculation(index, 'reductionPercentage', e.target.value)}
                       className="mt-1 h-8"
-                      min="0"
-                      max="100"
+                      step="0.1"
+                      aria-label={t('doseCalculator.percentageAdjustmentAria', 'Introduceți ajustarea procentuală pentru {{drug}}', { drug: calc.drug.name })}
                     />
                   ) : (
                     <p className="font-medium">
-                      {calc.reductionPercentage}%
+                      {calc.reductionPercentage ? `${calc.reductionPercentage > 0 ? '+' : ''}${calc.reductionPercentage}%` : '0%'}
                     </p>
                   )}
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">Doză ajustată</Label>
-                  <p className="font-medium">
-                    {calc.adjustedDose} mg
-                  </p>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Doză finală</Label>
+                  <Label className="text-muted-foreground">{t('doseCalculator.finalDose', 'Doză finală')}</Label>
                   {isEditing ? (
                     <Input
                       type="number"
@@ -540,10 +539,11 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
                       className="mt-1 h-8"
                       min="0"
                       step="0.1"
+                      aria-label={t('doseCalculator.finalDoseAria', 'Introduceți doza finală pentru {{drug}}', { drug: calc.drug.name })}
                     />
                   ) : (
                     <p className="font-medium text-lg text-accent">
-                      {calc.finalDose} mg
+                      {calc.finalDose.toFixed(1)} mg
                     </p>
                   )}
                 </div>
@@ -552,32 +552,37 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
               {/* Solvent and Notes */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t">
                 <div>
-                  <Label className="text-muted-foreground">Solvent</Label>
+                  <Label className="text-muted-foreground">{t('doseCalculator.solvent', 'Solvent')}</Label>
                   {isEditing ? (
                     <select
-                      value={calc.solvent || 'Normal Saline 0.9%'}
+                      value={calc.solvent || 'Soluție NaCl 0.9% 250ml'}
                       onChange={(e) => handleEditCalculation(index, 'solvent', e.target.value)}
                       className="w-full mt-1 h-8 px-3 rounded-md border border-input bg-background text-sm"
+                      aria-label={t('doseCalculator.solventAria', 'Selectați solventul pentru {{drug}}', { drug: calc.drug.name })}
                     >
-                      <option value="Normal Saline 0.9%">Normal Saline 0.9%</option>
-                      <option value="Dextrose 5%">Dextrose 5%</option>
-                      <option value="Water for Injection">Water for Injection</option>
-                      <option value="Lactated Ringer's">Lactated Ringer's</option>
+                      <option value="Soluție glucoză 5% 100ml">{t('doseCalculator.solventGlucose100', 'Soluție glucoză 5% 100ml')}</option>
+                      <option value="Soluție glucoză 5% 250ml">{t('doseCalculator.solventGlucose250', 'Soluție glucoză 5% 250ml')}</option>
+                      <option value="Soluție glucoză 5% 500ml">{t('doseCalculator.solventGlucose500', 'Soluție glucoză 5% 500ml')}</option>
+                      <option value="Soluție NaCl 0.9% 100ml">{t('doseCalculator.solventNaCl100', 'Soluție NaCl 0.9% 100ml')}</option>
+                      <option value="Soluție NaCl 0.9% 250ml">{t('doseCalculator.solventNaCl250', 'Soluție NaCl 0.9% 250ml')}</option>
+                      <option value="Soluție NaCl 0.9% 500ml">{t('doseCalculator.solventNaCl500', 'Soluție NaCl 0.9% 500ml')}</option>
+                      <option value="Water for Injection">{t('doseCalculator.solventWater', 'Apă pentru preparate injectabile')}</option>
                     </select>
                   ) : (
                     <p className="font-medium mt-1">
-                      {calc.solvent || 'Normal Saline 0.9%'}
+                      {calc.solvent || 'Soluție NaCl 0.9% 250ml'}
                     </p>
                   )}
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">Note</Label>
+                  <Label className="text-muted-foreground">{t('doseCalculator.notes', 'Note')}</Label>
                   {isEditing ? (
                     <Input
                       value={calc.notes || ''}
                       onChange={(e) => handleEditCalculation(index, 'notes', e.target.value)}
                       className="mt-1 h-8"
-                      placeholder="Adaugă note..."
+                      placeholder={t('doseCalculator.notesPlaceholder', 'Adăugați note pentru ajustarea dozei...')}
+                      aria-label={t('doseCalculator.notesAria', 'Adăugați note pentru {{drug}}', { drug: calc.drug.name })}
                     />
                   ) : (
                     <p className="font-medium mt-1">

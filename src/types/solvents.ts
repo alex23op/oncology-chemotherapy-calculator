@@ -1,15 +1,21 @@
-// Strict solvent types for better type safety
+// Strict solvent types for better type safety with volumes
 export type SolventType = 
-  | "Normal Saline 0.9%" 
-  | "Dextrose 5%" 
-  | "Ringer Solution" 
+  | "Soluție glucoză 5% 100ml" 
+  | "Soluție glucoză 5% 250ml"
+  | "Soluție glucoză 5% 500ml"
+  | "Soluție NaCl 0.9% 100ml"
+  | "Soluție NaCl 0.9% 250ml"
+  | "Soluție NaCl 0.9% 500ml"
   | "Water for Injection"
   | null;
 
 export const AVAILABLE_SOLVENTS: SolventType[] = [
-  "Normal Saline 0.9%",
-  "Dextrose 5%", 
-  "Ringer Solution",
+  "Soluție glucoză 5% 100ml",
+  "Soluție glucoză 5% 250ml", 
+  "Soluție glucoză 5% 500ml",
+  "Soluție NaCl 0.9% 100ml",
+  "Soluție NaCl 0.9% 250ml",
+  "Soluție NaCl 0.9% 500ml",
   "Water for Injection"
 ];
 

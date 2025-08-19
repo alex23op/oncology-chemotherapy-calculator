@@ -4,7 +4,6 @@ import { drugLimits, checkDoseLimit } from "@/data/drugLimits";
 export interface DoseCalculationResult {
   calculatedDose: number;
   finalDose: number;
-  adjustedDose: number;
   reductionPercentage: number;
   doseAlert?: {
     isExceeded: boolean;
@@ -233,7 +232,6 @@ export const calculateCompleteDose = (
   return {
     calculatedDose,
     finalDose: Math.round(calculatedDose * 10) / 10,
-    adjustedDose: calculatedDose,
     reductionPercentage: 0,
     doseAlert: doseAlert.isExceeded ? doseAlert : undefined,
     concentrationAlert: concentrationAlert || undefined

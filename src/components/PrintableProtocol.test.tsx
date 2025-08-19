@@ -98,7 +98,7 @@ const mockSolventGroups: GroupedPremedications = {
       indication: 'Gastroprotection',
       isRequired: false,
       isStandard: true,
-      solvent: 'Normal Saline 0.9%'
+      solvent: 'Soluție NaCl 0.9% 250ml'
     }
   ]
 };

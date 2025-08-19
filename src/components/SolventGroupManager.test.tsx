@@ -79,7 +79,7 @@ const mockPremedications: PremedAgent[] = [
     isRequired: true,
     isStandard: true,
     administrationDuration: '15 min',
-    solvent: 'Normal Saline 0.9%'
+    solvent: 'Soluție NaCl 0.9% 250ml'
   },
   {
     name: 'Granisetron',
@@ -94,7 +94,7 @@ const mockPremedications: PremedAgent[] = [
     isRequired: true,
     isStandard: true,
     administrationDuration: '15 min',
-    solvent: 'Normal Saline 0.9%'
+    solvent: 'Soluție NaCl 0.9% 250ml'
   }
 ];
 

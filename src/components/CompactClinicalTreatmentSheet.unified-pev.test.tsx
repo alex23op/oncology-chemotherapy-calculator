@@ -37,7 +37,7 @@ const mockTreatmentDataWithPEVs: TreatmentData = {
       }
     ],
     individual: [
-      { name: 'Difenhidramină', dosage: '25 mg', route: 'IV', timing: '15 min', category: 'Antiemetics', indication: 'Allergy prophylaxis', solvent: 'Normal Saline 0.9%', class: 'Antihistamine', unit: 'mg', isRequired: true, isStandard: true }
+      { name: 'Difenhidramină', dosage: '25 mg', route: 'IV', timing: '15 min', category: 'Antiemetics', indication: 'Allergy prophylaxis', solvent: 'Soluție NaCl 0.9% 250ml', class: 'Antihistamine', unit: 'mg', isRequired: true, isStandard: true }
     ]
   }
 };
@@ -48,7 +48,7 @@ const mockTreatmentDataWithoutPEVs: TreatmentData = {
   calculatedDrugs: [],
   emetogenicRisk: { level: 'moderate', justification: 'Test', acuteRisk: 'Moderate', delayedRisk: 'Low' },
   premedications: { 
-    antiemetics: [{ name: 'Ondansetron', dosage: '8 mg', route: 'IV', timing: '30 min', category: 'Antiemetics', indication: 'CINV', solvent: 'Normal Saline 0.9%', class: '5-HT3 Antagonist', unit: 'mg', isRequired: true, isStandard: true }], 
+    antiemetics: [{ name: 'Ondansetron', dosage: '8 mg', route: 'IV', timing: '30 min', category: 'Antiemetics', indication: 'CINV', solvent: 'Soluție NaCl 0.9% 250ml', class: '5-HT3 Antagonist', unit: 'mg', isRequired: true, isStandard: true }], 
     infusionReactionProphylaxis: [], 
     gastroprotection: [], 
     organProtection: [], 

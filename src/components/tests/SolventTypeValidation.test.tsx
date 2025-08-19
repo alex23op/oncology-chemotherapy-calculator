@@ -26,17 +26,20 @@ describe('Solvent Type Validation', () => {
     });
   });
 
-  it('should have exactly 4 available solvents', () => {
-    expect(AVAILABLE_SOLVENTS).toHaveLength(4);
-    expect(AVAILABLE_SOLVENTS).toContain('Normal Saline 0.9%');
-    expect(AVAILABLE_SOLVENTS).toContain('Dextrose 5%');
-    expect(AVAILABLE_SOLVENTS).toContain('Ringer Solution');
+  it('should have exactly 7 available solvents', () => {
+    expect(AVAILABLE_SOLVENTS).toHaveLength(7);
+    expect(AVAILABLE_SOLVENTS).toContain('Soluție glucoză 5% 100ml');
+    expect(AVAILABLE_SOLVENTS).toContain('Soluție glucoză 5% 250ml');
+    expect(AVAILABLE_SOLVENTS).toContain('Soluție glucoză 5% 500ml');
+    expect(AVAILABLE_SOLVENTS).toContain('Soluție NaCl 0.9% 100ml');
+    expect(AVAILABLE_SOLVENTS).toContain('Soluție NaCl 0.9% 250ml');
+    expect(AVAILABLE_SOLVENTS).toContain('Soluție NaCl 0.9% 500ml');
     expect(AVAILABLE_SOLVENTS).toContain('Water for Injection');
   });
 
   it('should maintain type safety for SolventType', () => {
     // Type-only test - this ensures the union type is correctly defined
-    const validSolvent: SolventType = 'Normal Saline 0.9%';
+    const validSolvent: SolventType = 'Soluție NaCl 0.9% 250ml';
     const nullSolvent: SolventType = null;
     
     expect(typeof validSolvent).toBe('string');
