@@ -9,7 +9,9 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calculator, CalendarIcon, FileText, Edit, Save, AlertTriangle } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Regimen, Drug } from "@/types/regimens";
+import { Regimen, Drug, Premedication } from "@/types/regimens";
+import { usePrint } from '@/hooks/usePrint';
+import { useDataPersistence } from '@/context/DataPersistenceContext';
 import { calculateCompleteDose, DoseCalculationResult } from "@/utils/doseCalculations";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
@@ -62,6 +64,7 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
   onGenerateSheet
 }) => {
   const { t } = useTranslation();
+  const { state: persistedState } = useDataPersistence();
   
   // Patient and treatment details state
   const [patientName, setPatientName] = useState<string>("");
@@ -254,6 +257,12 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
       return;
     }
 
+    // Get supportive care data from persistence context
+    const supportiveData = persistedState.supportiveData || {};
+    const selectedAntiemetics = supportiveData.selectedAntiemetics || [];
+    const selectedPremedications = supportiveData.selectedPremedications || [];
+    const groupedPremedications = supportiveData.groupedPremedications || { groups: [], individual: [] };
+
     const treatmentData = {
       patient: {
         fullName: patientName,
@@ -271,6 +280,7 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
       },
       regimen,
       calculatedDrugs: Array.isArray(currentCalculations) ? currentCalculations.map(calc => ({
+        name: calc.drug.name, // Ensure drug name is properly transmitted
         ...calc.drug,
         calculatedDose: calc.calculatedDose,
         finalDose: calc.finalDose,
@@ -280,13 +290,25 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
         solvent: calc.selectedSolventType || calc.solvent || 'Normal Saline 0.9%'
       })) : [],
       premedications: {
-        antiemetics: [],
-        infusionReactionProphylaxis: [],
-        gastroprotection: [],
-        organProtection: [],
-        other: []
+        antiemetics: selectedAntiemetics,
+        infusionReactionProphylaxis: selectedPremedications.filter((p: Premedication) => 
+          p.category === 'antihistamine' || p.name.toLowerCase().includes('allerg')
+        ),
+        gastroprotection: selectedPremedications.filter((p: Premedication) => 
+          p.category === 'h2_blocker' || p.name.toLowerCase().includes('gastro')
+        ),
+        organProtection: selectedPremedications.filter((p: Premedication) => 
+          p.category === 'corticosteroid' && p.name.toLowerCase().includes('protect')
+        ),
+        other: selectedPremedications.filter((p: Premedication) => 
+          p.category === 'other' || 
+          (!['antihistamine', 'h2_blocker'].includes(p.category) &&
+           !p.name.toLowerCase().includes('allerg') &&
+           !p.name.toLowerCase().includes('gastro') &&
+           !p.name.toLowerCase().includes('protect'))
+        )
       },
-      solventGroups: { groups: [], individual: [] },
+      solventGroups: groupedPremedications,
       clinicalNotes: "",
       preparingPharmacist: "",
       verifyingNurse: "",

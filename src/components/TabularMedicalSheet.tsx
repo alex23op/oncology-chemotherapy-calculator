@@ -48,26 +48,26 @@ export const TabularMedicalSheet = forwardRef<HTMLDivElement, TabularMedicalShee
           <PatientInfoTable patient={treatmentData.patient} />
         </div>
 
-        {/* Chemotherapy Protocol - Before premedication as per 08.08.2025 design */}
+        {/* Premedication - BEFORE chemotherapy as requested by user */}
         <div className="mb-3">
           <h2 className="text-lg font-semibold mb-2 bg-muted p-1.5 rounded text-sm">
-            2. PROTOCOL CHIMIOTERAPIE
+            2. PREMEDICAȚIE ȘI ÎNGRIJIRI SUPORTIVE
+          </h2>
+          <PremedsTable 
+            premedications={treatmentData.premedications}
+            solventGroups={treatmentData.solventGroups}
+          />
+        </div>
+
+        {/* Chemotherapy Protocol - AFTER premedication as requested by user */}
+        <div className="mb-3">
+          <h2 className="text-lg font-semibold mb-2 bg-muted p-1.5 rounded text-sm">
+            3. PROTOCOL CHIMIOTERAPIE
           </h2>
           <ChemotherapyProtocolTable 
             calculatedDrugs={treatmentData.calculatedDrugs}
             regimenName={treatmentData.regimen.name}
             clinicalNotes={treatmentData.clinicalNotes}
-          />
-        </div>
-
-        {/* Premedication - After chemotherapy as per 08.08.2025 design */}
-        <div className="mb-3">
-          <h2 className="text-lg font-semibold mb-2 bg-muted p-1.5 rounded text-sm">
-            3. PREMEDICAȚIE ȘI ÎNGRIJIRI SUPORTIVE
-          </h2>
-          <PremedsTable 
-            premedications={treatmentData.premedications}
-            solventGroups={treatmentData.solventGroups}
           />
         </div>
 
