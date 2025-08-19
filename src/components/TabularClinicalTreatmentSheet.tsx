@@ -51,28 +51,28 @@ export const TabularClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Ta
         {/* Header */}
         <div className="text-center border-b-2 border-black pb-4 mb-6 print:mb-4">
           <h1 className="text-2xl font-bold print:text-xl">
-            FIȘA DE TRATAMENT CHIMIOTERAPIC
+            {t('compactSheet.mainTitle')}
           </h1>
           <p className="text-sm mt-2">
-            Protocol standardizat de administrare
+            {t('compactSheet.subtitle')}
           </p>
         </div>
 
         {/* Patient Data Table */}
         <div className="mb-6">
-          <h2 className="text-lg font-bold mb-3 print:text-base">DATE PACIENT</h2>
+          <h2 className="text-lg font-bold mb-3 print:text-base">{t('compactSheet.patientData')}</h2>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse border-2 border-black print:text-xs">
               <tbody>
                 <tr>
                   <td className="border border-black px-3 py-2 font-medium bg-gray-50 print:bg-gray-100 w-1/4">
-                    Nume și Prenume
+                    {t('compactSheet.fullName')}
                   </td>
                   <td className="border border-black px-3 py-2 w-1/4">
                     {patient.fullName || '_'.repeat(30)}
                   </td>
                   <td className="border border-black px-3 py-2 font-medium bg-gray-50 print:bg-gray-100 w-1/4">
-                    CNP
+                    {t('compactSheet.cnp')}
                   </td>
                   <td className="border border-black px-3 py-2 w-1/4">
                     {patient.cnp}
@@ -80,13 +80,13 @@ export const TabularClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Ta
                 </tr>
                 <tr>
                   <td className="border border-black px-3 py-2 font-medium bg-gray-50 print:bg-gray-100">
-                    Nr. FO
+                    {t('compactSheet.foNumber')}
                   </td>
                   <td className="border border-black px-3 py-2">
                     {patient.foNumber || '_'.repeat(15)}
                   </td>
                   <td className="border border-black px-3 py-2 font-medium bg-gray-50 print:bg-gray-100">
-                    Ciclu nr.
+                    {t('compactSheet.cycleNumber')}
                   </td>
                   <td className="border border-black px-3 py-2">
                     {patient.cycleNumber}
@@ -94,13 +94,13 @@ export const TabularClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Ta
                 </tr>
                 <tr>
                   <td className="border border-black px-3 py-2 font-medium bg-gray-50 print:bg-gray-100">
-                    Greutate (kg)
+                    {t('compactSheet.weight')}
                   </td>
                   <td className="border border-black px-3 py-2">
                     {patient.weight}
                   </td>
                   <td className="border border-black px-3 py-2 font-medium bg-gray-50 print:bg-gray-100">
-                    BSA (m²)
+                    {t('compactSheet.bsa')}
                   </td>
                   <td className="border border-black px-3 py-2">
                     {patient.bsa}
@@ -108,13 +108,13 @@ export const TabularClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Ta
                 </tr>
                 <tr>
                   <td className="border border-black px-3 py-2 font-medium bg-gray-50 print:bg-gray-100">
-                    Data tratament
+                    {t('compactSheet.treatmentDate')}
                   </td>
                   <td className="border border-black px-3 py-2">
                     {formatDate(patient.treatmentDate)}
                   </td>
                   <td className="border border-black px-3 py-2 font-medium bg-gray-50 print:bg-gray-100">
-                    ClCr (mL/min)
+                    {t('compactSheet.creatinineClearance')}
                   </td>
                   <td className="border border-black px-3 py-2">
                     {patient.creatinineClearance}
@@ -127,13 +127,13 @@ export const TabularClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Ta
 
         {/* Regimen Information */}
         <div className="mb-6">
-          <h2 className="text-lg font-bold mb-3 print:text-base">REGIM CHIMIOTERAPIC</h2>
+          <h2 className="text-lg font-bold mb-3 print:text-base">{t('compactSheet.chemotherapyRegimen')}</h2>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse border-2 border-black print:text-xs">
               <tbody>
                 <tr>
                   <td className="border border-black px-3 py-2 font-medium bg-gray-50 print:bg-gray-100 w-1/4">
-                    Denumire Protocol
+                    {t('compactSheet.protocolName')}
                   </td>
                   <td className="border border-black px-3 py-2 w-3/4" colSpan={3}>
                     {regimen.name}
@@ -141,13 +141,13 @@ export const TabularClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Ta
                 </tr>
                 <tr>
                   <td className="border border-black px-3 py-2 font-medium bg-gray-50 print:bg-gray-100">
-                    Program
+                    {t('compactSheet.schedule')}
                   </td>
                   <td className="border border-black px-3 py-2">
                     {regimen.schedule}
                   </td>
                   <td className="border border-black px-3 py-2 font-medium bg-gray-50 print:bg-gray-100">
-                    Risc Emetogen
+                    {t('compactSheet.emetogenicRisk')}
                   </td>
                   <td className="border border-black px-3 py-2">
                     {getRiskLevel(emetogenicRisk.level)}
@@ -160,18 +160,18 @@ export const TabularClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Ta
 
         {/* Chemotherapy Drugs Table */}
         <div className="mb-6">
-          <h2 className="text-lg font-bold mb-3 print:text-base">MEDICAMENTE CHIMIOTERAPICE</h2>
+          <h2 className="text-lg font-bold mb-3 print:text-base">{t('compactSheet.chemotherapyDrugs')}</h2>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse border-2 border-black print:text-xs">
               <thead>
                 <tr className="bg-gray-50 print:bg-gray-100">
-                  <th className="border border-black px-2 py-2 text-left font-bold">Medicament</th>
-                  <th className="border border-black px-2 py-2 text-left font-bold">Doză Calculată</th>
-                  <th className="border border-black px-2 py-2 text-left font-bold">Doză Finală</th>
-                  <th className="border border-black px-2 py-2 text-left font-bold">Calea</th>
-                  <th className="border border-black px-2 py-2 text-left font-bold">Zi</th>
-                  <th className="border border-black px-2 py-2 text-left font-bold">Durată</th>
-                  <th className="border border-black px-2 py-2 text-left font-bold">Solvent</th>
+                  <th className="border border-black px-2 py-2 text-left font-bold">{t('compactSheet.drug')}</th>
+                  <th className="border border-black px-2 py-2 text-left font-bold">{t('compactSheet.calculatedDose')}</th>
+                  <th className="border border-black px-2 py-2 text-left font-bold">{t('compactSheet.finalDose')}</th>
+                  <th className="border border-black px-2 py-2 text-left font-bold">{t('compactSheet.route')}</th>
+                  <th className="border border-black px-2 py-2 text-left font-bold">{t('compactSheet.day')}</th>
+                  <th className="border border-black px-2 py-2 text-left font-bold">{t('compactSheet.duration')}</th>
+                  <th className="border border-black px-2 py-2 text-left font-bold">{t('compactSheet.solvent')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -193,20 +193,20 @@ export const TabularClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Ta
 
         {/* Premedication & Supportive Care */}
         <div className="mb-6">
-          <h2 className="text-lg font-bold mb-3 print:text-base">PREMEDICAȚIE ȘI ÎNGRIJIRI SUPORTIVE</h2>
+          <h2 className="text-lg font-bold mb-3 print:text-base">{t('compactSheet.premedSupport')}</h2>
           
           {/* PEV Groups if available */}
           {solventGroups && (solventGroups.groups.length > 0 || solventGroups.individual.length > 0) && (
             <div className="mb-4">
-              <h3 className="text-base font-semibold mb-2 print:text-sm">Grupări PEV</h3>
+              <h3 className="text-base font-semibold mb-2 print:text-sm">{t('compactSheet.pevGroups')}</h3>
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border-2 border-black print:text-xs">
                   <thead>
                     <tr className="bg-gray-50 print:bg-gray-100">
-                      <th className="border border-black px-2 py-2 text-left font-bold">Nr. PEV</th>
-                      <th className="border border-black px-2 py-2 text-left font-bold">Medicamente</th>
-                      <th className="border border-black px-2 py-2 text-left font-bold">Solvent</th>
-                      <th className="border border-black px-2 py-2 text-center font-bold">Administrat</th>
+                      <th className="border border-black px-2 py-2 text-left font-bold">{t('compactSheet.pevNumber')}</th>
+                      <th className="border border-black px-2 py-2 text-left font-bold">{t('compactSheet.medications')}</th>
+                      <th className="border border-black px-2 py-2 text-left font-bold">{t('compactSheet.solvent')}</th>
+                      <th className="border border-black px-2 py-2 text-center font-bold">{t('compactSheet.administered')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -250,17 +250,17 @@ export const TabularClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Ta
           {/* Individual Premedications */}
           {allPremedications.length > 0 && (
             <div>
-              <h3 className="text-base font-semibold mb-2 print:text-sm">Premedicații Individuale</h3>
+              <h3 className="text-base font-semibold mb-2 print:text-sm">{t('compactSheet.individualPremedications')}</h3>
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse border-2 border-black print:text-xs">
                   <thead>
                     <tr className="bg-gray-50 print:bg-gray-100">
-                      <th className="border border-black px-2 py-2 text-left font-bold">Medicament</th>
-                      <th className="border border-black px-2 py-2 text-left font-bold">Doză</th>
-                      <th className="border border-black px-2 py-2 text-left font-bold">Calea</th>
-                      <th className="border border-black px-2 py-2 text-left font-bold">Ora</th>
-                      <th className="border border-black px-2 py-2 text-left font-bold">Categoria</th>
-                      <th className="border border-black px-2 py-2 text-center font-bold">Administrat</th>
+                      <th className="border border-black px-2 py-2 text-left font-bold">{t('compactSheet.medication')}</th>
+                      <th className="border border-black px-2 py-2 text-left font-bold">{t('compactSheet.dose')}</th>
+                      <th className="border border-black px-2 py-2 text-left font-bold">{t('compactSheet.route')}</th>
+                      <th className="border border-black px-2 py-2 text-left font-bold">{t('compactSheet.timing')}</th>
+                      <th className="border border-black px-2 py-2 text-left font-bold">{t('compactSheet.category')}</th>
+                      <th className="border border-black px-2 py-2 text-center font-bold">{t('compactSheet.administered')}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -283,21 +283,21 @@ export const TabularClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Ta
 
         {/* Clinical Verification Section */}
         <div className="mb-6">
-          <h2 className="text-lg font-bold mb-3 print:text-base">VERIFICĂRI CLINICE</h2>
+          <h2 className="text-lg font-bold mb-3 print:text-base">{t('compactSheet.clinicalVerification')}</h2>
           <div className="overflow-x-auto">
             <table className="w-full border-collapse border-2 border-black print:text-xs">
               <thead>
                 <tr className="bg-gray-50 print:bg-gray-100">
-                  <th className="border border-black px-2 py-2 text-left font-bold">Funcție</th>
-                  <th className="border border-black px-2 py-2 text-left font-bold">Nume și Prenume</th>
-                  <th className="border border-black px-2 py-2 text-left font-bold">Data / Ora</th>
-                  <th className="border border-black px-2 py-2 text-left font-bold">Semnătură</th>
+                  <th className="border border-black px-2 py-2 text-left font-bold">{t('compactSheet.function')}</th>
+                  <th className="border border-black px-2 py-2 text-left font-bold">{t('compactSheet.nameAndSurname')}</th>
+                  <th className="border border-black px-2 py-2 text-left font-bold">{t('compactSheet.dateTime')}</th>
+                  <th className="border border-black px-2 py-2 text-left font-bold">{t('compactSheet.signature')}</th>
                 </tr>
               </thead>
               <tbody>
                 <tr>
                   <td className="border border-black px-2 py-3 font-medium bg-gray-50 print:bg-gray-100">
-                    Preparare Farmacist
+                    {t('compactSheet.preparingPharmacist')}
                   </td>
                   <td className="border border-black px-2 py-3">
                     {treatmentData.preparingPharmacist || '_'.repeat(25)}
@@ -311,7 +311,7 @@ export const TabularClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Ta
                 </tr>
                 <tr>
                   <td className="border border-black px-2 py-3 font-medium bg-gray-50 print:bg-gray-100">
-                    Verificare Asistent
+                    {t('compactSheet.verifyingNurse')}
                   </td>
                   <td className="border border-black px-2 py-3">
                     {treatmentData.verifyingNurse || '_'.repeat(25)}
@@ -325,7 +325,7 @@ export const TabularClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Ta
                 </tr>
                 <tr>
                   <td className="border border-black px-2 py-3 font-medium bg-gray-50 print:bg-gray-100">
-                    Verificare Medic
+                    {t('compactSheet.verifyingPhysician')}
                   </td>
                   <td className="border border-black px-2 py-3">
                     {'_'.repeat(25)}
@@ -339,7 +339,7 @@ export const TabularClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Ta
                 </tr>
                 <tr>
                   <td className="border border-black px-2 py-3 font-medium bg-gray-50 print:bg-gray-100">
-                    Administrare Asistent
+                    {t('compactSheet.administeringNurse')}
                   </td>
                   <td className="border border-black px-2 py-3">
                     {'_'.repeat(25)}
@@ -359,7 +359,7 @@ export const TabularClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Ta
         {/* Notes Section */}
         {treatmentData.clinicalNotes && (
           <div className="mb-6">
-            <h2 className="text-lg font-bold mb-3 print:text-base">OBSERVAȚII CLINICE</h2>
+            <h2 className="text-lg font-bold mb-3 print:text-base">{t('compactSheet.clinicalNotes')}</h2>
             <div className="border-2 border-black p-3 min-h-20">
               <p className="text-sm">{treatmentData.clinicalNotes}</p>
             </div>
@@ -370,14 +370,14 @@ export const TabularClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, Ta
         <div className="mt-8 pt-4 border-t-2 border-black text-xs print:text-xs">
           <div className="flex justify-between">
             <div>
-              <strong>Generat:</strong> {new Date().toLocaleDateString('ro-RO')} la {new Date().toLocaleTimeString('ro-RO')}
+              <strong>{t('compactSheet.generated')}:</strong> {new Date().toLocaleDateString('ro-RO')} la {new Date().toLocaleTimeString('ro-RO')}
             </div>
             <div>
-              <strong>Pagina:</strong> 1
+              <strong>{t('compactSheet.page')}:</strong> 1
             </div>
           </div>
           <div className="text-center mt-2">
-            <em>Această fișă trebuie completată și semnată înainte de administrarea tratamentului</em>
+            <em>{t('compactSheet.completionNote')}</em>
           </div>
         </div>
       </div>
