@@ -1,30 +1,19 @@
-/* Print optimizations for medical sheets - A4 Portrait format - Compact 08.08.2025 design */
+/* Ultra-compact medical sheet for A4 portrait printing - 08.08.2025 style */
 .medical-sheet-print {
-  font-family: 'Times New Roman', Times, serif;
-  line-height: 1.1;
-  color: #000 !important;
+  font-family: 'Arial', sans-serif;
+  line-height: 1.0;
+  color: #000;
   width: 210mm;
   min-height: 297mm;
-  padding: 10mm;
-  margin: 0 auto;
-  box-sizing: border-box;
+  font-size: 10px;
 }
 
 @media print {
-  @page {
-    size: A4 portrait;
-    margin: 10mm;
-  }
-  
   .medical-sheet-print {
-    -webkit-print-color-adjust: exact;
-    color-adjust: exact;
-    margin: 0;
-    padding: 8mm;
-    font-size: 9px;
-    line-height: 1.0;
-    width: 100%;
-    min-height: 100%;
+    page-size: A4 portrait;
+    margin: 8mm 6mm;
+    font-size: 7px;
+    line-height: 0.9;
   }
   
   /* Page breaks */
@@ -37,20 +26,21 @@
     page-break-inside: avoid;
   }
   
-  /* Compact table styling for print */
   .medical-sheet-print table {
-    border-collapse: collapse !important;
-    width: 100% !important;
-    margin-bottom: 0.5rem !important;
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 2px;
+    font-size: 6px;
   }
-  
+
   .medical-sheet-print th,
   .medical-sheet-print td {
-    border: 1px solid #000 !important;
-    padding: 1px 2px !important;
-    font-size: 8px !important;
-    vertical-align: top !important;
-    line-height: 1.0 !important;
+    border: 1px solid #333;
+    padding: 0.5px 1px;
+    text-align: left;
+    vertical-align: top;
+    font-size: 6px;
+    line-height: 0.9;
   }
   
   .medical-sheet-print th {
@@ -60,23 +50,18 @@
     font-size: 7px !important;
   }
   
-  /* Compact header styles - Romanian optimized - 08.08.2025 design */
   .medical-sheet-print h1 {
-    font-size: 14px !important;
-    font-weight: bold !important;
-    text-align: center !important;
-    margin-bottom: 6px !important;
-    border-bottom: 2px solid #000 !important;
-    padding-bottom: 3px !important;
+    font-size: 10px;
+    margin-bottom: 2px;
+    font-weight: bold;
   }
-  
+
   .medical-sheet-print h2 {
-    font-size: 10px !important;
-    font-weight: bold !important;
-    margin: 6px 0 3px 0 !important;
-    background-color: #f0f0f0 !important;
-    padding: 2px 4px !important;
-    border: 1px solid #000 !important;
+    font-size: 8px;
+    margin: 3px 0 1px 0;
+    background: #f0f0f0;
+    padding: 1px 2px;
+    font-weight: bold;
   }
   
   .medical-sheet-print h4 {
@@ -114,18 +99,16 @@
     gap: 0.25rem !important;
   }
   
-  /* Ultra compact spacing for 08.08.2025 design */
   .medical-sheet-print .mb-3 {
-    margin-bottom: 0.3rem !important;
+    margin-bottom: 3px;
   }
-  
-  .medical-sheet-print .space-y-2 > * + * {
-    margin-top: 0.15rem !important;
+
+  .medical-sheet-print .mb-2 {
+    margin-bottom: 2px;
   }
-  
-  /* Reduce table margins */
-  .medical-sheet-print table {
-    margin-bottom: 0.2rem !important;
+
+  .medical-sheet-print .mb-1 {
+    margin-bottom: 1px;
   }
 }
 

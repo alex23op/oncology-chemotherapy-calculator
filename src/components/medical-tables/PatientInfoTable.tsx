@@ -56,18 +56,18 @@ export const PatientInfoTable: React.FC<PatientInfoTableProps> = ({ patient, onP
     [
       { label: 'Clearance creatinină', value: `${patient.creatinineClearance} ml/min` },
       { label: 'Ciclu nr.', value: patient.cycleNumber?.toString() || 'N/A' },
-      { 
-        label: 'Data tratament', 
-        value: 'editable-date',
-        editableValue: patient.treatmentDate,
-        onEdit: (newDate: string) => onPatientUpdate?.({ treatmentDate: newDate })
-      },
-      { 
-        label: 'Data ciclu următor', 
-        value: 'editable-date',
-        editableValue: patient.nextCycleDate || '',
-        onEdit: (newDate: string) => onPatientUpdate?.({ nextCycleDate: newDate })
-      },
+        { 
+          label: 'Data tratament', 
+          value: 'editable-date',
+          editableValue: patient.treatmentDate,
+          onEdit: (newDate: string) => onPatientUpdate?.({ treatmentDate: newDate })
+        },
+        { 
+          label: 'Data ciclu următor', 
+          value: 'editable-date',
+          editableValue: patient.nextCycleDate || '',
+          onEdit: (newDate: string) => onPatientUpdate?.({ nextCycleDate: newDate })
+        },
       { label: '', value: '' }, // Empty cell for alignment
     ]
   ];
@@ -84,15 +84,15 @@ export const PatientInfoTable: React.FC<PatientInfoTableProps> = ({ patient, onP
                     {item.label}:
                   </TableCell>
                   <TableCell className="p-1 w-1/2 text-xs">
-                    {item.value === 'editable-date' ? (
-                      <EditableDateField
-                        value={item.editableValue}
-                        onChange={item.onEdit}
-                        className="w-full"
-                      />
-                    ) : (
-                      item.value
-                    )}
+                  {item.value === 'editable-date' ? (
+                    <EditableDateField
+                      value={item.editableValue || ''}
+                      onChange={item.onEdit || (() => {})}
+                      className="w-full"
+                    />
+                  ) : (
+                    item.value
+                  )}
                   </TableCell>
                 </TableRow>
               ) : null

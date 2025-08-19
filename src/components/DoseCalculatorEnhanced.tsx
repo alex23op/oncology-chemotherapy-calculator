@@ -43,6 +43,8 @@ interface EnhancedDoseCalculation extends DoseCalculationResult {
   selectedSolventType?: string;
   selectedVolume?: number;
   solvent?: string;
+  adjustmentNotes?: string;
+  preparationInstructions?: string;
 }
 
 const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
@@ -268,13 +270,15 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
         sex
       },
       regimen,
-      calculatedDrugs: Array.isArray(currentCalculations) ? currentCalculations : [],
-      emetogenicRisk: {
-        level: "moderate" as const,
-        justification: "Regim de chimioterapie standard",
-        acuteRisk: "Moderat",
-        delayedRisk: "Moderat"
-      },
+      calculatedDrugs: Array.isArray(currentCalculations) ? currentCalculations.map(calc => ({
+        ...calc.drug,
+        calculatedDose: calc.calculatedDose,
+        finalDose: calc.finalDose,
+        adjustmentNotes: calc.adjustmentNotes,
+        preparationInstructions: calc.preparationInstructions,
+        administrationDuration: calc.administrationDuration || calc.drug.administrationDuration,
+        solvent: calc.selectedSolventType || calc.solvent || 'Normal Saline 0.9%'
+      })) : [],
       premedications: {
         antiemetics: [],
         infusionReactionProphylaxis: [],
