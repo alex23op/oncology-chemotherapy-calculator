@@ -66,46 +66,12 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
   const { t } = useTranslation();
   const { state: persistedState } = useDataPersistence();
   
-  // Patient and treatment details state
-  const [patientName, setPatientName] = useState<string>("");
-  const [patientCNP, setPatientCNP] = useState<string>("");
-  const [cycleNumber, setCycleNumber] = useState<string>("");
-  const [observationNumber, setObservationNumber] = useState<string>("");
-  const [administrationDate, setAdministrationDate] = useState<Date>(new Date());
-  const [nextCycleDate, setNextCycleDate] = useState<Date | undefined>(undefined);
-  const [bsaCapEnabled, setBsaCapEnabled] = useState<boolean>(false);
+  // Use patient data from persistence context
+  const patientData = persistedState.patientData;
+  const effectiveBsa = patientData?.bsaCapEnabled ? Math.min(bsa, 2.0) : bsa;
+  
   const [isEditing, setIsEditing] = useState(false);
   const [editedCalculations, setEditedCalculations] = useState<EnhancedDoseCalculation[]>([]);
-
-  // Calculate effective BSA (with cap if enabled)
-  const effectiveBsa = useMemo(() => {
-    return bsaCapEnabled ? Math.min(bsa, 2.0) : bsa;
-  }, [bsa, bsaCapEnabled]);
-
-  // Calculate next cycle date automatically
-  const calculatedNextCycleDate = useMemo(() => {
-    if (!regimen || !administrationDate || !isValid(administrationDate)) return null;
-    
-    const schedule = regimen.schedule.toLowerCase();
-    let daysToAdd = 14; // Default: 2 weeks
-    
-    if (schedule.includes("3 weeks") || schedule.includes("21 days")) {
-      daysToAdd = 21;
-    } else if (schedule.includes("4 weeks") || schedule.includes("28 days")) {
-      daysToAdd = 28;
-    } else if (schedule.includes("weekly") || schedule.includes("7 days")) {
-      daysToAdd = 7;
-    }
-    
-    return addDays(administrationDate, daysToAdd);
-  }, [regimen, administrationDate]);
-
-  // Update next cycle date when calculated date changes
-  useEffect(() => {
-    if (calculatedNextCycleDate && !nextCycleDate) {
-      setNextCycleDate(calculatedNextCycleDate);
-    }
-  }, [calculatedNextCycleDate]);
 
   // Memoized calculations based on effective BSA
   const calculations = useMemo(() => {
@@ -143,46 +109,6 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
 
   // Get current calculations (edited or original)
   const currentCalculations = isEditing ? editedCalculations : calculations;
-
-  // Validation functions
-  const handleCNPChange = useCallback((value: string) => {
-    const sanitized = sanitizeCNP(value);
-    setPatientCNP(sanitized);
-    
-    if (sanitized && !validateCNP(sanitized).isValid) {
-      toast.error(t('doseCalculator.invalidCNP', 'Vă rugăm să introduceți un CNP valid de 13 cifre'));
-    }
-  }, [t]);
-
-  const validateCycleNumber = useCallback((cycle: string): boolean => {
-    if (!regimen || !cycle) return true;
-    const cycleNum = parseInt(cycle, 10);
-    if (isNaN(cycleNum) || cycleNum < 1) return false;
-    
-    const cycles = regimen.cycles;
-    if (typeof cycles === "number") {
-      return cycleNum <= cycles;
-    } else if (typeof cycles === "string") {
-      if (cycles.includes("-")) {
-        const parts = cycles.split("-");
-        if (parts.length === 2) {
-          const maxCycle = parseInt(parts[1], 10);
-          if (!isNaN(maxCycle)) {
-            return cycleNum <= maxCycle;
-          }
-        }
-      }
-      return true;
-    }
-    return true;
-  }, [regimen]);
-
-  const handleCycleNumberChange = useCallback((value: string) => {
-    setCycleNumber(value);
-    if (value && !validateCycleNumber(value)) {
-      toast.error(t('doseCalculator.invalidCycle', 'Număr ciclu invalid pentru regim'));
-    }
-  }, [validateCycleNumber, t]);
 
   // Handle editing functions with bidirectional synchronization
   const handleEditCalculation = useCallback((index: number, field: string, value: any) => {
@@ -242,12 +168,17 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
   }, [calculations]);
 
   const handleGenerateSheet = useCallback(() => {
-    if (!patientCNP) {
+    if (!patientData) {
+      toast.error('Vă rugăm să completați datele pacientului în secțiunea "Date pacient"');
+      return;
+    }
+
+    if (!patientData.cnp) {
       toast.error('Vă rugăm să introduceți CNP-ul pacientului');
       return;
     }
     
-    if (!patientName) {
+    if (!patientData.fullName) {
       toast.error('Vă rugăm să introduceți numele pacientului');
       return;
     }
@@ -265,12 +196,12 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
 
     const treatmentData = {
       patient: {
-        fullName: patientName,
-        cnp: patientCNP,
-        foNumber: observationNumber,
-        cycleNumber: parseInt(cycleNumber) || 1,
-        treatmentDate: administrationDate.toISOString(),
-        nextCycleDate: nextCycleDate?.toISOString(),
+        fullName: patientData.fullName,
+        cnp: patientData.cnp,
+        foNumber: patientData.foNumber,
+        cycleNumber: patientData.cycleNumber || 1,
+        treatmentDate: patientData.treatmentDate,
+        nextCycleDate: patientData.nextCycleDate,
         age,
         weight,
         height,
@@ -312,15 +243,13 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
       clinicalNotes: "",
       preparingPharmacist: "",
       verifyingNurse: "",
-      administrationDate,
-      nextCycleDate,
-      bsaCapEnabled,
+      bsaCapEnabled: patientData.bsaCapEnabled,
       effectiveBsa
     };
 
     onGenerateSheet?.(treatmentData);
     toast.success('Fișa de tratament a fost generată cu succes');
-  }, [patientCNP, patientName, currentCalculations, observationNumber, cycleNumber, age, weight, height, effectiveBsa, creatinineClearance, sex, regimen, administrationDate, nextCycleDate, bsaCapEnabled, onGenerateSheet]);
+  }, [patientData, currentCalculations, age, weight, height, effectiveBsa, creatinineClearance, sex, regimen, onGenerateSheet, persistedState.supportiveData, calculations]);
 
   if (!regimen) {
     return (
@@ -342,173 +271,7 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
       </CardHeader>
 
       <CardContent className="space-y-6">
-        {/* Patient Details Form */}
-        <div className="space-y-4">
-          <h3 className="text-base font-semibold text-primary">
-            {t('doseCalculator.patientDetailsTitle', 'Detalii Pacient și Tratament')}
-          </h3>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Patient Name */}
-            <div>
-              <Label htmlFor="patientName">
-                {t('doseCalculator.fullNameLabel', 'Nume și prenume')} *
-              </Label>
-              <Input
-                id="patientName"
-                value={patientName}
-                onChange={(e) => setPatientName(e.target.value)}
-                placeholder={t('doseCalculator.fullNamePlaceholder', 'Introduceți numele complet')}
-                className="mt-1"
-                required
-              />
-            </div>
-
-            {/* CNP */}
-            <div>
-              <Label htmlFor="cnp">
-                {t('doseCalculator.cnpLabel', 'CNP')} *
-              </Label>
-              <Input
-                id="cnp"
-                value={patientCNP}
-                onChange={(e) => handleCNPChange(e.target.value)}
-                placeholder={t('doseCalculator.cnpPlaceholder', 'Introduceți CNP-ul de 13 cifre')}
-                className="mt-1"
-                maxLength={13}
-                required
-              />
-              {patientCNP && !validateCNP(patientCNP).isValid && (
-                <p className="text-sm text-destructive mt-1">
-                  {t('doseCalculator.invalidCNP', 'Vă rugăm să introduceți un CNP valid de 13 cifre')}
-                </p>
-              )}
-            </div>
-
-            {/* Observation Number */}
-            <div>
-              <Label htmlFor="observationNumber">
-                {t('doseCalculator.foNumberLabel', 'Număr F.O.')} *
-              </Label>
-              <Input
-                id="observationNumber"
-                value={observationNumber}
-                onChange={(e) => setObservationNumber(e.target.value)}
-                placeholder={t('doseCalculator.foNumberPlaceholder', 'Introduceți numărul foii de observație')}
-                className="mt-1"
-                required
-              />
-            </div>
-
-            {/* Cycle Number */}
-            <div>
-              <Label htmlFor="cycleNumber">
-                {t('doseCalculator.cycleLabel', 'Număr ciclu')} *
-              </Label>
-              <Input
-                id="cycleNumber"
-                type="number"
-                value={cycleNumber}
-                onChange={(e) => handleCycleNumberChange(e.target.value)}
-                placeholder="1"
-                className="mt-1"
-                min="1"
-                required
-              />
-              {regimen && (
-                <p className="text-sm text-muted-foreground mt-1">
-                  Total cicluri: {regimen.cycles}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Date Fields */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Administration Date */}
-            <div>
-              <Label>
-                {t('doseCalculator.treatmentDateLabel', 'Data administrării')} *
-              </Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full mt-1 justify-start text-left font-normal",
-                      !administrationDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {administrationDate ? format(administrationDate, "dd/MM/yyyy") : "Selectați data"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={administrationDate}
-                    onSelect={(date) => date && setAdministrationDate(date)}
-                    initialFocus
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            {/* Next Cycle Date */}
-            <div>
-              <Label>
-                {t('doseCalculator.nextCycleDateLabel', 'Data următorului ciclu')}
-              </Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full mt-1 justify-start text-left font-normal",
-                      !nextCycleDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {nextCycleDate ? format(nextCycleDate, "dd/MM/yyyy") : "Selectați data"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={nextCycleDate}
-                    onSelect={setNextCycleDate}
-                    initialFocus
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
-              {calculatedNextCycleDate && (
-                <p className="text-sm text-muted-foreground mt-1">
-                  Sugerat automat: {format(calculatedNextCycleDate, "dd/MM/yyyy")}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* BSA Cap Option */}
-          <div className="flex items-center space-x-2 p-3 bg-muted/30 rounded-lg">
-            <Checkbox
-              id="bsaCapEnabled"
-              checked={bsaCapEnabled}
-              onCheckedChange={(checked) => setBsaCapEnabled(checked === true)}
-            />
-            <Label htmlFor="bsaCapEnabled" className="text-sm">
-              Aplică prag BSA 2.0 m²
-            </Label>
-            <div className="ml-auto text-sm text-muted-foreground">
-              BSA calculată: {bsa.toFixed(2)} m² | 
-              BSA folosită: {effectiveBsa.toFixed(2)} m²
-            </div>
-          </div>
-        </div>
-
-        {/* Drug Calculations Summary */}
+        {/* Drug Calculations Summary - Remove patient details form */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-base font-semibold">
@@ -684,7 +447,7 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
           <Button
             onClick={handleGenerateSheet}
             className="flex items-center gap-2"
-            disabled={!patientCNP || !patientName || !currentCalculations.length}
+            disabled={!patientData?.cnp || !patientData?.fullName || !currentCalculations.length}
           >
             <FileText className="h-4 w-4" />
             Generează fișa tratament

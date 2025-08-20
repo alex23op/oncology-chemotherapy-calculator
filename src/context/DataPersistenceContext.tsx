@@ -15,13 +15,14 @@ interface PatientData {
   creatinineUnit: string;
   bsa: number;
   creatinineClearance: number;
-  // Additional dose calculator fields
+  // Patient identification fields
   fullName: string;
   cnp: string;
   foNumber: string;
-  cycleNumber: string;
-  treatmentDate: Date;
-  nextCycleDate?: Date;
+  // Treatment details fields
+  cycleNumber: number;
+  treatmentDate: string; // ISO date string
+  nextCycleDate?: string; // ISO date string
   bsaCapEnabled: boolean;
 }
 
@@ -119,28 +120,14 @@ const parseStoredDate = (dateStr: string | undefined): Date | undefined => {
 
 // Helper to serialize dates for localStorage
 const serializeForStorage = (state: PersistedState): string => {
-  const serializedState = {
-    ...state,
-    patientData: state.patientData ? {
-      ...state.patientData,
-      treatmentDate: state.patientData.treatmentDate?.toISOString(),
-      nextCycleDate: state.patientData.nextCycleDate?.toISOString(),
-    } : undefined
-  };
-  return JSON.stringify(serializedState);
+  // PatientData dates are already stored as ISO strings, no conversion needed
+  return JSON.stringify(state);
 };
 
 // Helper to deserialize dates from localStorage
 const deserializeFromStorage = (data: string): PersistedState => {
-  const parsed = JSON.parse(data);
-  if (parsed.patientData) {
-    parsed.patientData = {
-      ...parsed.patientData,
-      treatmentDate: parseStoredDate(parsed.patientData.treatmentDate),
-      nextCycleDate: parseStoredDate(parsed.patientData.nextCycleDate),
-    };
-  }
-  return parsed;
+  // PatientData dates are stored as ISO strings, no conversion needed
+  return JSON.parse(data);
 };
 
 export const DataPersistenceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {

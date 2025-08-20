@@ -6,13 +6,21 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Calculator, User, AlertTriangle, CheckCircle } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Separator } from "@/components/ui/separator";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calculator, User, AlertTriangle, CheckCircle, CalendarIcon } from "lucide-react";
 import { validatePatientData, sanitizeInput, showValidationToast, ValidationResult } from "@/utils/inputValidation";
 import { ClinicalErrorBoundary } from "@/components/ClinicalErrorBoundary";
 import { useDebouncedCalculation, usePerformanceMonitoring } from "@/hooks/usePerformanceOptimization";
 import { toKg } from "@/utils/units";
 import { logger } from '@/utils/logger';
 import { useDataPersistence } from '@/context/DataPersistenceContext';
+import { sanitizeCNP, validateCNP } from "@/utils/cnp";
+import { format, addDays, isValid, parseISO } from "date-fns";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface PatientData {
   weight: string;
@@ -23,18 +31,30 @@ interface PatientData {
   weightUnit: string;
   heightUnit: string;
   creatinineUnit: string;
+  // Patient identification fields
+  fullName: string;
+  cnp: string;
+  foNumber: string;
+  // Treatment details fields
+  cycleNumber: number;
+  treatmentDate: string; // ISO date string
+  nextCycleDate?: string; // ISO date string
+  bsaCapEnabled: boolean;
 }
 
 interface PatientFormProps {
-  onPatientDataChange: (data: PatientData & { bsa: number; creatinineClearance: number }) => void;
+  onPatientDataChange: (data: PatientData & { bsa: number; creatinineClearance: number; effectiveBsa: number }) => void;
+  selectedRegimen?: { schedule?: string; cycles?: string | number } | null;
 }
 
-export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
+export const PatientForm = ({ onPatientDataChange, selectedRegimen }: PatientFormProps) => {
   const { t } = useTranslation();
-  const { state } = useDataPersistence();
+  const { state, setPatientData: savePatientData } = useDataPersistence();
   
   // Initialize with persistent data if available
-  const [patientData, setPatientData] = useState<PatientData>(() => {
+  const [localPatientData, setLocalPatientData] = useState<PatientData>(() => {
+    const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+    
     if (state.patientData) {
       return {
         weight: state.patientData.weight || "",
@@ -44,7 +64,14 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
         creatinine: state.patientData.creatinine || "",
         weightUnit: state.patientData.weightUnit || "kg",
         heightUnit: state.patientData.heightUnit || "cm",
-        creatinineUnit: state.patientData.creatinineUnit || "mg/dL"
+        creatinineUnit: state.patientData.creatinineUnit || "mg/dL",
+        fullName: state.patientData.fullName || "",
+        cnp: state.patientData.cnp || "",
+        foNumber: state.patientData.foNumber || "",
+        cycleNumber: state.patientData.cycleNumber || 1,
+        treatmentDate: state.patientData.treatmentDate || currentDate,
+        nextCycleDate: state.patientData.nextCycleDate,
+        bsaCapEnabled: state.patientData.bsaCapEnabled || false
       };
     }
     return {
@@ -55,7 +82,14 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
       creatinine: "",
       weightUnit: "kg",
       heightUnit: "cm",
-      creatinineUnit: "mg/dL"
+      creatinineUnit: "mg/dL",
+      fullName: "",
+      cnp: "",
+      foNumber: "",
+      cycleNumber: 1,
+      treatmentDate: currentDate,
+      nextCycleDate: undefined,
+      bsaCapEnabled: false
     };
   });
 
@@ -141,11 +175,14 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
     }
   }, 300, []);
 
-  const handleInputChange = useCallback((field: keyof PatientData, value: string) => {
-    // Sanitize input to prevent XSS
-    const sanitizedValue = sanitizeInput(value);
-    const newData = { ...patientData, [field]: sanitizedValue };
-    setPatientData(newData);
+  const handleInputChange = useCallback((field: keyof PatientData, value: string | number | boolean) => {
+    // Sanitize input to prevent XSS for string values
+    const sanitizedValue = typeof value === 'string' ? sanitizeInput(value) : value;
+    const newData = { ...localPatientData, [field]: sanitizedValue };
+    setLocalPatientData(newData);
+    
+    // Save to persistent storage
+    savePatientData(newData);
     
     // Immediately call parent callback for real-time updates
     const weight = parseFloat(newData.weight || "0");
@@ -164,6 +201,9 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
       );
     }
     
+    // Calculate effective BSA (with cap if enabled)
+    const effectiveBsa = newData.bsaCapEnabled ? Math.min(bsa, 2.0) : bsa;
+    
     // Always call parent callback immediately
     const weightNum = parseFloat(newData.weight || "0");
     const normalizedWeightKg = newData.weight ? toKg(weightNum, newData.weightUnit as 'kg' | 'lbs') : 0;
@@ -172,12 +212,13 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
       weight: newData.weight ? String(normalizedWeightKg) : newData.weight, 
       weightUnit: "kg", 
       bsa, 
-      creatinineClearance 
+      creatinineClearance,
+      effectiveBsa
     });
     
     // Trigger debounced validation
     debouncedCalculation(newData);
-  }, [patientData, debouncedCalculation, calculateBSA, calculateCreatinineClearance, onPatientDataChange]);
+  }, [localPatientData, debouncedCalculation, calculateBSA, calculateCreatinineClearance, onPatientDataChange, savePatientData]);
 
   // Show validation toast when validation changes
   useEffect(() => {
@@ -188,36 +229,95 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
 
   // Initialize parent with existing data on mount
   useEffect(() => {
-    if (state.patientData && patientData.weight && patientData.height) {
-      const weight = parseFloat(patientData.weight || "0");
-      const height = parseFloat(patientData.height || "0");
-      const age = parseFloat(patientData.age || "0");
-      const creatinine = parseFloat(patientData.creatinine || "0");
+    if (state.patientData && localPatientData.weight && localPatientData.height) {
+      const weight = parseFloat(localPatientData.weight || "0");
+      const height = parseFloat(localPatientData.height || "0");
+      const age = parseFloat(localPatientData.age || "0");
+      const creatinine = parseFloat(localPatientData.creatinine || "0");
       
-      const bsa = patientData.weight && patientData.height ? 
-        calculateBSA(weight, height, patientData.weightUnit, patientData.heightUnit) : 0;
+      const bsa = localPatientData.weight && localPatientData.height ? 
+        calculateBSA(weight, height, localPatientData.weightUnit, localPatientData.heightUnit) : 0;
       
       let creatinineClearance = 0;
-      if (patientData.age && patientData.weight && patientData.creatinine && patientData.sex) {
+      if (localPatientData.age && localPatientData.weight && localPatientData.creatinine && localPatientData.sex) {
         creatinineClearance = calculateCreatinineClearance(
-          age, weight, creatinine, patientData.sex, 
-          patientData.weightUnit, patientData.creatinineUnit
+          age, weight, creatinine, localPatientData.sex, 
+          localPatientData.weightUnit, localPatientData.creatinineUnit
         );
       }
       
-      const weightNum = parseFloat(patientData.weight || "0");
-      const normalizedWeightKg = patientData.weight ? toKg(weightNum, patientData.weightUnit as 'kg' | 'lbs') : 0;
+      // Calculate effective BSA (with cap if enabled)
+      const effectiveBsa = localPatientData.bsaCapEnabled ? Math.min(bsa, 2.0) : bsa;
+      
+      const weightNum = parseFloat(localPatientData.weight || "0");
+      const normalizedWeightKg = localPatientData.weight ? toKg(weightNum, localPatientData.weightUnit as 'kg' | 'lbs') : 0;
       onPatientDataChange({ 
-        ...patientData, 
-        weight: patientData.weight ? String(normalizedWeightKg) : patientData.weight, 
+        ...localPatientData, 
+        weight: localPatientData.weight ? String(normalizedWeightKg) : localPatientData.weight, 
         weightUnit: "kg", 
         bsa, 
-        creatinineClearance 
+        creatinineClearance,
+        effectiveBsa
       });
     }
   }, []); // Run only on mount - empty dependency array
 
-  const isFormValid = patientData.weight && patientData.height && patientData.age && patientData.sex;
+  // Auto-calculate next cycle date based on regimen schedule
+  useEffect(() => {
+    if (selectedRegimen && localPatientData.treatmentDate && !localPatientData.nextCycleDate) {
+      const treatmentDate = parseISO(localPatientData.treatmentDate);
+      
+      if (isValid(treatmentDate)) {
+        const schedule = selectedRegimen.schedule?.toLowerCase() || '';
+        let daysToAdd = 14; // Default: 2 weeks
+        
+        if (schedule.includes("3 weeks") || schedule.includes("21 days")) {
+          daysToAdd = 21;
+        } else if (schedule.includes("4 weeks") || schedule.includes("28 days")) {
+          daysToAdd = 28;
+        } else if (schedule.includes("weekly") || schedule.includes("7 days")) {
+          daysToAdd = 7;
+        }
+        
+        const calculatedNextDate = addDays(treatmentDate, daysToAdd);
+        const nextDateISO = calculatedNextDate.toISOString().split('T')[0];
+        
+        handleInputChange('nextCycleDate', nextDateISO);
+      }
+    }
+  }, [selectedRegimen, localPatientData.treatmentDate, localPatientData.nextCycleDate, handleInputChange]);
+
+  // CNP validation handler
+  const handleCNPChange = useCallback((value: string) => {
+    const sanitized = sanitizeCNP(value);
+    handleInputChange('cnp', sanitized);
+    
+    if (sanitized && !validateCNP(sanitized).isValid) {
+      toast.error('Vă rugăm să introduceți un CNP valid de 13 cifre');
+    }
+  }, [handleInputChange]);
+
+  // Cycle number validation
+  const handleCycleChange = useCallback((value: string) => {
+    const cycleNum = parseInt(value, 10);
+    if (!isNaN(cycleNum) && cycleNum > 0) {
+      handleInputChange('cycleNumber', cycleNum);
+      
+      // Validate against regimen max cycles
+      if (selectedRegimen?.cycles) {
+        const maxCycles = typeof selectedRegimen.cycles === 'number' 
+          ? selectedRegimen.cycles 
+          : parseInt(selectedRegimen.cycles.split('-')[1] || selectedRegimen.cycles, 10);
+        
+        if (maxCycles && cycleNum > maxCycles) {
+          toast.error(`Numărul ciclului depășește maximul permis (${maxCycles}) pentru acest regim`);
+        }
+      }
+    }
+  }, [selectedRegimen, handleInputChange]);
+
+  const isFormValid = localPatientData.weight && localPatientData.height && localPatientData.age && localPatientData.sex && 
+                     localPatientData.fullName && localPatientData.cnp && localPatientData.foNumber && localPatientData.treatmentDate;
 
   return (
     <ClinicalErrorBoundary context="PatientForm">
@@ -252,105 +352,302 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
             </Alert>
           )}
         </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label htmlFor="weight">{t('patientForm.weight')}</Label>
-            <div className="flex gap-2">
+      <CardContent className="space-y-6">
+        {/* Section 1: Date de identificare pacient */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <User className="h-4 w-4 text-primary" />
+            <h3 className="text-lg font-medium text-primary">Date de identificare pacient</h3>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Full Name */}
+            <div className="space-y-2">
+              <Label htmlFor="fullName">Nume și prenume *</Label>
               <Input
-                id="weight"
-                type="number"
-                placeholder={t('patientForm.placeholders.enterWeight')}
-                value={patientData.weight}
-                onChange={(e) => handleInputChange("weight", e.target.value)}
-                className="flex-1"
+                id="fullName"
+                value={localPatientData.fullName}
+                onChange={(e) => handleInputChange("fullName", e.target.value)}
+                placeholder="Introduceți numele complet"
+                required
               />
-              <Select value={patientData.weightUnit} onValueChange={(value) => handleInputChange("weightUnit", value)}>
-                <SelectTrigger className="w-20">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="kg">{t('patientForm.units.kg')}</SelectItem>
-                  <SelectItem value="lbs">{t('patientForm.units.lbs')}</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="height">{t('patientForm.height')}</Label>
-            <div className="flex gap-2">
+            {/* CNP */}
+            <div className="space-y-2">
+              <Label htmlFor="cnp">CNP *</Label>
               <Input
-                id="height"
-                type="number"
-                placeholder={t('patientForm.placeholders.enterHeight')}
-                value={patientData.height}
-                onChange={(e) => handleInputChange("height", e.target.value)}
-                className="flex-1"
+                id="cnp"
+                value={localPatientData.cnp}
+                onChange={(e) => handleCNPChange(e.target.value)}
+                placeholder="Introduceți CNP-ul de 13 cifre"
+                maxLength={13}
+                required
               />
-              <Select value={patientData.heightUnit} onValueChange={(value) => handleInputChange("heightUnit", value)}>
-                <SelectTrigger className="w-20">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="cm">{t('patientForm.units.cm')}</SelectItem>
-                  <SelectItem value="inches">{t('patientForm.units.in')}</SelectItem>
-                </SelectContent>
-              </Select>
+              {localPatientData.cnp && !validateCNP(localPatientData.cnp).isValid && (
+                <p className="text-sm text-destructive">
+                  Vă rugăm să introduceți un CNP valid de 13 cifre
+                </p>
+              )}
             </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="age">{t('patientForm.age')}</Label>
-            <Input
-              id="age"
-              type="number"
-              placeholder={t('patientForm.placeholders.enterAge')}
-              value={patientData.age}
-              onChange={(e) => handleInputChange("age", e.target.value)}
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="sex">{t('patientForm.sex')}</Label>
-            <Select value={patientData.sex} onValueChange={(value) => handleInputChange("sex", value)}>
-              <SelectTrigger>
-                <SelectValue placeholder={t('patientForm.placeholders.selectSex')} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="male">{t('patientForm.male')}</SelectItem>
-                <SelectItem value="female">{t('patientForm.female')}</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="creatinine">{t('patientForm.creatinine')}</Label>
-            <div className="flex gap-2">
+            {/* F.O. Number */}
+            <div className="space-y-2">
+              <Label htmlFor="foNumber">Număr F.O. *</Label>
               <Input
-                id="creatinine"
-                type="number"
-                step="0.1"
-                placeholder={t('patientForm.placeholders.enterCreatinine')}
-                value={patientData.creatinine}
-                onChange={(e) => handleInputChange("creatinine", e.target.value)}
-                className="flex-1"
+                id="foNumber"
+                value={localPatientData.foNumber}
+                onChange={(e) => handleInputChange("foNumber", e.target.value)}
+                placeholder="Introduceți numărul foii de observație"
+                required
               />
-              <Select value={patientData.creatinineUnit} onValueChange={(value) => handleInputChange("creatinineUnit", value)}>
-                <SelectTrigger className="w-24">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="mg/dL">{t('patientForm.units.mgdl')}</SelectItem>
-                  <SelectItem value="μmol/L">{t('patientForm.units.umoll')}</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
           </div>
         </div>
 
-        {patientData.weight && patientData.height && (
-          <div className="mt-4 space-y-4">
+        <Separator />
+
+        {/* Section 2: Basic Patient Data */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <Calculator className="h-4 w-4 text-primary" />
+            <h3 className="text-lg font-medium text-primary">Date antropometrice și clinice</h3>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="weight">{t('patientForm.weight')}</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="weight"
+                  type="number"
+                  placeholder={t('patientForm.placeholders.enterWeight')}
+                  value={localPatientData.weight}
+                  onChange={(e) => handleInputChange("weight", e.target.value)}
+                  className="flex-1"
+                />
+                <Select value={localPatientData.weightUnit} onValueChange={(value) => handleInputChange("weightUnit", value)}>
+                  <SelectTrigger className="w-20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="kg">{t('patientForm.units.kg')}</SelectItem>
+                    <SelectItem value="lbs">{t('patientForm.units.lbs')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="height">{t('patientForm.height')}</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="height"
+                  type="number"
+                  placeholder={t('patientForm.placeholders.enterHeight')}
+                  value={localPatientData.height}
+                  onChange={(e) => handleInputChange("height", e.target.value)}
+                  className="flex-1"
+                />
+                <Select value={localPatientData.heightUnit} onValueChange={(value) => handleInputChange("heightUnit", value)}>
+                  <SelectTrigger className="w-20">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="cm">{t('patientForm.units.cm')}</SelectItem>
+                    <SelectItem value="inches">{t('patientForm.units.in')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="age">{t('patientForm.age')}</Label>
+              <Input
+                id="age"
+                type="number"
+                placeholder={t('patientForm.placeholders.enterAge')}
+                value={localPatientData.age}
+                onChange={(e) => handleInputChange("age", e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="sex">{t('patientForm.sex')}</Label>
+              <Select value={localPatientData.sex} onValueChange={(value) => handleInputChange("sex", value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder={t('patientForm.placeholders.selectSex')} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="male">{t('patientForm.male')}</SelectItem>
+                  <SelectItem value="female">{t('patientForm.female')}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="creatinine">{t('patientForm.creatinine')}</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="creatinine"
+                  type="number"
+                  step="0.1"
+                  placeholder={t('patientForm.placeholders.enterCreatinine')}
+                  value={localPatientData.creatinine}
+                  onChange={(e) => handleInputChange("creatinine", e.target.value)}
+                  className="flex-1"
+                />
+                <Select value={localPatientData.creatinineUnit} onValueChange={(value) => handleInputChange("creatinineUnit", value)}>
+                  <SelectTrigger className="w-24">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="mg/dL">{t('patientForm.units.mgdl')}</SelectItem>
+                    <SelectItem value="μmol/L">{t('patientForm.units.umoll')}</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <Separator />
+
+        {/* Section 3: Detalii pacient și tratament */}
+        <div className="space-y-4">
+          <div className="flex items-center gap-2">
+            <CalendarIcon className="h-4 w-4 text-primary" />
+            <h3 className="text-lg font-medium text-primary">Detalii pacient și tratament</h3>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Cycle Number */}
+            <div className="space-y-2">
+              <Label htmlFor="cycleNumber">Număr ciclu *</Label>
+              <Input
+                id="cycleNumber"
+                type="number"
+                value={localPatientData.cycleNumber}
+                onChange={(e) => handleCycleChange(e.target.value)}
+                placeholder="1"
+                min="1"
+                required
+              />
+              {selectedRegimen && (
+                <p className="text-sm text-muted-foreground">
+                  Total cicluri: {selectedRegimen.cycles}
+                </p>
+              )}
+            </div>
+
+            {/* Treatment Date */}
+            <div className="space-y-2">
+              <Label>Data administrării *</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !localPatientData.treatmentDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {localPatientData.treatmentDate 
+                      ? format(parseISO(localPatientData.treatmentDate), "dd/MM/yyyy") 
+                      : "Selectați data"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={localPatientData.treatmentDate ? parseISO(localPatientData.treatmentDate) : undefined}
+                    onSelect={(date) => date && handleInputChange('treatmentDate', date.toISOString().split('T')[0])}
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {/* Next Cycle Date */}
+            <div className="space-y-2">
+              <Label>Data următorului ciclu (sugerată automat, editabilă)</Label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !localPatientData.nextCycleDate && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {localPatientData.nextCycleDate 
+                      ? format(parseISO(localPatientData.nextCycleDate), "dd/MM/yyyy") 
+                      : "Selectați data"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={localPatientData.nextCycleDate ? parseISO(localPatientData.nextCycleDate) : undefined}
+                    onSelect={(date) => date && handleInputChange('nextCycleDate', date.toISOString().split('T')[0])}
+                    initialFocus
+                    className="pointer-events-auto"
+                  />
+                </PopoverContent>
+              </Popover>
+              {selectedRegimen && localPatientData.treatmentDate && (
+                <p className="text-sm text-muted-foreground">
+                  Automat calculată bazată pe regimul selectat
+                </p>
+              )}
+            </div>
+
+            {/* BSA Cap Option */}
+            <div className="space-y-2">
+              <div className="flex items-center space-x-2 p-3 bg-muted/30 rounded-lg">
+                <Checkbox
+                  id="bsaCapEnabled"
+                  checked={localPatientData.bsaCapEnabled}
+                  onCheckedChange={(checked) => handleInputChange('bsaCapEnabled', checked === true)}
+                />
+                <Label htmlFor="bsaCapEnabled" className="text-sm font-medium">
+                  Aplică prag BSA 2.0 m²
+                </Label>
+              </div>
+              {localPatientData.weight && localPatientData.height && (
+                <div className="text-sm text-muted-foreground pl-3">
+                  BSA calculată: {calculateBSA(
+                    parseFloat(localPatientData.weight),
+                    parseFloat(localPatientData.height),
+                    localPatientData.weightUnit,
+                    localPatientData.heightUnit
+                  ).toFixed(2)} m² | 
+                  BSA folosită: {localPatientData.bsaCapEnabled 
+                    ? Math.min(calculateBSA(
+                        parseFloat(localPatientData.weight),
+                        parseFloat(localPatientData.height),
+                        localPatientData.weightUnit,
+                        localPatientData.heightUnit
+                      ), 2.0).toFixed(2)
+                    : calculateBSA(
+                        parseFloat(localPatientData.weight),
+                        parseFloat(localPatientData.height),
+                        localPatientData.weightUnit,
+                        localPatientData.heightUnit
+                      ).toFixed(2)} m²
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        <Separator />
+
+        {localPatientData.weight && localPatientData.height && (
+          <div className="space-y-4">
             <div className={`p-4 rounded-lg border ${
               validation.isValid ? 'bg-success/10 border-success/20' : 'bg-warning/10 border-warning/20'
             }`}>
@@ -363,10 +660,10 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
               </div>
               <p className={`text-2xl font-bold ${validation.isValid ? 'text-success' : 'text-warning'}`}>
                 {calculateBSA(
-                  parseFloat(patientData.weight),
-                  parseFloat(patientData.height),
-                  patientData.weightUnit,
-                  patientData.heightUnit
+                  parseFloat(localPatientData.weight),
+                  parseFloat(localPatientData.height),
+                  localPatientData.weightUnit,
+                  localPatientData.heightUnit
                 )} m²
               </p>
               <p className="text-sm text-muted-foreground mt-1">
@@ -374,7 +671,7 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
               </p>
             </div>
             
-            {patientData.age && patientData.creatinine && patientData.sex && (
+            {localPatientData.age && localPatientData.creatinine && localPatientData.sex && (
               <div className={`p-4 rounded-lg border ${
                 validation.isValid ? 'bg-success/10 border-success/20' : 'bg-warning/10 border-warning/20'
               }`}>
@@ -387,12 +684,12 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
                 </div>
                 <p className={`text-2xl font-bold ${validation.isValid ? 'text-success' : 'text-warning'}`}>
                   {calculateCreatinineClearance(
-                    parseFloat(patientData.age),
-                    parseFloat(patientData.weight),
-                    parseFloat(patientData.creatinine),
-                    patientData.sex,
-                    patientData.weightUnit,
-                    patientData.creatinineUnit
+                    parseFloat(localPatientData.age),
+                    parseFloat(localPatientData.weight),
+                    parseFloat(localPatientData.creatinine),
+                    localPatientData.sex,
+                    localPatientData.weightUnit,
+                    localPatientData.creatinineUnit
                   )} mL/min
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
