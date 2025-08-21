@@ -24,11 +24,11 @@ export const ChemotherapyProtocolTable: React.FC<ChemotherapyProtocolTableProps>
       <Table className="w-full border-collapse border border-gray-300">
         <TableHeader>
           <TableRow className="bg-gray-100">
-            <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center w-20">MEDICAMENT</TableHead>
+            <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center">MEDICAMENT</TableHead>
             <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center w-16">DOZĂ</TableHead>
-            <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center w-20">SOLVENȚI/<br/>DILUANȚI</TableHead>
-            <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center w-16">DURATA<br/>ADM.</TableHead>
-            <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center">OBSERVAȚII SUPLIMENTARE</TableHead>
+            <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center w-20">SOLVENȚI</TableHead>
+            <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center w-16">DURATĂ ADMINISTRARE</TableHead>
+            <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center">OBSERVAȚII</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -41,9 +41,6 @@ export const ChemotherapyProtocolTable: React.FC<ChemotherapyProtocolTableProps>
               <TableCell className="border border-gray-300 p-0.5 text-xs text-center">
                 <div className="font-medium">{drug.finalDose} mg</div>
                 <div className="text-gray-600 text-xs">({drug.calculatedDose} mg/m²)</div>
-                {drug.adjustmentNotes && (
-                  <div className="text-gray-600 text-xs">{drug.adjustmentNotes}</div>
-                )}
               </TableCell>
               <TableCell className="border border-gray-300 p-0.5 text-xs text-center">
                 <div>{drug.solvent}</div>
@@ -53,12 +50,9 @@ export const ChemotherapyProtocolTable: React.FC<ChemotherapyProtocolTableProps>
               </TableCell>
               <TableCell className="border border-gray-300 p-0.5 text-xs">
                 <div className="space-y-0.5">
-                  {drug.preparationInstructions && (
-                    <div>{drug.preparationInstructions}</div>
-                  )}
-                  {drug.notes && (
-                    <div>{drug.notes}</div>
-                  )}
+                  {drug.adjustmentNotes && <div>{drug.adjustmentNotes}</div>}
+                  {drug.preparationInstructions && <div>{drug.preparationInstructions}</div>}
+                  {drug.notes && <div>{drug.notes}</div>}
                   {(drug.monitoring && Array.isArray(drug.monitoring) && drug.monitoring.length > 0) && (
                     <div className="text-gray-600">{drug.monitoring.join(', ')}</div>
                   )}

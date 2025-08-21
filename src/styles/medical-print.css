@@ -1,73 +1,59 @@
-/* Ultra-compact medical sheet for A4 portrait printing - 08.08.2025 style */
+/* Ultra-compact medical sheet for A4 portrait printing - New Ultra Design */
 .medical-sheet-print {
   font-family: 'Arial', sans-serif;
-  line-height: 1.0;
+  line-height: 0.9;
   color: #000;
   width: 210mm;
   min-height: 297mm;
-  font-size: 10px;
+  font-size: 8px;
 }
 
 @media print {
   .medical-sheet-print {
     page-size: A4 portrait;
-    margin: 8mm 6mm;
-    font-size: 7px;
-    line-height: 0.9;
-  }
-  
-  /* Page breaks */
-  .medical-sheet-print h2 {
-    page-break-after: avoid;
-    margin-top: 0.5rem !important;
-  }
-  
-  .medical-sheet-print table {
-    page-break-inside: avoid;
+    margin: 5mm 4mm;
+    font-size: 6px;
+    line-height: 0.8;
   }
   
   .medical-sheet-print table {
     border-collapse: collapse;
     width: 100%;
-    margin-bottom: 2px;
+    margin-bottom: 1px;
     font-size: 6px;
+    page-break-inside: avoid;
   }
 
   .medical-sheet-print th,
   .medical-sheet-print td {
     border: 1px solid #333;
-    padding: 0.5px 1px;
+    padding: 0.5px;
     text-align: left;
     vertical-align: top;
     font-size: 6px;
-    line-height: 0.9;
+    line-height: 0.8;
   }
   
   .medical-sheet-print th {
     background-color: #f5f5f5 !important;
     font-weight: bold !important;
     text-align: center !important;
-    font-size: 7px !important;
+    font-size: 6px !important;
   }
   
   .medical-sheet-print h1 {
-    font-size: 10px;
-    margin-bottom: 2px;
+    font-size: 8px;
+    margin-bottom: 1px;
     font-weight: bold;
   }
 
   .medical-sheet-print h2 {
-    font-size: 8px;
-    margin: 3px 0 1px 0;
+    font-size: 6px;
+    margin: 1px 0 0.5px 0;
     background: #f0f0f0;
-    padding: 1px 2px;
+    padding: 0.5px 1px;
     font-weight: bold;
-  }
-  
-  .medical-sheet-print h4 {
-    font-size: 10px !important;
-    font-weight: bold !important;
-    margin: 0.25rem 0 0.125rem 0 !important;
+    page-break-after: avoid;
   }
   
   /* Hide print button */
@@ -75,170 +61,127 @@
     display: none !important;
   }
   
-  /* Compact row height */
+  /* Ultra compact row height */
   .medical-sheet-print tbody tr {
-    min-height: 15px !important;
+    min-height: 12px !important;
   }
   
-  /* Checkbox styling */
-  .medical-sheet-print input[type="checkbox"] {
-    width: 10px !important;
-    height: 10px !important;
-    border: 1px solid #000 !important;
-  }
-  
-  /* Footer styling */
-  .medical-sheet-print .text-xs {
-    font-size: 8px !important;
-  }
-  
-  /* Grid layout optimization for print */
-  .medical-sheet-print .grid-cols-3 {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr 1fr !important;
-    gap: 0.25rem !important;
-  }
-  
-  .medical-sheet-print .mb-3 {
-    margin-bottom: 3px;
-  }
-
-  .medical-sheet-print .mb-2 {
-    margin-bottom: 2px;
-  }
-
+  /* Ultra compact margins */
   .medical-sheet-print .mb-1 {
-    margin-bottom: 1px;
+    margin-bottom: 0.5px;
+  }
+  
+  .medical-sheet-print .mb-0\.5 {
+    margin-bottom: 0.25px;
+  }
+  
+  .medical-sheet-print .p-0\.5 {
+    padding: 0.25px;
+  }
+  
+  .medical-sheet-print .pt-0\.5 {
+    padding-top: 0.25px;
+  }
+  
+  .medical-sheet-print .pb-1 {
+    padding-bottom: 0.5px;
   }
 }
 
-/* Screen display adjustments - Ultra-Compact A4 Preview matching 08.08.2025 */
+/* Screen display adjustments - Ultra-Compact A4 Preview */
 @media screen {
   .medical-sheet-print {
     width: 210mm;
     min-height: 297mm;
     margin: 10px auto;
-    padding: 8mm 6mm;
+    padding: 5mm 4mm;
     background: white;
     box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     border: 1px solid #ddd;
     box-sizing: border-box;
-    font-size: 9px;
-    line-height: 1.1;
+    font-size: 8px;
+    line-height: 1.0;
   }
   
   .medical-sheet-print h1 {
-    font-size: 12px !important;
-    margin-bottom: 4px !important;
+    font-size: 10px !important;
+    margin-bottom: 2px !important;
     border-bottom: 1px solid #333;
-    padding-bottom: 2px !important;
+    padding-bottom: 1px !important;
     font-weight: bold;
   }
   
   .medical-sheet-print h2 {
-    font-size: 10px !important;
-    margin: 4px 0 2px 0 !important;
+    font-size: 8px !important;
+    margin: 2px 0 1px 0 !important;
     background-color: #f0f0f0 !important;
-    padding: 2px 4px !important;
-    border-radius: 2px !important;
+    padding: 1px 2px !important;
+    border-radius: 1px !important;
     border-left: 2px solid #007bff !important;
     font-weight: bold;
-  }
-  
-  .medical-sheet-print h4 {
-    font-size: 9px !important;
-    font-weight: bold !important;
-    margin: 0.2rem 0 0.1rem 0 !important;
   }
   
   .medical-sheet-print table {
     border-collapse: collapse;
     width: 100%;
-    margin-bottom: 3px !important;
-    font-size: 8px;
+    margin-bottom: 2px !important;
+    font-size: 7px;
   }
 
   .medical-sheet-print th,
   .medical-sheet-print td {
     border: 1px solid #333;
-    padding: 1px 2px !important;
+    padding: 0.5px 1px !important;
     text-align: left;
     vertical-align: top;
-    font-size: 8px !important;
-    line-height: 1.0 !important;
+    font-size: 7px !important;
+    line-height: 0.9 !important;
   }
   
   .medical-sheet-print th {
     background-color: #f5f5f5 !important;
     font-weight: bold !important;
     text-align: center !important;
-    font-size: 8px !important;
+    font-size: 7px !important;
   }
   
-  /* Override Tailwind spacing classes */
-  .medical-sheet-print .mb-6 {
-    margin-bottom: 3px !important;
-  }
-  
-  .medical-sheet-print .mb-3 {
-    margin-bottom: 2px !important;
-  }
-  
-  .medical-sheet-print .mb-2 {
+  /* Ultra compact spacing overrides */
+  .medical-sheet-print .mb-1 {
     margin-bottom: 1px !important;
   }
   
-  .medical-sheet-print .mb-1 {
+  .medical-sheet-print .mb-0\.5 {
     margin-bottom: 0.5px !important;
   }
   
-  .medical-sheet-print .text-2xl {
-    font-size: 12px !important;
+  .medical-sheet-print .p-0\.5 {
+    padding: 0.5px !important;
   }
   
-  .medical-sheet-print .text-lg {
-    font-size: 10px !important;
+  .medical-sheet-print .pt-0\.5 {
+    padding-top: 0.5px !important;
   }
   
-  .medical-sheet-print .text-sm {
-    font-size: 8px !important;
+  .medical-sheet-print .pb-1 {
+    padding-bottom: 1px !important;
   }
   
   .medical-sheet-print .text-xs {
     font-size: 7px !important;
   }
   
-  .medical-sheet-print .p-1\.5 {
-    padding: 1px 2px !important;
-  }
-  
-  .medical-sheet-print .p-2 {
-    padding: 1px !important;
-  }
-  
-  .medical-sheet-print .p-3 {
-    padding: 2px !important;
-  }
-  
-  .medical-sheet-print .p-4 {
-    padding: 3px !important;
-  }
-  
-  /* Grid layout optimization for screen */
-  .medical-sheet-print .grid-cols-3 {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr 1fr !important;
-    gap: 0.2rem !important;
+  .medical-sheet-print .text-sm {
+    font-size: 8px !important;
   }
   
   /* Compact row height for screen */
   .medical-sheet-print tbody tr {
-    min-height: 18px !important;
+    min-height: 15px !important;
   }
   
   /* Print button styling */
   .medical-sheet-print button {
-    font-size: 8px !important;
-    padding: 2px 4px !important;
+    font-size: 7px !important;
+    padding: 1px 2px !important;
   }
 }

@@ -31,12 +31,9 @@ export const PremedsTable: React.FC<PremedsTableProps> = ({ premedications, solv
     <Table className="w-full border-collapse border border-gray-300">
       <TableHeader>
         <TableRow className="bg-gray-100">
-          <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center w-12">TIP</TableHead>
           <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center">MEDICAMENT</TableHead>
           <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center w-16">DOZĂ</TableHead>
-          <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center w-10">CALE</TableHead>
-          <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center w-12">TIMING</TableHead>
-          <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center w-16">SOLVENT</TableHead>
+          <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center w-16">ADMINISTRARE</TableHead>
           <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center">OBSERVAȚII</TableHead>
         </TableRow>
       </TableHeader>
@@ -46,13 +43,10 @@ export const PremedsTable: React.FC<PremedsTableProps> = ({ premedications, solv
           solventGroups.groups.map((group) =>
             group.medications.map((med, index) => (
               <TableRow key={`group-${group.id}-${index}`} className="border-b border-gray-200">
-                <TableCell className="border border-gray-300 p-0.5 text-xs font-medium text-center">PEV</TableCell>
                 <TableCell className="border border-gray-300 p-0.5 text-xs">{med.name}</TableCell>
                 <TableCell className="border border-gray-300 p-0.5 text-xs text-center">{med.dosage} {med.unit}</TableCell>
-                <TableCell className="border border-gray-300 p-0.5 text-xs text-center">{med.route}</TableCell>
-                <TableCell className="border border-gray-300 p-0.5 text-xs text-center">{med.timing}</TableCell>
-                <TableCell className="border border-gray-300 p-0.5 text-xs text-center">{group.solvent}</TableCell>
-                <TableCell className="border border-gray-300 p-0.5 text-xs">{med.administrationDuration || 'Standard'}</TableCell>
+                <TableCell className="border border-gray-300 p-0.5 text-xs text-center">{med.route}, {med.timing}</TableCell>
+                <TableCell className="border border-gray-300 p-0.5 text-xs">{group.solvent}, {med.administrationDuration || 'Standard'}</TableCell>
               </TableRow>
             ))
           )
@@ -61,13 +55,10 @@ export const PremedsTable: React.FC<PremedsTableProps> = ({ premedications, solv
         {/* Individual Premedications */}
         {allPremedications.map((med, index) => (
           <TableRow key={`individual-${index}`} className="border-b border-gray-200">
-            <TableCell className="border border-gray-300 p-0.5 text-xs font-medium text-center">{getCategoryName(med.category)}</TableCell>
             <TableCell className="border border-gray-300 p-0.5 text-xs">{med.name}</TableCell>
             <TableCell className="border border-gray-300 p-0.5 text-xs text-center">{med.dosage} {med.unit}</TableCell>
-            <TableCell className="border border-gray-300 p-0.5 text-xs text-center">{med.route}</TableCell>
-            <TableCell className="border border-gray-300 p-0.5 text-xs text-center">{med.timing}</TableCell>
-            <TableCell className="border border-gray-300 p-0.5 text-xs text-center">{med.solvent}</TableCell>
-            <TableCell className="border border-gray-300 p-0.5 text-xs">{med.administrationDuration || 'Standard'}</TableCell>
+            <TableCell className="border border-gray-300 p-0.5 text-xs text-center">{med.route}, {med.timing}</TableCell>
+            <TableCell className="border border-gray-300 p-0.5 text-xs">{med.solvent}, {med.administrationDuration || 'Standard'}</TableCell>
           </TableRow>
         ))}
       </TableBody>
