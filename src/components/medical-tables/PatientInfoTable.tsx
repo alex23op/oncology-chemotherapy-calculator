@@ -37,69 +37,96 @@ export const PatientInfoTable: React.FC<PatientInfoTableProps> = ({ patient, onP
     return age;
   };
 
-  // Organize data in 3 columns for compact display - removed Diagnostic and Grupa sanguină
-  const patientData = [
-    [
-      { label: 'CNP', value: patient.cnp || 'N/A' },
-      { label: 'Nr. FO', value: patient.foNumber || 'N/A' },
-      { label: 'Nume complet', value: patient.fullName || 'N/A' },
-      { label: '', value: '' }, // Empty for alignment
-      { label: '', value: '' }, // Empty for alignment
-    ],
-    [
-      { label: 'Vârsta', value: patient.cnp ? `${calculateAge(patient.cnp)} ani` : `${patient.age || 0} ani` },
-      { label: 'Sex', value: patient.sex || 'N/A' },
-      { label: 'Greutate', value: `${patient.weight} kg` },
-      { label: 'Înălțime', value: `${patient.height} cm` },
-      { label: 'BSA', value: `${patient.bsa.toFixed(2)} m²` },
-    ],
-    [
-      { label: 'Clearance creatinină', value: `${patient.creatinineClearance} ml/min` },
-      { label: 'Ciclu nr.', value: patient.cycleNumber?.toString() || 'N/A' },
-        { 
-          label: 'Data tratament', 
-          value: 'editable-date',
-          editableValue: patient.treatmentDate,
-          onEdit: (newDate: string) => onPatientUpdate?.({ treatmentDate: newDate })
-        },
-        { 
-          label: 'Data ciclu următor', 
-          value: 'editable-date',
-          editableValue: patient.nextCycleDate || '',
-          onEdit: (newDate: string) => onPatientUpdate?.({ nextCycleDate: newDate })
-        },
-      { label: '', value: '' }, // Empty cell for alignment
-    ]
-  ];
-
   return (
-    <div className="grid grid-cols-3 gap-2">
-      {patientData.map((column, colIndex) => (
-        <Table key={colIndex} className="w-full border-collapse border border-gray-300">
-          <TableBody>
-            {column.map((item, index) => (
-              item.label ? (
-                <TableRow key={index} className="border-b border-gray-300">
-                  <TableCell className="font-semibold border-r border-gray-300 w-1/2 p-1 text-xs">
-                    {item.label}:
-                  </TableCell>
-                  <TableCell className="p-1 w-1/2 text-xs">
-                  {item.value === 'editable-date' ? (
-                    <EditableDateField
-                      value={item.editableValue || ''}
-                      onChange={item.onEdit || (() => {})}
-                      className="w-full"
-                    />
-                  ) : (
-                    item.value
-                  )}
-                  </TableCell>
-                </TableRow>
-              ) : null
-            ))}
-          </TableBody>
-        </Table>
-      ))}
+    <div className="grid grid-cols-2 gap-4">
+      {/* Left Column */}
+      <div className="space-y-3">
+        {/* Patient Identity Section */}
+        <div>
+          <h4 className="text-xs font-bold bg-gray-50 p-2 border-l-2 border-primary">IDENTITATE PACIENT</h4>
+          <Table className="w-full border-collapse border border-gray-300">
+            <TableBody>
+              <TableRow className="border-b border-gray-300">
+                <TableCell className="font-semibold border-r border-gray-300 w-2/5 p-1 text-xs bg-gray-50">Nume și prenume:</TableCell>
+                <TableCell className="p-1 text-xs">{patient.fullName || 'N/A'}</TableCell>
+              </TableRow>
+              <TableRow className="border-b border-gray-300">
+                <TableCell className="font-semibold border-r border-gray-300 w-2/5 p-1 text-xs bg-gray-50">CNP:</TableCell>
+                <TableCell className="p-1 text-xs">{patient.cnp || 'N/A'}</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-semibold border-r border-gray-300 w-2/5 p-1 text-xs bg-gray-50">Nr. F.O.:</TableCell>
+                <TableCell className="p-1 text-xs">{patient.foNumber || 'N/A'}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
+
+        {/* Anthropometric Data Section */}
+        <div>
+          <h4 className="text-xs font-bold bg-gray-50 p-2 border-l-2 border-primary">DATE ANTROPOMETRICE</h4>
+          <Table className="w-full border-collapse border border-gray-300">
+            <TableBody>
+              <TableRow className="border-b border-gray-300">
+                <TableCell className="font-semibold border-r border-gray-300 w-2/5 p-1 text-xs bg-gray-50">Vârsta:</TableCell>
+                <TableCell className="p-1 text-xs">{patient.cnp ? `${calculateAge(patient.cnp)} ani` : `${patient.age || 0} ani`}</TableCell>
+              </TableRow>
+              <TableRow className="border-b border-gray-300">
+                <TableCell className="font-semibold border-r border-gray-300 w-2/5 p-1 text-xs bg-gray-50">Greutate:</TableCell>
+                <TableCell className="p-1 text-xs">{patient.weight} kg</TableCell>
+              </TableRow>
+              <TableRow className="border-b border-gray-300">
+                <TableCell className="font-semibold border-r border-gray-300 w-2/5 p-1 text-xs bg-gray-50">Înălțime:</TableCell>
+                <TableCell className="p-1 text-xs">{patient.height} cm</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-semibold border-r border-gray-300 w-2/5 p-1 text-xs bg-gray-50">BSA:</TableCell>
+                <TableCell className="p-1 text-xs">{patient.bsa.toFixed(2)} m²</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+
+      {/* Right Column */}
+      <div>
+        {/* Treatment Protocol Section */}
+        <div>
+          <h4 className="text-xs font-bold bg-gray-50 p-2 border-l-2 border-primary">PROTOCOL TRATAMENT</h4>
+          <Table className="w-full border-collapse border border-gray-300">
+            <TableBody>
+              <TableRow className="border-b border-gray-300">
+                <TableCell className="font-semibold border-r border-gray-300 w-2/5 p-1 text-xs bg-gray-50">Ciclu nr.:</TableCell>
+                <TableCell className="p-1 text-xs">{patient.cycleNumber?.toString() || 'N/A'}</TableCell>
+              </TableRow>
+              <TableRow className="border-b border-gray-300">
+                <TableCell className="font-semibold border-r border-gray-300 w-2/5 p-1 text-xs bg-gray-50">Data tratament:</TableCell>
+                <TableCell className="p-1 text-xs">
+                  <EditableDateField
+                    value={patient.treatmentDate || ''}
+                    onChange={(newDate: string) => onPatientUpdate?.({ treatmentDate: newDate })}
+                    className="w-full"
+                  />
+                </TableCell>
+              </TableRow>
+              <TableRow className="border-b border-gray-300">
+                <TableCell className="font-semibold border-r border-gray-300 w-2/5 p-1 text-xs bg-gray-50">Data ciclu următor:</TableCell>
+                <TableCell className="p-1 text-xs">
+                  <EditableDateField
+                    value={patient.nextCycleDate || ''}
+                    onChange={(newDate: string) => onPatientUpdate?.({ nextCycleDate: newDate })}
+                    className="w-full"
+                  />
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-semibold border-r border-gray-300 w-2/5 p-1 text-xs bg-gray-50">Clearance creatinină:</TableCell>
+                <TableCell className="p-1 text-xs">{patient.creatinineClearance} ml/min</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </div>
+      </div>
     </div>
   );
 };

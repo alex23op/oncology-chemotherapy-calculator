@@ -14,92 +14,58 @@ export const CertificationTable: React.FC<CertificationTableProps> = ({
   
   const certificationData = [
     {
-      role: 'MEDIC PRESCRIPTOR',
+      role: 'MEDIC',
       name: 'N/A',
       signature: '',
-      date: currentDate,
-      responsibilities: 'Prescripție, indicație tratament, monitorizare clinică'
+      date: currentDate
     },
     {
-      role: 'FARMACIST PREPARATOR',
-      name: preparingPharmacist || 'N/A',
-      signature: '',
-      date: currentDate,
-      responsibilities: 'Preparare, verificare doze, control calitate'
-    },
-    {
-      role: 'ASISTENT MEDICAL',
+      role: 'ASISTENT',
       name: verifyingNurse || 'N/A',
       signature: '',
-      date: currentDate,
-      responsibilities: 'Verificare identitate pacient, administrare, monitorizare'
+      date: currentDate
+    },
+    {
+      role: 'FARMACIST',
+      name: preparingPharmacist || 'N/A',
+      signature: '',
+      date: currentDate
     }
   ];
 
   return (
-    <div>
-      <Table className="border-2 border-foreground">
+    <div className="space-y-2">
+      {/* Main certification table - compact single table */}
+      <Table className="w-full border-collapse border border-gray-300">
         <TableHeader>
-          <TableRow className="bg-muted/50">
-            <TableHead className="border-r border-foreground font-semibold w-1/6">FUNCȚIE</TableHead>
-            <TableHead className="border-r border-foreground font-semibold w-1/4">NUME ȘI PRENUME</TableHead>
-            <TableHead className="border-r border-foreground font-semibold w-1/4">SEMNĂTURĂ</TableHead>
-            <TableHead className="border-r border-foreground font-semibold w-1/6">DATA</TableHead>
-            <TableHead className="border-r border-foreground font-semibold w-1/4">RESPONSABILITĂȚI</TableHead>
+          <TableRow className="bg-gray-100">
+            <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center w-16">FUNCȚIE</TableHead>
+            <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center">NUME ȘI PRENUME</TableHead>
+            <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center w-24">SEMNĂTURĂ</TableHead>
+            <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center w-20">DATA</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {certificationData.map((cert, index) => (
-            <TableRow key={index} className="border-b border-foreground">
-              <TableCell className="border-r border-foreground font-medium bg-muted/20 text-center">
-                <div className="font-semibold text-sm">{cert.role}</div>
+            <TableRow key={index} className="border-b border-gray-200">
+              <TableCell className="border border-gray-300 p-0.5 text-xs font-semibold text-center bg-gray-50">
+                {cert.role}
               </TableCell>
-              <TableCell className="border-r border-foreground h-16">
-                <div className="flex items-center h-full">
-                  {cert.name}
-                </div>
+              <TableCell className="border border-gray-300 p-0.5 text-xs h-8">
+                {cert.name}
               </TableCell>
-              <TableCell className="border-r border-foreground h-16">
-                <div className="border-b-2 border-dotted border-muted-foreground h-8 w-full mt-4">
+              <TableCell className="border border-gray-300 p-0.5 text-xs h-8">
+                <div className="border-b border-dotted border-gray-400 h-6 w-full">
                   {/* Space for signature */}
                 </div>
               </TableCell>
-              <TableCell className="border-r border-foreground h-16">
-                <div className="flex items-center h-full">
-                  {cert.date}
-                </div>
-              </TableCell>
-              <TableCell className="border-r border-foreground h-16">
-                <div className="text-xs text-muted-foreground p-1">
-                  {cert.responsibilities}
-                </div>
+              <TableCell className="border border-gray-300 p-0.5 text-xs text-center h-8">
+                {cert.date}
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-
-      <div className="mt-4 p-3 border rounded bg-muted/10">
-        <h4 className="font-semibold mb-2">DECLARAȚII ȘI RESPONSABILITĂȚI:</h4>
-        <div className="text-xs space-y-2">
-          <p>• Medicul prescriptor declară că a verificat indicația, contraindicațiile și dozele prescrise.</p>
-          <p>• Farmacistul preparator confirmă corectitudinea calculelor și preparării medicamentelor.</p>
-          <p>• Asistentul medical confirmă verificarea identității pacientului și administrarea conform prescripției.</p>
-        </div>
-        
-        <div className="mt-4 border-t pt-2">
-          <h5 className="font-semibold text-sm mb-2">OBSERVAȚII CLINICE SUPLIMENTARE:</h5>
-          <div className="min-h-[3rem] border-b-2 border-dotted border-muted-foreground">
-            {/* Space for additional clinical notes */}
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-4 text-xs text-muted-foreground text-center border-t pt-2">
-        <p className="font-semibold">IMPORTANT:</p>
-        <p>Această fișă trebuie păstrată în dosarul medical al pacientului și arhivată conform reglementărilor în vigoare.</p>
-        <p>Data și ora administrării: {new Date().toLocaleString('ro-RO')}</p>
-      </div>
     </div>
   );
 };
