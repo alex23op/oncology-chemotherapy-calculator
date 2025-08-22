@@ -13,7 +13,7 @@ import { WizardStep } from "@/components/wizard/WizardStep";
 import { ProgressBar } from "@/components/wizard/ProgressBar";
 import { useSmartNav } from "@/context/SmartNavContext";
 import { EmetogenicRiskClassifier } from "@/components/EmetogenicRiskClassifier";
-import { PatientSummaryPanel } from "@/components/PatientSummaryPanel";
+
 import UnifiedProtocolSelector from "@/components/UnifiedProtocolSelector";
 import { CompactClinicalTreatmentSheetOptimized } from "@/components/CompactClinicalTreatmentSheetOptimized";
 import { useMonitoring } from "@/hooks/useMonitoring";
@@ -221,7 +221,6 @@ const IndexContent = () => {
   return (
     <main className="container mx-auto px-4 py-6 space-y-6">
       <ProgressBar />
-      <PatientSummaryPanel patientData={patientData} selectedRegimen={selectedRegimen} className="hidden lg:block" />
 
       <WizardStep id="patient" title={t('wizard.steps.patient', { defaultValue: 'Patient data' })}>
         <SafeComponentWrapper componentName="Patient Form" fallbackMessage={t('errors.patientFormFailed')}>

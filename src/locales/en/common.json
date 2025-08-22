@@ -17,18 +17,6 @@
     "english": "English",
     "romanian": "Romanian"
   },
-  "summary": {
-    "title": "Patient & Regimen Summary",
-    "patient": "Patient",
-    "unknown": "Unknown",
-    "weight": "Weight",
-    "height": "Height",
-    "bsa": "BSA",
-    "crcl": "CrCl",
-    "regimen": "Regimen",
-    "selected": "Selected",
-    "notSelected": "Not selected"
-  },
   "index": {
     "toasts": {
       "patientDataRequired": {
