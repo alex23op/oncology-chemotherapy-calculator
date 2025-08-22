@@ -319,10 +319,13 @@
     "diluent": "Diluant",
     "selectSolvent": "Selectați solventul",
     "solvents": {
-      "normalSaline": "Ser fiziologic 0,9%",
-      "dextrose5": "Glucoză 5%",
-      "ringer": "Soluție Ringer",
-      "waterForInjection": "Apă pentru preparate injectabile"
+      "normalSaline100": "Ser fiziologic 0.9% 100ml",
+      "normalSaline250": "Ser fiziologic 0.9% 250ml", 
+      "normalSaline500": "Ser fiziologic 0.9% 500ml",
+      "dextrose5_100": "Glucoză 5% 100ml",
+      "dextrose5_250": "Glucoză 5% 250ml",
+      "dextrose5_500": "Glucoză 5% 500ml",
+      "ringer": "Soluție Ringer"
     },
     "protocolSuggest": "Sugestie din protocol",
     "adminDuration": "Durata administrării",

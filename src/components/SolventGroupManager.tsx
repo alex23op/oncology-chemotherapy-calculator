@@ -9,6 +9,7 @@ import { PremedAgent, PremedSolventGroup, GroupedPremedications } from '@/types/
 import { Trash2, Plus, GripVertical, Beaker, Droplets, AlertTriangle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
+import { MedicationMultiSelector } from './MedicationMultiSelector';
 
 interface SolventGroupManagerProps {
   selectedAgents: PremedAgent[];
@@ -17,10 +18,13 @@ interface SolventGroupManagerProps {
 }
 
 const SOLVENT_OPTIONS = [
-  { value: 'Normal Saline 0.9%', key: 'normalSaline' },
-  { value: 'Dextrose 5%', key: 'dextrose5' },
-  { value: 'Ringer Solution', key: 'ringer' },
-  { value: 'Water for Injection', key: 'waterForInjection' }
+  { value: 'Soluție NaCl 0.9% 100ml', key: 'normalSaline100' },
+  { value: 'Soluție NaCl 0.9% 250ml', key: 'normalSaline250' },
+  { value: 'Soluție NaCl 0.9% 500ml', key: 'normalSaline500' },
+  { value: 'Soluție glucoză 5% 100ml', key: 'dextrose5_100' },
+  { value: 'Soluție glucoză 5% 250ml', key: 'dextrose5_250' },
+  { value: 'Soluție glucoză 5% 500ml', key: 'dextrose5_500' },
+  { value: 'Ringer Solution', key: 'ringer' }
 ];
 
 export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
@@ -83,6 +87,15 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
       ...localGrouping,
       groups: localGrouping.groups.map(group =>
         group.id === groupId ? { ...group, solvent } : group
+      )
+    });
+  };
+
+  const addMedicationsToGroup = (groupId: string, medications: PremedAgent[]) => {
+    updateGrouping({
+      ...localGrouping,
+      groups: localGrouping.groups.map(group =>
+        group.id === groupId ? { ...group, medications: [...group.medications, ...medications] } : group
       )
     });
   };
@@ -246,8 +259,15 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
                       }`}
                     >
                       {group.medications.length === 0 ? (
-                        <div className="text-center text-muted-foreground text-sm py-4">
-                          {t('solventGroups.dropHere')}
+                        <div className="space-y-4">
+                          <MedicationMultiSelector
+                            selectedMedications={[]}
+                            onSelectionChange={(medications) => addMedicationsToGroup(group.id, medications)}
+                            placeholder="Selectează medicamente pentru acest PEV..."
+                          />
+                          <div className="text-center text-muted-foreground text-xs border-t pt-2">
+                            {t('solventGroups.dropHere')}
+                          </div>
                         </div>
                       ) : (
                         <div className="space-y-2">
