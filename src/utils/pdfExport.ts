@@ -2,7 +2,7 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import { TreatmentData } from '@/types/clinicalTreatment';
 import i18n from '@/i18n';
-import { formatDate } from '@/utils/dateFormat';
+import { formatDate, toLocalISODate } from '@/utils/dateFormat';
 import { logger } from '@/utils/logger';
 
 interface ProtocolData {
@@ -98,7 +98,7 @@ export const generateClinicalTreatmentPDF = async (
     // No temporary element to clean up when using direct element capture
 
     // Save the PDF with clinical naming convention
-    const filename = `treatment-protocol-${treatmentData.patient.cnp}-${treatmentData.regimen.name.toLowerCase().replace(/\s+/g, '-')}-cycle${treatmentData.patient.cycleNumber}-${new Date().toISOString().split('T')[0]}.pdf`;
+    const filename = `treatment-protocol-${treatmentData.patient.cnp}-${treatmentData.regimen.name.toLowerCase().replace(/\s+/g, '-')}-cycle${treatmentData.patient.cycleNumber}-${toLocalISODate(new Date())}.pdf`;
     pdf.save(filename);
   } catch (error) {
     logger.error('Error generating treatment protocol PDF', { component: 'pdfExport', error });
@@ -175,7 +175,7 @@ export const generateProtocolPDF = async (
     }
 
     // Save the PDF
-    const filename = `premedication-protocol-${protocolData.regimenName?.toLowerCase().replace(/\s+/g, '-') || 'protocol'}-${new Date().toISOString().split('T')[0]}.pdf`;
+    const filename = `premedication-protocol-${protocolData.regimenName?.toLowerCase().replace(/\s+/g, '-') || 'protocol'}-${toLocalISODate(new Date())}.pdf`;
     pdf.save(filename);
   } catch (error) {
     logger.error('Error generating PDF', { component: 'pdfExport', error });

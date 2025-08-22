@@ -1,6 +1,7 @@
 import { useRef, useCallback } from 'react';
 import { useReactToPrint } from 'react-to-print';
 import { logger } from '@/utils/logger';
+import { toLocalISODate } from '@/utils/dateFormat';
 
 export const usePrint = (documentTitle?: string, options?: { orientation?: 'portrait' | 'landscape' }) => {
   const componentRef = useRef<HTMLDivElement>(null);
@@ -8,7 +9,7 @@ export const usePrint = (documentTitle?: string, options?: { orientation?: 'port
 
   const handlePrint = useReactToPrint({
     contentRef: componentRef,
-    documentTitle: documentTitle || `Clinical Treatment Protocol - ${new Date().toISOString().split('T')[0]}`,
+    documentTitle: documentTitle || `Clinical Treatment Protocol - ${toLocalISODate(new Date())}`,
     pageStyle: `
       @page {
         size: A4 ${orientation === 'landscape' ? 'landscape' : 'portrait'};

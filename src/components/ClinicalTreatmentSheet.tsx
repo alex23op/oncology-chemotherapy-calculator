@@ -4,8 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { TreatmentData } from '@/types/clinicalTreatment';
 import { Calendar, FileText, Pill, Shield, AlertTriangle, CheckCircle } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { formatDate } from '@/utils/dateFormat';
+import { useTSafe } from '@/i18n/tSafe';
+import { formatDate, toLocalISODate } from '@/utils/dateFormat';
 
 interface ClinicalTreatmentSheetProps {
   treatmentData: TreatmentData;
@@ -14,7 +14,7 @@ interface ClinicalTreatmentSheetProps {
 
 export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalTreatmentSheetProps>(
   ({ treatmentData, className }, ref) => {
-    const { t } = useTranslation();
+    const tSafe = useTSafe();
     const { patient, regimen, calculatedDrugs, premedications } = treatmentData;
 
     const getRiskIcon = (level: string) => {
@@ -41,31 +41,31 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
         <div className="print:mb-4">
           <div className="text-center border-b-2 border-primary pb-4 mb-6 print:border-border">
             <h1 className="text-3xl font-bold text-primary print:text-2xl">
-              {t('clinicalSheet.mainTitle')}
+              {tSafe('clinicalSheet.mainTitle', 'Clinical Treatment Sheet')}
             </h1>
             <p className="text-muted-foreground mt-2 print:text-foreground">
-              {t('clinicalSheet.subtitle')}
+              {tSafe('clinicalSheet.subtitle', 'Oncology Treatment Protocol')}
             </p>
           </div>
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 print:grid-cols-4 print:gap-2">
             <div className="space-y-1">
-              <span className="text-sm font-medium text-muted-foreground print:text-foreground">{t('clinicalSheet.patientId')}</span>
+              <span className="text-sm font-medium text-muted-foreground print:text-foreground">{tSafe('clinicalSheet.patientId', 'Patient ID')}</span>
               <p className="font-bold text-lg print:text-base">{patient.cnp}</p>
               {patient.foNumber && (
-                <p className="text-sm text-muted-foreground print:text-foreground">{t('clinicalSheet.foNumber')}: {patient.foNumber}</p>
+                <p className="text-sm text-muted-foreground print:text-foreground">{tSafe('clinicalSheet.foNumber', 'FO Number')}: {patient.foNumber}</p>
               )}
             </div>
             <div className="space-y-1">
-              <span className="text-sm font-medium text-muted-foreground print:text-foreground">{t('pdf.date')}</span>
+              <span className="text-sm font-medium text-muted-foreground print:text-foreground">{tSafe('pdf.date', 'Date')}</span>
               <p className="font-bold text-lg print:text-base">{formatDate(patient.treatmentDate)}</p>
             </div>
             <div className="space-y-1">
-              <span className="text-sm font-medium text-muted-foreground print:text-foreground">{t('clinicalSheet.regimen')}</span>
+              <span className="text-sm font-medium text-muted-foreground print:text-foreground">{tSafe('clinicalSheet.regimen', 'Regimen')}</span>
               <p className="font-bold text-lg print:text-base">{regimen.name}</p>
             </div>
             <div className="space-y-1">
-              <span className="text-sm font-medium text-muted-foreground print:text-foreground">{t('clinicalSheet.cycle')}</span>
+              <span className="text-sm font-medium text-muted-foreground print:text-foreground">{tSafe('clinicalSheet.cycle', 'Cycle')}</span>
               <p className="font-bold text-lg print:text-base">{patient.cycleNumber}</p>
             </div>
           </div>
@@ -76,25 +76,25 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
           <CardHeader className="pb-3 print:pb-2">
             <CardTitle className="flex items-center gap-2 text-primary print:text-foreground">
               <Pill className="h-5 w-5" />
-              {t('clinicalSheet.regimenDetails')}
+              {tSafe('clinicalSheet.regimenDetails', 'Regimen Details')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 print:space-y-3">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-muted/50 rounded-lg print:bg-background print:border print:border-border">
               <div className="text-center">
-                <p className="text-sm text-muted-foreground print:text-foreground">{t('clinicalSheet.weight')}</p>
+                <p className="text-sm text-muted-foreground print:text-foreground">{tSafe('clinicalSheet.weight', 'Weight')}</p>
                 <p className="font-bold">{patient.weight} kg</p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-muted-foreground print:text-foreground">{t('clinicalSheet.bsa')}</p>
+                <p className="text-sm text-muted-foreground print:text-foreground">{tSafe('clinicalSheet.bsa', 'BSA')}</p>
                 <p className="font-bold">{patient.bsa} m²</p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-muted-foreground print:text-foreground">{t('clinicalSheet.crcl')}</p>
+                <p className="text-sm text-muted-foreground print:text-foreground">{tSafe('clinicalSheet.crcl', 'CrCl')}</p>
                 <p className="font-bold">{patient.creatinineClearance} mL/min</p>
               </div>
               <div className="text-center">
-                <p className="text-sm text-muted-foreground print:text-foreground">{t('clinicalSheet.schedule')}</p>
+                <p className="text-sm text-muted-foreground print:text-foreground">{tSafe('clinicalSheet.schedule', 'Schedule')}</p>
                 <p className="font-bold">{regimen.schedule}</p>
               </div>
             </div>
@@ -112,32 +112,32 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm print:text-xs">
                     <div className="space-y-2">
                       <div>
-                        <span className="font-medium">{t('clinicalSheet.calculatedDose')}:</span>
+                        <span className="font-medium">{tSafe('clinicalSheet.calculatedDose', 'Calculated Dose')}:</span>
                         <p className="text-accent font-bold print:text-foreground">{drug.calculatedDose}</p>
                       </div>
                       <div>
-                        <span className="font-medium">{t('clinicalSheet.finalDose')}:</span>
+                        <span className="font-medium">{tSafe('clinicalSheet.finalDose', 'Final Dose')}:</span>
                         <p className="text-primary font-bold print:text-foreground">{drug.finalDose}</p>
                       </div>
                     </div>
                     
                     <div className="space-y-2">
                       <div>
-                        <span className="font-medium">{t('printableProtocol.route')}:</span> {drug.route}
+                        <span className="font-medium">{tSafe('printableProtocol.route', 'Route')}:</span> {drug.route}
                       </div>
                       {drug.day && (
                         <div>
-                          <span className="font-medium">{t('compactSheet.day')}:</span> {drug.day}
+                          <span className="font-medium">{tSafe('compactSheet.day', 'Day')}:</span> {drug.day}
                         </div>
                       )}
                       {drug.administrationDuration && (
                         <div>
-                          <span className="font-medium">{t('printableProtocol.duration')}:</span> {drug.administrationDuration}
+                          <span className="font-medium">{tSafe('printableProtocol.duration', 'Duration')}:</span> {drug.administrationDuration}
                         </div>
                       )}
                       {drug.solvent && (
                         <div>
-                          <span className="font-medium">{t('doseCalculator.diluent')}:</span> {drug.solvent}
+                          <span className="font-medium">{tSafe('doseCalculator.diluent', 'Diluent')}:</span> {drug.solvent}
                         </div>
                       )}
                     </div>
@@ -145,12 +145,12 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
                     <div className="space-y-2">
                       {drug.dilution && (
                         <div>
-                          <span className="font-medium">{t('clinicalSheet.dilution')}:</span> {drug.dilution}
+                          <span className="font-medium">{tSafe('clinicalSheet.dilution', 'Dilution')}:</span> {drug.dilution}
                         </div>
                       )}
                       {drug.preparationInstructions && (
                         <div>
-                          <span className="font-medium">{t('clinicalSheet.preparation')}:</span> {drug.preparationInstructions}
+                          <span className="font-medium">{tSafe('clinicalSheet.preparation', 'Preparation')}:</span> {drug.preparationInstructions}
                         </div>
                       )}
                     </div>
@@ -158,13 +158,13 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
                   
                   {drug.adjustmentNotes && (
                     <div className="mt-2 p-2 bg-warning/10 border border-warning/20 rounded text-sm print:bg-background print:border-border print:text-xs">
-                      <span className="font-medium">{t('clinicalSheet.doseAdjustment')}:</span> {drug.adjustmentNotes}
+                      <span className="font-medium">{tSafe('clinicalSheet.doseAdjustment', 'Dose Adjustment')}:</span> {drug.adjustmentNotes}
                     </div>
                   )}
                   
                   {drug.notes && (
                     <div className="mt-2 p-2 bg-info/10 border border-info/20 rounded text-sm print:bg-background print:border-border print:text-xs">
-                      <span className="font-medium">{t('clinicalSheet.notes')}:</span> {drug.notes}
+                      <span className="font-medium">{tSafe('clinicalSheet.notes', 'Notes')}:</span> {drug.notes}
                     </div>
                   )}
                 </div>
@@ -178,14 +178,14 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
           <CardHeader className="pb-3 print:pb-2">
             <CardTitle className="flex items-center gap-2 text-primary print:text-foreground">
               <Shield className="h-5 w-5" />
-              {t('clinicalSheet.premedTitle')}
+              {tSafe('clinicalSheet.premedTitle', 'Premedication & Supportive Care')}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 print:space-y-3">
             {/* Antiemetics */}
             {premedications.antiemetics.length > 0 && (
               <div>
-                <h4 className="font-semibold text-base mb-3 text-accent print:text-foreground">{t('clinicalSheet.antiemeticTherapy')}</h4>
+                <h4 className="font-semibold text-base mb-3 text-accent print:text-foreground">{tSafe('clinicalSheet.antiemeticTherapy', 'Antiemetic Therapy')}</h4>
                 <div className="space-y-2">
                   {premedications.antiemetics.map((med, index) => (
                     <div key={index} className="border-l-4 border-accent pl-3 print:border-l-2 print:border-border">
@@ -196,19 +196,19 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
                         </Badge>
                       </div>
                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm print:text-xs">
-                         <div><span className="font-medium">{t('clinicalSheet.dose')}:</span> {med.dosage}</div>
-                         <div><span className="font-medium">{t('printableProtocol.route')}:</span> {med.route}</div>
-                         <div><span className="font-medium">{t('printableProtocol.timing')}:</span> {med.timing}</div>
+                         <div><span className="font-medium">{tSafe('clinicalSheet.dose', 'Dose')}:</span> {med.dosage}</div>
+                         <div><span className="font-medium">{tSafe('printableProtocol.route', 'Route')}:</span> {med.route}</div>
+                         <div><span className="font-medium">{tSafe('printableProtocol.timing', 'Timing')}:</span> {med.timing}</div>
                          {med.administrationDuration && (
-                           <div><span className="font-medium">{t('printableProtocol.duration')}:</span> {med.administrationDuration}</div>
+                           <div><span className="font-medium">{tSafe('printableProtocol.duration', 'Duration')}:</span> {med.administrationDuration}</div>
                          )}
                          {med.solvent && (
-                           <div><span className="font-medium">{t('premedSelector.solvent')}:</span> {med.solvent}</div>
+                           <div><span className="font-medium">{tSafe('premedSelector.solvent', 'Solvent')}:</span> {med.solvent}</div>
                          )}
                        </div>
                       {med.rationale && (
                         <div className="mt-1 text-xs text-muted-foreground print:text-foreground">
-                          <span className="font-medium">{t('clinicalSheet.rationale')}:</span> {med.rationale}
+                          <span className="font-medium">{tSafe('clinicalSheet.rationale', 'Rationale')}:</span> {med.rationale}
                         </div>
                       )}
                     </div>
@@ -221,7 +221,7 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
             {/* Infusion Reaction Prophylaxis */}
             {premedications.infusionReactionProphylaxis.length > 0 && (
               <div>
-                <h4 className="font-semibold text-base mb-3 text-warning print:text-foreground">{t('clinicalSheet.infusionProphylaxis')}</h4>
+                <h4 className="font-semibold text-base mb-3 text-warning print:text-foreground">{tSafe('clinicalSheet.infusionProphylaxis', 'Infusion Reaction Prophylaxis')}</h4>
                 <div className="space-y-2">
                   {premedications.infusionReactionProphylaxis.map((med, index) => (
                     <div key={index} className="border-l-4 border-warning pl-3 print:border-l-2 print:border-border">
@@ -232,14 +232,14 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
                         </Badge>
                       </div>
                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm print:text-xs">
-                         <div><span className="font-medium">{t('clinicalSheet.dose')}:</span> {med.dosage}</div>
-                         <div><span className="font-medium">{t('printableProtocol.route')}:</span> {med.route}</div>
-                         <div><span className="font-medium">{t('printableProtocol.timing')}:</span> {med.timing}</div>
+                         <div><span className="font-medium">{tSafe('clinicalSheet.dose', 'Dose')}:</span> {med.dosage}</div>
+                         <div><span className="font-medium">{tSafe('printableProtocol.route', 'Route')}:</span> {med.route}</div>
+                         <div><span className="font-medium">{tSafe('printableProtocol.timing', 'Timing')}:</span> {med.timing}</div>
                          {med.administrationDuration && (
-                           <div><span className="font-medium">{t('printableProtocol.duration')}:</span> {med.administrationDuration}</div>
+                           <div><span className="font-medium">{tSafe('printableProtocol.duration', 'Duration')}:</span> {med.administrationDuration}</div>
                          )}
                          {med.solvent && (
-                           <div><span className="font-medium">{t('premedSelector.solvent')}:</span> {med.solvent}</div>
+                           <div><span className="font-medium">{tSafe('premedSelector.solvent', 'Solvent')}:</span> {med.solvent}</div>
                          )}
                        </div>
                     </div>
@@ -252,7 +252,7 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
             {/* GI Protection */}
             {premedications.gastroprotection.length > 0 && (
               <div>
-                <h4 className="font-semibold text-base mb-3 text-info print:text-foreground">{t('clinicalSheet.giProtection')}</h4>
+                <h4 className="font-semibold text-base mb-3 text-info print:text-foreground">{tSafe('clinicalSheet.giProtection', 'GI Protection')}</h4>
                 <div className="space-y-2">
                   {premedications.gastroprotection.map((med, index) => (
                     <div key={index} className="border-l-4 border-info pl-3 print:border-l-2 print:border-border">
@@ -263,14 +263,14 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
                         </Badge>
                       </div>
                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm print:text-xs">
-                         <div><span className="font-medium">{t('clinicalSheet.dose')}:</span> {med.dosage}</div>
-                         <div><span className="font-medium">{t('printableProtocol.route')}:</span> {med.route}</div>
-                         <div><span className="font-medium">{t('printableProtocol.timing')}:</span> {med.timing}</div>
+                         <div><span className="font-medium">{tSafe('clinicalSheet.dose', 'Dose')}:</span> {med.dosage}</div>
+                         <div><span className="font-medium">{tSafe('printableProtocol.route', 'Route')}:</span> {med.route}</div>
+                         <div><span className="font-medium">{tSafe('printableProtocol.timing', 'Timing')}:</span> {med.timing}</div>
                          {med.administrationDuration && (
-                           <div><span className="font-medium">{t('printableProtocol.duration')}:</span> {med.administrationDuration}</div>
+                           <div><span className="font-medium">{tSafe('printableProtocol.duration', 'Duration')}:</span> {med.administrationDuration}</div>
                          )}
                          {med.solvent && (
-                           <div><span className="font-medium">{t('premedSelector.solvent')}:</span> {med.solvent}</div>
+                           <div><span className="font-medium">{tSafe('premedSelector.solvent', 'Solvent')}:</span> {med.solvent}</div>
                          )}
                        </div>
                     </div>
@@ -283,7 +283,7 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
             {/* Organ Protection */}
             {premedications.organProtection.length > 0 && (
               <div>
-                <h4 className="font-semibold text-base mb-3 text-success print:text-foreground">{t('clinicalSheet.organProtection')}</h4>
+                <h4 className="font-semibold text-base mb-3 text-success print:text-foreground">{tSafe('clinicalSheet.organProtection', 'Organ Protection')}</h4>
                 <div className="space-y-2">
                   {premedications.organProtection.map((med, index) => (
                     <div key={index} className="border-l-4 border-success pl-3 print:border-l-2 print:border-border">
@@ -294,14 +294,14 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
                         </Badge>
                       </div>
                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm print:text-xs">
-                          <div><span className="font-medium">{t('clinicalSheet.dose')}:</span> {med.dosage}</div>
-                         <div><span className="font-medium">{t('printableProtocol.route')}:</span> {med.route}</div>
-                         <div><span className="font-medium">{t('printableProtocol.timing')}:</span> {med.timing}</div>
+                          <div><span className="font-medium">{tSafe('clinicalSheet.dose', 'Dose')}:</span> {med.dosage}</div>
+                         <div><span className="font-medium">{tSafe('printableProtocol.route', 'Route')}:</span> {med.route}</div>
+                         <div><span className="font-medium">{tSafe('printableProtocol.timing', 'Timing')}:</span> {med.timing}</div>
                          {med.administrationDuration && (
-                           <div><span className="font-medium">{t('printableProtocol.duration')}:</span> {med.administrationDuration}</div>
+                           <div><span className="font-medium">{tSafe('printableProtocol.duration', 'Duration')}:</span> {med.administrationDuration}</div>
                          )}
                          {med.solvent && (
-                           <div><span className="font-medium">{t('premedSelector.solvent')}:</span> {med.solvent}</div>
+                           <div><span className="font-medium">{tSafe('premedSelector.solvent', 'Solvent')}:</span> {med.solvent}</div>
                          )}
                        </div>
                     </div>
@@ -314,7 +314,7 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
             {premedications.other.length > 0 && (
               <div>
                 <Separator className="my-4 print:border-border" />
-                <h4 className="font-semibold text-base mb-3 print:text-foreground">{t('clinicalSheet.additionalSupport')}</h4>
+                <h4 className="font-semibold text-base mb-3 print:text-foreground">{tSafe('clinicalSheet.additionalSupport', 'Additional Support')}</h4>
                 <div className="space-y-2">
                   {premedications.other.map((med, index) => (
                     <div key={index} className="border-l-4 border-muted-foreground pl-3 print:border-l-2 print:border-border">
@@ -325,14 +325,14 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
                         </Badge>
                       </div>
                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm print:text-xs">
-                         <div><span className="font-medium">{t('clinicalSheet.dose')}:</span> {med.dosage}</div>
-                         <div><span className="font-medium">{t('printableProtocol.route')}:</span> {med.route}</div>
-                         <div><span className="font-medium">{t('printableProtocol.timing')}:</span> {med.timing}</div>
+                         <div><span className="font-medium">{tSafe('clinicalSheet.dose', 'Dose')}:</span> {med.dosage}</div>
+                         <div><span className="font-medium">{tSafe('printableProtocol.route', 'Route')}:</span> {med.route}</div>
+                         <div><span className="font-medium">{tSafe('printableProtocol.timing', 'Timing')}:</span> {med.timing}</div>
                          {med.administrationDuration && (
-                           <div><span className="font-medium">{t('printableProtocol.duration')}:</span> {med.administrationDuration}</div>
+                           <div><span className="font-medium">{tSafe('printableProtocol.duration', 'Duration')}:</span> {med.administrationDuration}</div>
                          )}
                          {med.solvent && (
-                           <div><span className="font-medium">{t('premedSelector.solvent')}:</span> {med.solvent}</div>
+                           <div><span className="font-medium">{tSafe('premedSelector.solvent', 'Solvent')}:</span> {med.solvent}</div>
                          )}
                        </div>
                     </div>
@@ -352,7 +352,7 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
                 <div className="p-4 bg-muted/30 rounded-lg print:bg-background print:border print:border-border">
                   <h5 className="font-medium mb-2 flex items-center gap-2">
                     <FileText className="h-4 w-4" />
-                    {t('clinicalSheet.clinicalNotesHeader')}
+                    {tSafe('clinicalSheet.clinicalNotesHeader', 'Clinical Notes')}
                   </h5>
                   <p className="text-sm text-muted-foreground print:text-foreground">{treatmentData.clinicalNotes}</p>
                 </div>
@@ -361,36 +361,36 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
               {/* Signature Section */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 print:grid-cols-2">
                 <div className="space-y-3">
-                  <h5 className="font-medium">{t('clinicalSheet.pharmacyVerification')}</h5>
+                  <h5 className="font-medium">{tSafe('clinicalSheet.pharmacyVerification', 'Pharmacy Verification')}</h5>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">{t('clinicalSheet.preparedBy')}</span>
+                      <span className="text-sm">{tSafe('clinicalSheet.preparedBy', 'Prepared by')}</span>
                       <div className="border-b border-muted-foreground w-32 print:border-foreground"></div>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">{t('clinicalSheet.dateTime')}</span>
+                      <span className="text-sm">{tSafe('clinicalSheet.dateTime', 'Date/Time')}</span>
                       <div className="border-b border-muted-foreground w-32 print:border-foreground"></div>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">{t('clinicalSheet.signature')}</span>
+                      <span className="text-sm">{tSafe('clinicalSheet.signature', 'Signature')}</span>
                       <div className="border-b border-muted-foreground w-32 print:border-foreground"></div>
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-3">
-                  <h5 className="font-medium">{t('clinicalSheet.nursingVerification')}</h5>
+                  <h5 className="font-medium">{tSafe('clinicalSheet.nursingVerification', 'Nursing Verification')}</h5>
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">{t('clinicalSheet.verifiedBy')}</span>
+                      <span className="text-sm">{tSafe('clinicalSheet.verifiedBy', 'Verified by')}</span>
                       <div className="border-b border-muted-foreground w-32 print:border-foreground"></div>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">{t('clinicalSheet.dateTime')}</span>
+                      <span className="text-sm">{tSafe('clinicalSheet.dateTime', 'Date/Time')}</span>
                       <div className="border-b border-muted-foreground w-32 print:border-foreground"></div>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-sm">{t('clinicalSheet.signature')}</span>
+                      <span className="text-sm">{tSafe('clinicalSheet.signature', 'Signature')}</span>
                       <div className="border-b border-muted-foreground w-32 print:border-foreground"></div>
                     </div>
                   </div>
@@ -401,14 +401,14 @@ export const ClinicalTreatmentSheet = React.forwardRef<HTMLDivElement, ClinicalT
               <Separator className="print:border-border" />
               <div className="text-xs text-muted-foreground print:text-foreground space-y-2">
                 <div className="flex justify-between items-center">
-                  <span>{t('clinicalSheet.generatedLabel')} {new Date().toLocaleString()}</span>
+                  <span>{tSafe('clinicalSheet.generatedLabel', 'Generated')} {new Date().toLocaleString()}</span>
                   <span className="flex items-center gap-1">
                     <Calendar className="h-3 w-3" />
-                    {t('clinicalSheet.documentVersion')} {new Date().toISOString().split('T')[0]}
+                    {tSafe('clinicalSheet.documentVersion', 'Document Version')} {toLocalISODate(new Date())}
                   </span>
                 </div>
                 <div className="text-center pt-2 border-t border-muted print:border-foreground">
-                  <em className="text-xs">{t('clinicalSheet.disclaimer')}</em>
+                  <em className="text-xs">{tSafe('clinicalSheet.disclaimer', 'This document is for clinical use only. Verify all calculations independently.')}</em>
                 </div>
               </div>
             </div>
