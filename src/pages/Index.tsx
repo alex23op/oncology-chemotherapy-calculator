@@ -48,7 +48,8 @@ const IndexContent = () => {
     setRegimenData: setPersistentRegimenData,
     setSupportiveData: setPersistentSupportiveData,
     setDoseData: setPersistentDoseData,
-    resetAllData 
+    resetAllData,
+    markSessionComplete
   } = useDataPersistence();
   
   // Performance monitoring
@@ -316,11 +317,11 @@ const IndexContent = () => {
                         elementId: 'protocol-print',
                         orientation: reviewOrientation,
                       });
-                      // Reset all data after successful PDF generation
+                      // Mark session as complete and clean up immediately
+                      markSessionComplete();
                       setTimeout(() => {
-                        resetAllData();
                         goTo('patient');
-                      }, 1000);
+                      }, 100);
                     }}
                   >
                     {t('doseCalculator.exportPdf')}
@@ -332,9 +333,11 @@ const IndexContent = () => {
                       window.print();
                       setTimeout(() => {
                         document.body.classList.remove('printing-protocol');
-                        // Reset all data after successful printing
-                        resetAllData();
-                        goTo('patient');
+                        // Mark session as complete and clean up immediately
+                        markSessionComplete();
+                        setTimeout(() => {
+                          goTo('patient');
+                        }, 100);
                       }, 1000);
                     }}
                   >

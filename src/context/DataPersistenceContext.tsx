@@ -3,6 +3,7 @@ import { Regimen, Premedication } from '@/types/regimens';
 import { TreatmentData } from '@/types/clinicalTreatment';
 import { AntiemeticAgent } from '@/types/emetogenicRisk';
 import { toast } from 'sonner';
+import { logger } from '@/utils/logger';
 
 interface PatientData {
   weight: string;
@@ -49,6 +50,7 @@ interface PersistedState {
   supportiveData?: Partial<SupportiveData>;
   doseData?: DoseData;
   lastUpdated?: string;
+  isSessionComplete?: boolean;
 }
 
 type DataPersistenceAction =
@@ -57,6 +59,7 @@ type DataPersistenceAction =
   | { type: 'SET_SUPPORTIVE_DATA'; payload: Partial<SupportiveData> }
   | { type: 'SET_DOSE_DATA'; payload: DoseData }
   | { type: 'LOAD_FROM_STORAGE'; payload: PersistedState }
+  | { type: 'MARK_SESSION_COMPLETE' }
   | { type: 'RESET_ALL' };
 
 interface DataPersistenceContextType {
@@ -66,12 +69,62 @@ interface DataPersistenceContextType {
   setSupportiveData: (data: Partial<SupportiveData>) => void;
   setDoseData: (data: DoseData) => void;
   resetAllData: () => void;
+  markSessionComplete: () => void;
   hasPersistedData: boolean;
 }
 
 const DataPersistenceContext = createContext<DataPersistenceContextType | undefined>(undefined);
 
 const STORAGE_KEY = 'clinical-treatment-data';
+const SESSION_TIMEOUT_MINUTES = 5;
+const DATA_EXPIRY_HOURS = 24;
+
+// Helper to check if data contains meaningful information
+const hasValidData = (data: PersistedState): boolean => {
+  const hasPatientInfo = !!(
+    data.patientData?.fullName ||
+    data.patientData?.cnp ||
+    data.patientData?.weight ||
+    data.patientData?.height
+  );
+  
+  const hasRegimenInfo = !!(data.regimenData?.selectedRegimen);
+  
+  const hasDoseInfo = !!(
+    data.doseData?.calculations && 
+    data.doseData.calculations.length > 0
+  );
+  
+  return hasPatientInfo || hasRegimenInfo || hasDoseInfo;
+};
+
+// Helper to check if data is recent enough to show recovery dialog
+const isDataRecent = (lastUpdated: string): boolean => {
+  const now = new Date();
+  const dataDate = new Date(lastUpdated);
+  const diffMinutes = (now.getTime() - dataDate.getTime()) / (1000 * 60);
+  return diffMinutes >= SESSION_TIMEOUT_MINUTES;
+};
+
+// Helper to check if data is expired
+const isDataExpired = (lastUpdated: string): boolean => {
+  const now = new Date();
+  const dataDate = new Date(lastUpdated);
+  const diffHours = (now.getTime() - dataDate.getTime()) / (1000 * 60 * 60);
+  return diffHours >= DATA_EXPIRY_HOURS;
+};
+
+// Helper to check if state should be saved
+const shouldSaveState = (state: PersistedState): boolean => {
+  // Don't save empty states or states with only lastUpdated
+  if (!state || Object.keys(state).length === 0) return false;
+  if (Object.keys(state).length === 1 && state.lastUpdated) return false;
+  
+  // Don't save if session is marked as complete
+  if (state.isSessionComplete) return false;
+  
+  return true;
+};
 
 function dataPersistenceReducer(state: PersistedState, action: DataPersistenceAction): PersistedState {
   switch (action.type) {
@@ -79,24 +132,34 @@ function dataPersistenceReducer(state: PersistedState, action: DataPersistenceAc
       return {
         ...state,
         patientData: { ...state.patientData, ...action.payload },
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
+        isSessionComplete: false
       };
     case 'SET_REGIMEN_DATA':
       return {
         ...state,
         regimenData: { ...state.regimenData, ...action.payload },
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
+        isSessionComplete: false
       };
     case 'SET_SUPPORTIVE_DATA':
       return {
         ...state,
         supportiveData: { ...state.supportiveData, ...action.payload },
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
+        isSessionComplete: false
       };
     case 'SET_DOSE_DATA':
       return {
         ...state,
         doseData: action.payload,
+        lastUpdated: new Date().toISOString(),
+        isSessionComplete: false
+      };
+    case 'MARK_SESSION_COMPLETE':
+      return {
+        ...state,
+        isSessionComplete: true,
         lastUpdated: new Date().toISOString()
       };
     case 'LOAD_FROM_STORAGE':
@@ -142,28 +205,62 @@ export const DataPersistenceProvider: React.FC<{ children: React.ReactNode }> = 
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
         const parsedData = deserializeFromStorage(stored);
-        if (Object.keys(parsedData).length > 0 && parsedData.lastUpdated) {
+        
+        logger.debug('Checking persisted data on mount', {
+          component: 'DataPersistenceContext',
+          hasData: Object.keys(parsedData).length > 0,
+          lastUpdated: parsedData.lastUpdated,
+          isComplete: parsedData.isSessionComplete
+        });
+
+        // Remove expired data automatically
+        if (parsedData.lastUpdated && isDataExpired(parsedData.lastUpdated)) {
+          logger.debug('Removing expired data', { lastUpdated: parsedData.lastUpdated });
+          localStorage.removeItem(STORAGE_KEY);
+          return;
+        }
+
+        // Show recovery dialog only for valid, recent, incomplete data
+        if (parsedData.lastUpdated && 
+            hasValidData(parsedData) && 
+            !parsedData.isSessionComplete &&
+            isDataRecent(parsedData.lastUpdated)) {
+          
+          logger.debug('Showing recovery dialog for valid incomplete data');
           setStoredData(parsedData);
           setHasPersistedData(true);
           setShowRecoveryDialog(true);
+        } else if (parsedData.isSessionComplete) {
+          // Clean up completed sessions
+          logger.debug('Removing completed session data');
+          localStorage.removeItem(STORAGE_KEY);
         }
       }
     } catch (error) {
-      console.warn('Failed to load persisted data:', error);
+      logger.error('Failed to load persisted data', { error: error.message });
       localStorage.removeItem(STORAGE_KEY);
     }
   }, []);
 
-  // Save to localStorage whenever state changes
+  // Save to localStorage whenever state changes (with debounce)
   useEffect(() => {
-    if (Object.keys(state).length > 0) {
-      try {
-        localStorage.setItem(STORAGE_KEY, serializeForStorage(state));
-      } catch (error) {
-        console.warn('Failed to save data to localStorage:', error);
-        toast.error('Nu s-au putut salva datele local. Vă rugăm să nu închideți aplicația.');
+    const saveTimeout = setTimeout(() => {
+      if (shouldSaveState(state)) {
+        try {
+          logger.debug('Saving state to localStorage', {
+            component: 'DataPersistenceContext', 
+            hasValidData: hasValidData(state),
+            isComplete: state.isSessionComplete
+          });
+          localStorage.setItem(STORAGE_KEY, serializeForStorage(state));
+        } catch (error) {
+          logger.error('Failed to save data to localStorage', { error: error.message });
+          toast.error('Nu s-au putut salva datele local. Vă rugăm să nu închideți aplicația.');
+        }
       }
-    }
+    }, 500); // Debounce saves by 500ms
+
+    return () => clearTimeout(saveTimeout);
   }, [state]);
 
   const setPatientData = (data: Partial<PatientData>) => {
@@ -183,10 +280,21 @@ export const DataPersistenceProvider: React.FC<{ children: React.ReactNode }> = 
   };
 
   const resetAllData = () => {
+    logger.debug('Resetting all data', { component: 'DataPersistenceContext' });
     dispatch({ type: 'RESET_ALL' });
     localStorage.removeItem(STORAGE_KEY);
     setHasPersistedData(false);
     toast.success('Toate datele au fost șterse. Puteți începe un nou caz.');
+  };
+
+  const markSessionComplete = () => {
+    logger.debug('Marking session as complete', { component: 'DataPersistenceContext' });
+    dispatch({ type: 'MARK_SESSION_COMPLETE' });
+    // Clear localStorage immediately when session is complete
+    setTimeout(() => {
+      localStorage.removeItem(STORAGE_KEY);
+      setHasPersistedData(false);
+    }, 100); // Small delay to ensure state is saved first
   };
 
   const handleRecoveryChoice = (restore: boolean) => {
@@ -208,6 +316,7 @@ export const DataPersistenceProvider: React.FC<{ children: React.ReactNode }> = 
     setSupportiveData,
     setDoseData,
     resetAllData,
+    markSessionComplete,
     hasPersistedData
   };
 
@@ -221,9 +330,14 @@ export const DataPersistenceProvider: React.FC<{ children: React.ReactNode }> = 
           <div className="bg-background p-6 rounded-lg shadow-lg max-w-md w-full mx-4">
             <h3 className="text-lg font-semibold mb-4">Date nesalvate detectate</h3>
             <p className="text-sm text-muted-foreground mb-6">
-              Există date nesalvate de la o sesiune anterioară din{' '}
-              {storedData?.lastUpdated && new Date(storedData.lastUpdated).toLocaleString('ro-RO')}.
-              {' '}Doriți să le încărcați?
+              S-au detectat date nesalvate dintr-o sesiune anterioară{' '}
+              {storedData?.lastUpdated && (
+                <>din {new Date(storedData.lastUpdated).toLocaleString('ro-RO')}</>
+              )}
+              {storedData?.patientData?.fullName && (
+                <> pentru pacientul "{storedData.patientData.fullName}"</>
+              )}.
+              {' '}Doriți să continuați cu aceste date?
             </p>
             <div className="flex gap-3 justify-end">
               <button
