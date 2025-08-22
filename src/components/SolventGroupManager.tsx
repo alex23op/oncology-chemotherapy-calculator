@@ -195,7 +195,7 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
       <Alert>
         <Beaker className="h-4 w-4" />
         <AlertDescription>
-          {t('solventGroups.description')}
+          {tSafe('solventGroups.description', 'Organizați medicamentele în grupuri PEV pentru optimizarea administrării.')}
         </AlertDescription>
       </Alert>
 
@@ -203,10 +203,10 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
         {/* Solvent Groups */}
         <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">{t('solventGroups.pevTitle')}</h3>
+            <h3 className="text-lg font-semibold">{tSafe('solventGroups.pevTitle', 'Grupuri PEV')}</h3>
             <Button onClick={createNewGroup} variant="outline" size="sm">
               <Plus className="h-4 w-4 mr-1" />
-              {t('solventGroups.addNewPev')}
+              {tSafe('solventGroups.addNewPev', 'Adaugă PEV nou')}
             </Button>
           </div>
 
@@ -216,7 +216,7 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2 text-base">
                     <Droplets className="h-4 w-4 text-primary" />
-                    {t('solventGroups.pevNumber', { number: index + 1 })}
+                    {tSafe('solventGroups.pevNumber', 'PEV {{number}}', { number: index + 1 })}
                   </CardTitle>
                   <Button
                     onClick={() => deleteGroup(group.id)}
@@ -239,7 +239,7 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
                     <SelectContent>
                       {SOLVENT_OPTIONS.map((option) => (
                         <SelectItem key={option.value} value={option.value}>
-                          {t(`doseCalculator.solvents.${option.key}`)}
+                          {tSafe(`doseCalculator.solvents.${option.key}`, option.key)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -266,7 +266,7 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
                             placeholder="Selectează medicamente pentru acest PEV..."
                           />
                           <div className="text-center text-muted-foreground text-xs border-t pt-2">
-                            {t('solventGroups.dropHere')}
+                            {tSafe('solventGroups.dropHere', 'Trageți medicamentele aici pentru a le grupa')}
                           </div>
                         </div>
                       ) : (
@@ -290,7 +290,7 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2 text-base">
               <Beaker className="h-4 w-4" />
-              {t('solventGroups.individual')} ({localGrouping.individual.length})
+              {tSafe('solventGroups.individual', 'Medicamente individuale')} ({localGrouping.individual.length})
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -307,7 +307,7 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
                 >
                   {localGrouping.individual.length === 0 ? (
                     <div className="text-center text-muted-foreground text-sm py-4">
-                      {t('solventGroups.noIndividual')}
+                      {tSafe('solventGroups.noIndividual', 'Niciun medicament individual')}
                     </div>
                   ) : (
                     <div className="space-y-2">
@@ -329,7 +329,7 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-base text-warning">
                 <GripVertical className="h-4 w-4" />
-                {t('solventGroups.unassigned')} ({unassignedMedications.length})
+                {tSafe('solventGroups.unassigned', 'Medicamente neasignate')} ({unassignedMedications.length})
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -349,7 +349,7 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
                 ))}
               </div>
               <p className="text-xs text-warning mt-2">
-                {t('solventGroups.unassignedHelp')}
+                {tSafe('solventGroups.unassignedHelp', 'Aceste medicamente trebuie să fie asignate la un grup sau mutate la administrarea individuală.')}
               </p>
             </CardContent>
           </Card>
@@ -365,7 +365,7 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
               <AlertTriangle className="h-4 w-4" />
               <AlertDescription>
                 <div className="space-y-1">
-                  <div className="font-medium">{t('solventGroups.validation.title')}</div>
+                  <div className="font-medium">{tSafe('solventGroups.validation.title', 'Vă rugăm să corectați următoarele probleme:')}</div>
                   {validation.errors.map((error, index) => (
                     <div key={index} className="text-sm">• {error}</div>
                   ))}
