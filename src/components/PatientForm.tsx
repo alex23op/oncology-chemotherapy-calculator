@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { formatDate, parseISODate, toISODate, toLocalISODate } from "@/utils/dateFormat";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
@@ -53,7 +54,7 @@ export const PatientForm = ({ onPatientDataChange, selectedRegimen }: PatientFor
   
   // Initialize with persistent data if available
   const [localPatientData, setLocalPatientData] = useState<PatientData>(() => {
-    const currentDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+    const currentDate = toLocalISODate(new Date()); // YYYY-MM-DD format
     
     if (state.patientData) {
       return {
@@ -230,7 +231,7 @@ export const PatientForm = ({ onPatientDataChange, selectedRegimen }: PatientFor
   // Sync with context state when it changes (data recovery)
   useEffect(() => {
     if (state.patientData) {
-      const currentDate = new Date().toISOString().split('T')[0];
+      const currentDate = toLocalISODate(new Date());
       const restoredData = {
         weight: state.patientData.weight || "",
         height: state.patientData.height || "",
@@ -337,7 +338,7 @@ export const PatientForm = ({ onPatientDataChange, selectedRegimen }: PatientFor
         }
         
         const calculatedNextDate = addDays(treatmentDate, daysToAdd);
-        const nextDateISO = calculatedNextDate.toISOString().split('T')[0];
+        const nextDateISO = toLocalISODate(calculatedNextDate);
         
         handleInputChange('nextCycleDate', nextDateISO);
       }
@@ -619,7 +620,7 @@ export const PatientForm = ({ onPatientDataChange, selectedRegimen }: PatientFor
                   <Calendar
                     mode="single"
                     selected={localPatientData.treatmentDate ? parseISO(localPatientData.treatmentDate) : undefined}
-                    onSelect={(date) => date && handleInputChange('treatmentDate', date.toISOString().split('T')[0])}
+                    onSelect={(date) => date && handleInputChange('treatmentDate', toLocalISODate(date))}
                     initialFocus
                     className="pointer-events-auto"
                   />
@@ -649,7 +650,7 @@ export const PatientForm = ({ onPatientDataChange, selectedRegimen }: PatientFor
                   <Calendar
                     mode="single"
                     selected={localPatientData.nextCycleDate ? parseISO(localPatientData.nextCycleDate) : undefined}
-                    onSelect={(date) => date && handleInputChange('nextCycleDate', date.toISOString().split('T')[0])}
+                    onSelect={(date) => date && handleInputChange('nextCycleDate', toLocalISODate(date))}
                     initialFocus
                     className="pointer-events-auto"
                   />
