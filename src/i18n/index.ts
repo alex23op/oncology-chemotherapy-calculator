@@ -5,6 +5,9 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 import en from '@/locales/en/common.json';
 import ro from '@/locales/ro/common.json';
 
+// Runtime missing key detection
+const missingKeysThisSession = new Set<string>();
+
 // Initialize i18n
 void i18n
   .use(LanguageDetector)
@@ -23,5 +26,16 @@ void i18n
       lookupLocalStorage: 'i18nextLng',
     },
   });
+
+// Add missing key handler for runtime detection
+i18n.on('missingKey', (lng, namespace, key, defaultValue) => {
+  const fullKey = namespace ? `${namespace}:${key}` : key;
+  
+  // Only log each missing key once per session
+  if (!missingKeysThisSession.has(fullKey)) {
+    missingKeysThisSession.add(fullKey);
+    console.warn(`[i18n-missing] Key: "${fullKey}", Language: ${lng}, Default: "${defaultValue || 'none'}"`);
+  }
+});
 
 export default i18n;

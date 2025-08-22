@@ -1,14 +1,16 @@
 #!/usr/bin/env node
 /*
-  i18n consistency checker - Enhanced version
+  i18n consistency checker - Enhanced version with usage scanning
   - Compares src/locales/en and src/locales/ro JSON files recursively
   - Supports multiple languages (en, ro, fr, es)
+  - Scans source files for t(), tSafe(), i18n.t() usage
   - Detects invalid key formats (keys ending with ':' or other invalid patterns)
   - Reports:
       MISSING in target language: keys present in EN but missing in target
       MISSING in EN: keys present in target but missing in EN
       EMPTY in target language: keys present in both but empty string in target
       INVALID KEYS: keys with invalid formats
+      USAGE ISSUES: keys used in code but missing from locale files
   - Exit code: 1 if any issue found (unless --fix resolves everything), else 0
   - Optional: --fix will add missing target language keys using EN values as fallback
 
@@ -16,6 +18,7 @@
     node scripts/check-i18n.js
     node scripts/check-i18n.js --fix
     node scripts/check-i18n.js --languages en,ro,fr,es
+    node scripts/check-i18n.js --scan-usage  (scan source files for t() usage)
 */
 
 const fs = require('fs');
@@ -26,6 +29,7 @@ const LOCALE_DIR = path.join(ROOT, 'src', 'locales');
 
 const args = process.argv.slice(2);
 const FIX = args.includes('--fix');
+const SCAN_USAGE = args.includes('--scan-usage');
 const LANGUAGES_ARG = args.find(arg => arg.startsWith('--languages='));
 const LANGUAGES = LANGUAGES_ARG 
   ? LANGUAGES_ARG.split('=')[1].split(',')
@@ -263,6 +267,82 @@ function applyFix(primaryFiles, localeData) {
   return totalFixes;
 }
 
+// Source code scanning for t() usage
+function scanSourceFiles() {
+  const srcDir = path.join(ROOT, 'src');
+  const usedKeys = new Set();
+  
+  function scanFile(filePath) {
+    try {
+      const content = fs.readFileSync(filePath, 'utf8');
+      
+      // Patterns to match t(), tSafe(), i18n.t() calls
+      const patterns = [
+        /\bt\s*\(\s*['"`]([^'"`]+)['"`]/g,           // t('key')
+        /\btSafe\s*\(\s*['"`]([^'"`]+)['"`]/g,       // tSafe('key')
+        /\bi18n\.t\s*\(\s*['"`]([^'"`]+)['"`]/g,     // i18n.t('key')
+        /\bTranslatedText\s+k=['"`]([^'"`]+)['"`]/g  // <TranslatedText k="key" />
+      ];
+      
+      for (const pattern of patterns) {
+        let match;
+        while ((match = pattern.exec(content)) !== null) {
+          usedKeys.add(match[1]);
+        }
+      }
+    } catch (error) {
+      console.warn(`Warning: Could not scan ${filePath}: ${error.message}`);
+    }
+  }
+  
+  function walkSrcDir(dir) {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isDirectory()) {
+        walkSrcDir(fullPath);
+      } else if (entry.isFile() && /\.(ts|tsx|js|jsx)$/.test(entry.name)) {
+        scanFile(fullPath);
+      }
+    }
+  }
+  
+  if (fs.existsSync(srcDir)) {
+    walkSrcDir(srcDir);
+  }
+  
+  return Array.from(usedKeys).sort();
+}
+
+function checkUsageIssues(usedKeys, localeData) {
+  const primaryFlat = new Map();
+  
+  // Collect all keys from all primary locale files
+  const primaryData = localeData.get(PRIMARY_LANG);
+  for (const [file, data] of primaryData.entries()) {
+    Object.keys(data.flat).forEach(key => primaryFlat.set(key, `${file}:${key}`));
+  }
+  
+  const missingFromLocales = [];
+  const unusedInLocales = [];
+  
+  // Check for keys used in code but missing from locale files
+  for (const key of usedKeys) {
+    if (!primaryFlat.has(key)) {
+      missingFromLocales.push(key);
+    }
+  }
+  
+  // Check for keys in locale files but not used in code (optional - might be too noisy)
+  // for (const key of primaryFlat.keys()) {
+  //   if (!usedKeys.includes(key)) {
+  //     unusedInLocales.push(primaryFlat.get(key));
+  //   }
+  // }
+  
+  return { missingFromLocales, unusedInLocales };
+}
+
 function main() {
   console.log(`Checking i18n consistency for languages: ${LANGUAGES.join(', ')}`);
   console.log(`Primary language: ${PRIMARY_LANG}`);
@@ -276,6 +356,48 @@ function main() {
   }
 
   let issues = computeDiffs(primaryFiles, localeData);
+  let usageIssues = null;
+  
+  // Scan source code usage if requested
+  if (SCAN_USAGE) {
+    console.log('\nScanning source files for i18n key usage...');
+    const usedKeys = scanSourceFiles();
+    console.log(`Found ${usedKeys.length} i18n keys used in source code.`);
+    
+    usageIssues = checkUsageIssues(usedKeys, localeData);
+    
+    // If fixing and we have missing keys from usage, add them to locale files
+    if (FIX && usageIssues.missingFromLocales.length > 0) {
+      console.log(`Adding ${usageIssues.missingFromLocales.length} missing keys found in source code...`);
+      
+      // Add missing keys to all locales
+      for (const lang of LANGUAGES) {
+        const langDir = path.join(LOCALE_DIR, lang);
+        const commonFile = path.join(langDir, 'common.json');
+        
+        let commonData = {};
+        if (fs.existsSync(commonFile)) {
+          commonData = readJson(commonFile);
+        }
+        
+        let added = 0;
+        for (const key of usageIssues.missingFromLocales) {
+          if (!getByPath(commonData, key)) {
+            const fallback = lang === PRIMARY_LANG ? 
+              `__MISSING__${key}` : 
+              `__LIPSA__${key}`;
+            setByPath(commonData, key, fallback);
+            added++;
+          }
+        }
+        
+        if (added > 0) {
+          writeJson(commonFile, commonData);
+          console.log(`Added ${added} missing keys to ${lang}/common.json`);
+        }
+      }
+    }
+  }
 
   if (FIX) {
     const fixed = applyFix(primaryFiles, localeData);
@@ -305,16 +427,28 @@ function main() {
     printSection(`EMPTY in ${lang.toUpperCase()}`, issues[lang].emptyInTarget);
     printSection(`INVALID KEYS in ${lang.toUpperCase()}`, issues[lang].invalidKeys);
   }
+  
+  // Print usage issues if scanned
+  if (usageIssues) {
+    console.log(`\n=== USAGE ISSUES ===`);
+    printSection('KEYS USED IN CODE BUT MISSING FROM LOCALES', usageIssues.missingFromLocales);
+  }
 
   if (hasIssues) {
     if (!FIX) {
-      console.error('\nFound i18n inconsistencies. Run with --fix to autofill missing keys using EN values.');
+      const fixSuggestion = SCAN_USAGE ? 
+        '\nRun with --fix --scan-usage to autofill missing keys and add keys found in source code.' :
+        '\nRun with --fix to autofill missing keys using EN values.';
+      console.error(fixSuggestion);
     } else {
       console.error('\nSome inconsistencies remain after --fix (likely EMPTY values or INVALID KEYS). Please review manually.');
     }
     process.exit(1);
   } else {
     console.log(`\n✔ i18n keys are consistent across all languages: ${LANGUAGES.join(', ')}.`);
+    if (usageIssues && usageIssues.missingFromLocales.length === 0) {
+      console.log('✔ All keys used in source code are present in locale files.');
+    }
     process.exit(0);
   }
 }

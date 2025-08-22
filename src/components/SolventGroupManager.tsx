@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { PremedAgent, PremedSolventGroup, GroupedPremedications } from '@/types/clinicalTreatment';
 import { Trash2, Plus, GripVertical, Beaker, Droplets, AlertTriangle } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTSafe } from '@/i18n/tSafe';
 import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { MedicationMultiSelector } from './MedicationMultiSelector';
 
@@ -32,7 +32,7 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
   groupedPremedications,
   onGroupingChange
 }) => {
-  const { t } = useTranslation();
+  const tSafe = useTSafe();
   const [localGrouping, setLocalGrouping] = useState<GroupedPremedications>(groupedPremedications);
 
   useEffect(() => {
@@ -49,10 +49,10 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
     
     localGrouping.groups.forEach((group, index) => {
       if (!group.solvent.trim()) {
-        errors.push(t('solventGroups.validation.noSolvent', { pev: index + 1 }));
+        errors.push(tSafe('solventGroups.validation.noSolvent', `PEV ${index + 1}: Niciun solvent selectat`, { pev: index + 1 }));
       }
       if (group.medications.length === 0) {
-        errors.push(t('solventGroups.validation.emptyPev', { pev: index + 1 }));
+        errors.push(tSafe('solventGroups.validation.emptyPev', `PEV ${index + 1}: Niciun medicament asignat`, { pev: index + 1 }));
       }
     });
     
@@ -228,13 +228,13 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
                   </Button>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-sm font-medium">{t('unifiedSelector.solvent')}</Label>
+                  <Label className="text-sm font-medium">{tSafe('unifiedSelector.solvent', 'Solvent')}</Label>
                   <Select
                     value={group.solvent}
                     onValueChange={(value) => updateGroupSolvent(group.id, value)}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder={t('doseCalculator.selectSolvent')} />
+                      <SelectValue placeholder={tSafe('doseCalculator.selectSolvent', 'Selectează solventul')} />
                     </SelectTrigger>
                     <SelectContent>
                       {SOLVENT_OPTIONS.map((option) => (
