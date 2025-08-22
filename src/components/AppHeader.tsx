@@ -1,10 +1,10 @@
 import { Stethoscope, Shield, Info } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { useTranslation } from "react-i18next";
+import { useTSafe } from '@/i18n/tSafe';
 import { LanguageToggle } from "./LanguageToggle";
 import { SmartNavSettings } from "@/components/SmartNavSettings";
 export const AppHeader = () => {
-  const { t } = useTranslation();
+  const tSafe = useTSafe();
   return (
     <header className="border-b bg-card" role="banner">
       <div className="container mx-auto px-4 py-4">
@@ -15,10 +15,10 @@ export const AppHeader = () => {
             </div>
             <div>
               <h1 className="text-xl font-bold text-foreground" id="app-title">
-                {t('header.title')}
+                {tSafe('header.title', 'ChemoCalc Pro')}
               </h1>
               <p className="text-sm text-muted-foreground" aria-describedby="app-title">
-                {t('header.subtitle')}
+                {tSafe('header.subtitle', 'Oncology Dose Calculator')}
               </p>
             </div>
           </div>
@@ -28,19 +28,19 @@ export const AppHeader = () => {
               variant="outline" 
               className="flex items-center gap-1"
               role="status"
-              aria-label={t('header.hipaa')}
+              aria-label={tSafe('header.hipaa', 'HIPAA Compliant')}
             >
               <Shield className="h-3 w-3" aria-hidden="true" />
-              {t('header.hipaa')}
+              {tSafe('header.hipaa', 'HIPAA Compliant')}
             </Badge>
             <Badge 
               variant="secondary" 
               className="flex items-center gap-1"
               role="status"
-              aria-label={t('header.clinicalUseOnly')}
+              aria-label={tSafe('header.clinicalUseOnly', 'Clinical Use Only')}
             >
               <Info className="h-3 w-3" aria-hidden="true" />
-              {t('header.clinicalUseOnly')}
+              {tSafe('header.clinicalUseOnly', 'Clinical Use Only')}
             </Badge>
             <LanguageToggle />
             <SmartNavSettings />

@@ -15,7 +15,7 @@ import {
 } from "@/data/antiemeticProtocols";
 import { AntiemeticProtocol, AntiemeticAgent } from "@/types/emetogenicRisk";
 import { Drug } from "@/types/regimens";
-import { useTranslation } from 'react-i18next';
+import { useTSafe } from '@/i18n/tSafe';
 
 interface AntiemeticProtocolSelectorProps {
   drugs: Drug[];
@@ -28,7 +28,7 @@ export const AntiemeticProtocolSelector: React.FC<AntiemeticProtocolSelectorProp
   riskLevel,
   onProtocolChange
 }) => {
-  const { t } = useTranslation();
+  const tSafe = useTSafe();
   const [selectedProtocol, setSelectedProtocol] = useState<string | null>(null);
   const [selectedIndividualAgents, setSelectedIndividualAgents] = useState<string[]>([]);
   const [customizationMode, setCustomizationMode] = useState<"protocol" | "individual">("protocol");
@@ -113,7 +113,7 @@ export const AntiemeticProtocolSelector: React.FC<AntiemeticProtocolSelectorProp
         <div>
           <h5 className="font-medium text-sm mb-2 flex items-center gap-2">
             <Pill className="h-3 w-3" />
-            {t('antiemeticSelector.agentsLabel', { count: protocol.agents.length })}
+            {tSafe('antiemeticSelector.agentsLabel', `Agents (${protocol.agents.length})`, { count: protocol.agents.length })}
           </h5>
           <div className="flex flex-wrap gap-1">
             {protocol.agents.map((agent, idx) => (
@@ -128,7 +128,7 @@ export const AntiemeticProtocolSelector: React.FC<AntiemeticProtocolSelectorProp
         <Collapsible>
           <CollapsibleTrigger asChild>
             <Button variant="ghost" size="sm" className="w-full justify-between p-0 h-auto font-normal">
-              <span className="text-sm">{t('antiemeticSelector.viewDetails')}</span>
+              <span className="text-sm">{tSafe('antiemeticSelector.viewDetails', 'View Clinical Details')}</span>
               <ChevronDown className="h-3 w-3" />
             </Button>
           </CollapsibleTrigger>
@@ -136,27 +136,27 @@ export const AntiemeticProtocolSelector: React.FC<AntiemeticProtocolSelectorProp
             <div>
               <h6 className="font-medium text-xs text-muted-foreground mb-1 flex items-center gap-1">
                 <Clock className="h-3 w-3" />
-                {t('antiemeticSelector.acuteManagement')}
+                {tSafe('antiemeticSelector.acuteManagement', 'Acute Management')}
               </h6>
               <p className="text-xs">{protocol.acuteManagement}</p>
             </div>
             <div>
               <h6 className="font-medium text-xs text-muted-foreground mb-1 flex items-center gap-1">
                 <Clock className="h-3 w-3" />
-                {t('antiemeticSelector.delayedManagement')}
+                {tSafe('antiemeticSelector.delayedManagement', 'Delayed Management')}
               </h6>
               <p className="text-xs">{protocol.delayedManagement}</p>
             </div>
             <div>
               <h6 className="font-medium text-xs text-muted-foreground mb-1 flex items-center gap-1">
                 <BookOpen className="h-3 w-3" />
-                {t('antiemeticSelector.rationale')}
+                {tSafe('antiemeticSelector.rationale', 'Rationale')}
               </h6>
               <p className="text-xs">{protocol.clinicalRationale}</p>
             </div>
             <div>
               <p className="text-xs text-muted-foreground">
-                <strong>{t('antiemeticSelector.guidelinesLabel')}</strong> {protocol.guidelines.join(", ")}
+                <strong>{tSafe('antiemeticSelector.guidelinesLabel', 'Guidelines:')}</strong> {protocol.guidelines.join(", ")}
               </p>
             </div>
           </CollapsibleContent>
@@ -195,32 +195,32 @@ export const AntiemeticProtocolSelector: React.FC<AntiemeticProtocolSelectorProp
         <div className="space-y-2 text-xs">
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <span className="font-medium">{t('clinicalSheet.dose')}:</span> {agent.dosage} {agent.unit}
+              <span className="font-medium">{tSafe('clinicalSheet.dose', 'Dose')}:</span> {agent.dosage} {agent.unit}
             </div>
             <div>
-              <span className="font-medium">{t('printableProtocol.route')}:</span> {agent.route}
+              <span className="font-medium">{tSafe('printableProtocol.route', 'Route')}:</span> {agent.route}
             </div>
             <div>
-              <span className="font-medium">{t('printableProtocol.timing')}:</span> {agent.timing}
+              <span className="font-medium">{tSafe('printableProtocol.timing', 'Timing')}:</span> {agent.timing}
             </div>
             <div>
-              <span className="font-medium">{t('clinicalSheet.indication')}:</span> {agent.indication}
+              <span className="font-medium">{tSafe('clinicalSheet.indication', 'Indication')}:</span> {agent.indication}
             </div>
           </div>
           
           {agent.duration && (
             <div>
-              <span className="font-medium">{t('printableProtocol.duration')}:</span> {agent.duration}
+              <span className="font-medium">{tSafe('printableProtocol.duration', 'Duration')}:</span> {agent.duration}
             </div>
           )}
           
           <div>
-            <span className="font-medium">{t('antiemeticSelector.mechanismLabel')}</span> {agent.mechanism}
+            <span className="font-medium">{tSafe('antiemeticSelector.mechanismLabel', 'Mechanism:')}</span> {agent.mechanism}
           </div>
           
           {agent.notes && (
             <div className="mt-2 p-2 bg-muted rounded text-xs">
-              <strong>{t('antiemeticSelector.noteLabel')}</strong> {agent.notes}
+              <strong>{tSafe('antiemeticSelector.noteLabel', 'Note:')}</strong> {agent.notes}
             </div>
           )}
         </div>
@@ -233,18 +233,18 @@ export const AntiemeticProtocolSelector: React.FC<AntiemeticProtocolSelectorProp
       <CardHeader>
 <CardTitle className="flex items-center gap-2">
   <Shield className="h-5 w-5" />
-  {t('antiemeticSelector.title')}
+  {tSafe('antiemeticSelector.title', 'Antiemetic Protocol Selection')}
 </CardTitle>
 <CardDescription>
-  {t('antiemeticSelector.description', { riskLevel })}
+  {tSafe('antiemeticSelector.description', `Evidence-based antiemetic prophylaxis for ${riskLevel} emetogenic risk regimens`, { riskLevel })}
 </CardDescription>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="recommended" className="space-y-4">
 <TabsList className="grid w-full grid-cols-3">
-  <TabsTrigger value="recommended">{t('antiemeticSelector.tabs.recommended')}</TabsTrigger>
-  <TabsTrigger value="all-protocols">{t('antiemeticSelector.tabs.all')}</TabsTrigger>
-  <TabsTrigger value="individual">{t('antiemeticSelector.tabs.individual')}</TabsTrigger>
+  <TabsTrigger value="recommended">{tSafe('antiemeticSelector.tabs.recommended', 'Recommended')}</TabsTrigger>
+  <TabsTrigger value="all-protocols">{tSafe('antiemeticSelector.tabs.all', 'All Protocols')}</TabsTrigger>
+  <TabsTrigger value="individual">{tSafe('antiemeticSelector.tabs.individual', 'Individual Agents')}</TabsTrigger>
 </TabsList>
 
           <TabsContent value="recommended" className="space-y-4">
@@ -253,7 +253,7 @@ export const AntiemeticProtocolSelector: React.FC<AntiemeticProtocolSelectorProp
 <Alert>
   <AlertTriangle className="h-4 w-4" />
   <AlertDescription>
-    {t('antiemeticSelector.alerts.recommended')}
+    {tSafe('antiemeticSelector.alerts.recommended', 'Protocols specifically recommended for your current regimen based on evidence-based guidelines.')}
   </AlertDescription>
 </Alert>
                 <div className="grid gap-4">
@@ -263,7 +263,7 @@ export const AntiemeticProtocolSelector: React.FC<AntiemeticProtocolSelectorProp
             ) : (
 <Alert>
   <AlertDescription>
-    {t('antiemeticSelector.alerts.none')}
+    {tSafe('antiemeticSelector.alerts.none', 'No specific protocols recommended for this combination. Please review all protocols or select individual agents.')}
   </AlertDescription>
 </Alert>
             )}
@@ -278,7 +278,7 @@ export const AntiemeticProtocolSelector: React.FC<AntiemeticProtocolSelectorProp
           <TabsContent value="individual" className="space-y-4">
 <Alert>
   <AlertDescription>
-    {t('antiemeticSelector.individualHelper')}
+    {tSafe('antiemeticSelector.individualHelper', 'Select individual antiemetic agents to create a custom protocol. Evidence levels: IA (highest), IB, IC, IIA, IIB, IIIA, IIIB (lowest).')}
   </AlertDescription>
 </Alert>
             <div className="grid gap-3">
@@ -293,7 +293,7 @@ export const AntiemeticProtocolSelector: React.FC<AntiemeticProtocolSelectorProp
           <>
             <Separator className="my-6" />
             <div>
-              <h4 className="font-semibold mb-3">{t('antiemeticSelector.summaryTitle')}</h4>
+              <h4 className="font-semibold mb-3">{tSafe('antiemeticSelector.summaryTitle', 'Selected Antiemetic Protocol Summary')}</h4>
               <div className="space-y-2">
                 {selectedAgents.map((agent, index) => (
                   <div key={index} className="flex items-center justify-between p-3 border rounded-lg">

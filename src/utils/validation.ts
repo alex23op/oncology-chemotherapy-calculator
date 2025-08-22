@@ -93,10 +93,13 @@ export const validateTreatmentData = (data: unknown): { isValid: boolean; errors
   } catch (error) {
     if (error instanceof z.ZodError) {
       const errors = error.errors.map(err => `${err.path.join('.')}: ${err.message}`);
-      logger.error("TreatmentData validation failed:", errors);
+      logger.error("TreatmentData validation failed:", { errors });
       return { isValid: false, errors };
     }
-    logger.error("Unexpected validation error:", error);
+    logger.error("Unexpected validation error occurred during treatment data validation", { 
+      component: 'validation', 
+      error: error instanceof Error ? error.message : 'Unknown error' 
+    });
     return { isValid: false, errors: ["Unexpected validation error"] };
   }
 };

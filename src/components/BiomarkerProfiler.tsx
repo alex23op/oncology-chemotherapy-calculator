@@ -7,7 +7,7 @@ import { Separator } from '@/components/ui/separator';
 import { AlertCircle, CheckCircle, Clock } from 'lucide-react';
 import { getBiomarkerPanel } from '@/data/biomarkerTesting';
 import { Biomarker } from '@/types/regimens';
-import { useTranslation } from 'react-i18next';
+import { useTSafe } from '@/i18n/tSafe';
 interface BiomarkerProfilerProps {
   cancerType: string;
   stage: string;
@@ -19,7 +19,7 @@ export const BiomarkerProfiler: React.FC<BiomarkerProfilerProps> = ({
   stage,
   onBiomarkerStatusChange
 }) => {
-  const { t } = useTranslation();
+  const tSafe = useTSafe();
   const [biomarkerStatuses, setBiomarkerStatuses] = useState<{ [key: string]: string }>({});
   const [testingComplete, setTestingComplete] = useState(false);
 
@@ -29,8 +29,8 @@ export const BiomarkerProfiler: React.FC<BiomarkerProfilerProps> = ({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t('biomarker.title')}</CardTitle>
-          <CardDescription>{t('biomarker.noPanel')}</CardDescription>
+          <CardTitle>{tSafe('biomarker.title', 'Biomarker Profiler')}</CardTitle>
+          <CardDescription>{tSafe('biomarker.noPanel', 'No biomarker panel available for this cancer type and stage')}</CardDescription>
         </CardHeader>
       </Card>
     );
@@ -76,7 +76,7 @@ export const BiomarkerProfiler: React.FC<BiomarkerProfilerProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <AlertCircle className="h-5 w-5" />
-            {t('biomarker.panelTitle')}
+            {tSafe('biomarker.panelTitle', 'Biomarker Testing Panel')}
           </CardTitle>
           <CardDescription>
             {biomarkerPanel.testingGuidelines}
@@ -85,10 +85,10 @@ export const BiomarkerProfiler: React.FC<BiomarkerProfilerProps> = ({
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
-              <strong>{t('biomarker.turnaround')}:</strong> {biomarkerPanel.turnaroundTime}
+              <strong>{tSafe('biomarker.turnaround', 'Turnaround Time')}:</strong> {biomarkerPanel.turnaroundTime}
             </div>
             <div>
-              <strong>{t('biomarker.tissueReq')}:</strong> {biomarkerPanel.tissueRequirements}
+              <strong>{tSafe('biomarker.tissueReq', 'Tissue Requirements')}:</strong> {biomarkerPanel.tissueRequirements}
             </div>
           </div>
         </CardContent>
@@ -96,9 +96,9 @@ export const BiomarkerProfiler: React.FC<BiomarkerProfilerProps> = ({
 
       <Card>
         <CardHeader>
-          <CardTitle>{t('biomarker.requiredTitle')}</CardTitle>
+          <CardTitle>{tSafe('biomarker.requiredTitle', 'Required Biomarkers')}</CardTitle>
           <CardDescription>
-            {t('biomarker.requiredDesc')}
+            {tSafe('biomarker.requiredDesc', 'These biomarkers are required for treatment selection')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -125,17 +125,17 @@ export const BiomarkerProfiler: React.FC<BiomarkerProfilerProps> = ({
                   onValueChange={(value) => handleBiomarkerChange(biomarker.name, value)}
                 >
               <SelectTrigger className="w-32">
-                <SelectValue placeholder={t('biomarker.status.unknown')} />
+                <SelectValue placeholder={tSafe('biomarker.status.unknown', 'Unknown')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="unknown">{t('biomarker.status.unknown')}</SelectItem>
-                <SelectItem value="positive">{t('biomarker.status.positive')}</SelectItem>
-                <SelectItem value="negative">{t('biomarker.status.negative')}</SelectItem>
-                <SelectItem value="wild-type">{t('biomarker.status.wildType')}</SelectItem>
-                <SelectItem value="mutated">{t('biomarker.status.mutated')}</SelectItem>
-                <SelectItem value="amplified">{t('biomarker.status.amplified')}</SelectItem>
-                <SelectItem value="high">{t('biomarker.status.high')}</SelectItem>
-                <SelectItem value="low">{t('biomarker.status.low')}</SelectItem>
+                <SelectItem value="unknown">{tSafe('biomarker.status.unknown', 'Unknown')}</SelectItem>
+                <SelectItem value="positive">{tSafe('biomarker.status.positive', 'Positive')}</SelectItem>
+                <SelectItem value="negative">{tSafe('biomarker.status.negative', 'Negative')}</SelectItem>
+                <SelectItem value="wild-type">{tSafe('biomarker.status.wildType', 'Wild-type')}</SelectItem>
+                <SelectItem value="mutated">{tSafe('biomarker.status.mutated', 'Mutated')}</SelectItem>
+                <SelectItem value="amplified">{tSafe('biomarker.status.amplified', 'Amplified')}</SelectItem>
+                <SelectItem value="high">{tSafe('biomarker.status.high', 'High')}</SelectItem>
+                <SelectItem value="low">{tSafe('biomarker.status.low', 'Low')}</SelectItem>
               </SelectContent>
                 </Select>
               </div>
@@ -147,9 +147,9 @@ export const BiomarkerProfiler: React.FC<BiomarkerProfilerProps> = ({
       {biomarkerPanel.recommendedBiomarkers.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>{t('biomarker.recommendedTitle')}</CardTitle>
+            <CardTitle>{tSafe('biomarker.recommendedTitle', 'Recommended Biomarkers')}</CardTitle>
             <CardDescription>
-              {t('biomarker.recommendedDesc')}
+              {tSafe('biomarker.recommendedDesc', 'These biomarkers are recommended for optimal treatment selection')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -176,17 +176,17 @@ export const BiomarkerProfiler: React.FC<BiomarkerProfilerProps> = ({
                     onValueChange={(value) => handleBiomarkerChange(biomarker.name, value)}
                   >
               <SelectTrigger className="w-32">
-                <SelectValue placeholder={t('biomarker.status.unknown')} />
+                <SelectValue placeholder={tSafe('biomarker.status.unknown', 'Unknown')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="unknown">{t('biomarker.status.unknown')}</SelectItem>
-                <SelectItem value="positive">{t('biomarker.status.positive')}</SelectItem>
-                <SelectItem value="negative">{t('biomarker.status.negative')}</SelectItem>
-                <SelectItem value="wild-type">{t('biomarker.status.wildType')}</SelectItem>
-                <SelectItem value="mutated">{t('biomarker.status.mutated')}</SelectItem>
-                <SelectItem value="amplified">{t('biomarker.status.amplified')}</SelectItem>
-                <SelectItem value="high">{t('biomarker.status.high')}</SelectItem>
-                <SelectItem value="low">{t('biomarker.status.low')}</SelectItem>
+                <SelectItem value="unknown">{tSafe('biomarker.status.unknown', 'Unknown')}</SelectItem>
+                <SelectItem value="positive">{tSafe('biomarker.status.positive', 'Positive')}</SelectItem>
+                <SelectItem value="negative">{tSafe('biomarker.status.negative', 'Negative')}</SelectItem>
+                <SelectItem value="wild-type">{tSafe('biomarker.status.wildType', 'Wild-type')}</SelectItem>
+                <SelectItem value="mutated">{tSafe('biomarker.status.mutated', 'Mutated')}</SelectItem>
+                <SelectItem value="amplified">{tSafe('biomarker.status.amplified', 'Amplified')}</SelectItem>
+                <SelectItem value="high">{tSafe('biomarker.status.high', 'High')}</SelectItem>
+                <SelectItem value="low">{tSafe('biomarker.status.low', 'Low')}</SelectItem>
               </SelectContent>
                   </Select>
                 </div>
@@ -199,8 +199,8 @@ export const BiomarkerProfiler: React.FC<BiomarkerProfilerProps> = ({
       <div className="flex items-center justify-between">
         <div className="text-sm text-muted-foreground">
           {allRequiredTested
-            ? t('biomarker.allRequiredTested')
-            : t('biomarker.requiredTestedCount', { done: biomarkerPanel.requiredBiomarkers.filter(b => biomarkerStatuses[b.name] && biomarkerStatuses[b.name] !== 'unknown').length, total: biomarkerPanel.requiredBiomarkers.length })
+            ? tSafe('biomarker.allRequiredTested', 'All required biomarkers have been tested')
+            : tSafe('biomarker.requiredTestedCount', `${biomarkerPanel.requiredBiomarkers.filter(b => biomarkerStatuses[b.name] && biomarkerStatuses[b.name] !== 'unknown').length} of ${biomarkerPanel.requiredBiomarkers.length} required biomarkers tested`, { done: biomarkerPanel.requiredBiomarkers.filter(b => biomarkerStatuses[b.name] && biomarkerStatuses[b.name] !== 'unknown').length, total: biomarkerPanel.requiredBiomarkers.length })
           }
         </div>
         <Button
@@ -208,7 +208,7 @@ export const BiomarkerProfiler: React.FC<BiomarkerProfilerProps> = ({
           disabled={!allRequiredTested}
           variant={allRequiredTested ? "default" : "outline"}
         >
-          {allRequiredTested ? t('biomarker.completeProfile') : t('biomarker.completeRequired')}
+          {allRequiredTested ? tSafe('biomarker.completeProfile', 'Complete Profile') : tSafe('biomarker.completeRequired', 'Complete Required Tests')}
         </Button>
       </div>
     </div>

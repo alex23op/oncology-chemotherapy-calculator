@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { logger } from "@/utils/logger";
 
 // Enhanced type safety with Zod schemas
 export const DrugSchema = z.object({
@@ -92,8 +93,11 @@ export const validateRegimen = (regimen: unknown): regimen is z.infer<typeof Reg
     RegimenSchema.parse(regimen);
     return true;
   } catch (error) {
-    console.error(`Regimen validation failed:`, error);
-    return false;
+      logger.error("Regimen validation failed", { 
+        component: 'schemas',
+        error: error instanceof Error ? error.message : 'Unknown validation error'
+      });
+      return false;
   }
 };
 
@@ -102,8 +106,11 @@ export const validateCancerType = (cancerType: unknown): cancerType is z.infer<t
     CancerTypeSchema.parse(cancerType);
     return true;
   } catch (error) {
-    console.error(`Cancer type validation failed:`, error);
-    return false;
+      logger.error("Cancer type validation failed", { 
+        component: 'schemas',
+        error: error instanceof Error ? error.message : 'Unknown validation error'
+      });
+      return false;
   }
 };
 
