@@ -87,6 +87,46 @@ const IndexContent = () => {
     try { localStorage.setItem('pdfOrientation', reviewOrientation); } catch {}
   }, [reviewOrientation]);
 
+  // Sync context state changes to local state (data recovery)
+  useEffect(() => {
+    if (state.patientData && state.patientData !== patientData) {
+      console.debug('[DataRecovery] Restoring patient data:', state.patientData);
+      setPatientData(state.patientData as PatientData);
+    }
+  }, [state.patientData]);
+
+  useEffect(() => {
+    if (state.regimenData?.selectedRegimen && state.regimenData.selectedRegimen !== selectedRegimen) {
+      console.debug('[DataRecovery] Restoring regimen:', state.regimenData.selectedRegimen);
+      setSelectedRegimen(state.regimenData.selectedRegimen);
+    }
+  }, [state.regimenData]);
+
+  useEffect(() => {
+    if (state.supportiveData) {
+      console.debug('[DataRecovery] Restoring supportive care data:', state.supportiveData);
+      if (state.supportiveData.emetogenicRiskLevel !== emetogenicRiskLevel) {
+        setEmetogenicRiskLevel(state.supportiveData.emetogenicRiskLevel || "minimal");
+      }
+      if (JSON.stringify(state.supportiveData.selectedPremedications) !== JSON.stringify(selectedPremedications)) {
+        setSelectedPremedications(state.supportiveData.selectedPremedications || []);
+      }
+      if (JSON.stringify(state.supportiveData.selectedAntiemetics) !== JSON.stringify(selectedAntiemetics)) {
+        setSelectedAntiemetics(state.supportiveData.selectedAntiemetics || []);
+      }
+      if (JSON.stringify(state.supportiveData.groupedPremedications) !== JSON.stringify(groupedPremedications)) {
+        setGroupedPremedications(state.supportiveData.groupedPremedications || { groups: [], individual: [] });
+      }
+    }
+  }, [state.supportiveData]);
+
+  useEffect(() => {
+    if (state.doseData?.treatmentData && state.doseData.treatmentData !== treatmentData) {
+      console.debug('[DataRecovery] Restoring treatment data:', state.doseData.treatmentData);
+      setTreatmentData(state.doseData.treatmentData);
+    }
+  }, [state.doseData]);
+
   // Sync local state changes to persistent storage
   useEffect(() => {
     if (patientData) {

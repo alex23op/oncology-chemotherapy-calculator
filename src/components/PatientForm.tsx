@@ -227,6 +227,63 @@ export const PatientForm = ({ onPatientDataChange, selectedRegimen }: PatientFor
     }
   }, [validation]);
 
+  // Sync with context state when it changes (data recovery)
+  useEffect(() => {
+    if (state.patientData) {
+      const currentDate = new Date().toISOString().split('T')[0];
+      const restoredData = {
+        weight: state.patientData.weight || "",
+        height: state.patientData.height || "",
+        age: state.patientData.age || "",
+        sex: state.patientData.sex || "",
+        creatinine: state.patientData.creatinine || "",
+        weightUnit: state.patientData.weightUnit || "kg",
+        heightUnit: state.patientData.heightUnit || "cm",
+        creatinineUnit: state.patientData.creatinineUnit || "mg/dL",
+        fullName: state.patientData.fullName || "",
+        cnp: state.patientData.cnp || "",
+        foNumber: state.patientData.foNumber || "",
+        cycleNumber: state.patientData.cycleNumber || 1,
+        treatmentDate: state.patientData.treatmentDate || currentDate,
+        nextCycleDate: state.patientData.nextCycleDate,
+        bsaCapEnabled: state.patientData.bsaCapEnabled || false
+      };
+      
+      setLocalPatientData(restoredData);
+      
+      // Trigger parent callback with restored data
+      if (restoredData.weight && restoredData.height) {
+        const weight = parseFloat(restoredData.weight);
+        const height = parseFloat(restoredData.height);
+        const age = parseFloat(restoredData.age || "0");
+        const creatinine = parseFloat(restoredData.creatinine || "0");
+        
+        const bsa = calculateBSA(weight, height, restoredData.weightUnit, restoredData.heightUnit);
+        
+        let creatinineClearance = 0;
+        if (restoredData.age && restoredData.weight && restoredData.creatinine && restoredData.sex) {
+          creatinineClearance = calculateCreatinineClearance(
+            age, weight, creatinine, restoredData.sex, 
+            restoredData.weightUnit, restoredData.creatinineUnit
+          );
+        }
+        
+        const effectiveBsa = restoredData.bsaCapEnabled ? Math.min(bsa, 2.0) : bsa;
+        const weightNum = parseFloat(restoredData.weight);
+        const normalizedWeightKg = toKg(weightNum, restoredData.weightUnit as 'kg' | 'lbs');
+        
+        onPatientDataChange({ 
+          ...restoredData, 
+          weight: String(normalizedWeightKg), 
+          weightUnit: "kg", 
+          bsa, 
+          creatinineClearance,
+          effectiveBsa
+        });
+      }
+    }
+  }, [state.patientData, calculateBSA, calculateCreatinineClearance, onPatientDataChange]);
+
   // Initialize parent with existing data on mount
   useEffect(() => {
     if (state.patientData && localPatientData.weight && localPatientData.height) {
