@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown, ChevronRight, CheckCircle, AlertTriangle, Pill, Shield, Heart, Activity, Droplet, Lightbulb, Beaker, ShoppingCart, User, X, Settings } from 'lucide-react';
+import { ChevronDown, ChevronRight, CheckCircle, AlertTriangle, Pill, Shield, Heart, Activity, Droplet, Beaker, ShoppingCart, User, X, Settings } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -17,7 +17,6 @@ interface UnifiedProtocolSelectorProps {
   emetogenicRisk: "high" | "moderate" | "low" | "minimal";
   selectedAgents?: LocalPremedAgent[];
   onSelectionChange?: (agents: LocalPremedAgent[]) => void;
-  onRecommendationApplied?: (agents: LocalPremedAgent[]) => void;
   onGroupingChange?: (groupedPremedications: GroupedPremedications) => void;
   patientWeight?: number;
 }
@@ -395,15 +394,13 @@ export default function UnifiedProtocolSelector({
   emetogenicRisk,
   selectedAgents = [],
   onSelectionChange,
-  onRecommendationApplied,
   onGroupingChange,
   patientWeight
 }: UnifiedProtocolSelectorProps) {
   const { t } = useTranslation();
   const [localSelectedAgents, setLocalSelectedAgents] = useState<LocalPremedAgent[]>(selectedAgents);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
-  const [activeTab, setActiveTab] = useState("recommendations");
-  const [solventSelections, setSolventSelections] = useState<Record<string, SolventType>>({});
+  const [activeTab, setActiveTab] = useState("categories");
   const [groupedPremedications, setGroupedPremedications] = useState<GroupedPremedications>({
     groups: [],
     individual: []
@@ -428,90 +425,20 @@ export default function UnifiedProtocolSelector({
     onGroupingChange?.(updatedGrouped);
   }, [localSelectedAgents, groupedPremedications.groups, onGroupingChange]);
 
-  // Calculate recommendations based on drug names and emetogenic risk
-  const recommendations = useMemo(() => {
-    const recommendedAgents: LocalPremedAgent[] = [];
-    
-    // Get all agents from categories
-    const allAgents = premedCategories.flatMap(category => category.agents);
-    
-    // Risk-based recommendations
-    if (emetogenicRisk === 'high') {
-      recommendedAgents.push(
-        ...allAgents.filter(agent => 
-          ['Ondansetron', 'Aprepitant', 'Dexamethasone', 'Olanzapine'].includes(agent.name)
-        )
-      );
-    } else if (emetogenicRisk === 'moderate') {
-      recommendedAgents.push(
-        ...allAgents.filter(agent => 
-          ['Ondansetron', 'Dexamethasone'].includes(agent.name)
-        )
-      );
-    }
-
-    // Drug-specific recommendations
-    drugNames.forEach(drugName => {
-      const drugLower = drugName.toLowerCase();
-      const specificAgents = allAgents.filter(agent => 
-        agent.drugSpecific?.some(specificDrug => drugLower.includes(specificDrug.toLowerCase()))
-      );
-      recommendedAgents.push(...specificAgents);
-    });
-
-    // Remove duplicates
-    const uniqueRecommendations = recommendedAgents.filter((agent, index, self) => 
-      index === self.findIndex(a => a.name === agent.name)
-    );
-
-    return uniqueRecommendations;
-  }, [drugNames, emetogenicRisk]);
 
   const handleAgentToggle = useCallback((agent: LocalPremedAgent, isSelected: boolean) => {
     setLocalSelectedAgents(prev => {
       if (isSelected) {
-        return [...prev, { ...agent, solvent: solventSelections[agent.name] || null }];
+        return [...prev, { ...agent, solvent: null }];
       } else {
-        // Remove from both local selection and solvent selections
-        setSolventSelections(prevSolvents => {
-          const newSolvents = { ...prevSolvents };
-          delete newSolvents[agent.name];
-          return newSolvents;
-        });
         return prev.filter(a => a.name !== agent.name);
       }
     });
-  }, [solventSelections]);
-
-  const handleSolventChange = useCallback((agentName: string, solvent: SolventType) => {
-    setSolventSelections(prev => ({
-      ...prev,
-      [agentName]: solvent
-    }));
-
-    setLocalSelectedAgents(prev => 
-      prev.map(agent => 
-        agent.name === agentName 
-          ? { ...agent, solvent }
-          : agent
-      )
-    );
   }, []);
 
-  const applyRecommendations = useCallback(() => {
-    const recommendationsWithSolvents = recommendations.map(rec => ({
-      ...rec,
-      solvent: solventSelections[rec.name] || null
-    }));
-    
-    setLocalSelectedAgents(recommendationsWithSolvents);
-    onRecommendationApplied?.(recommendationsWithSolvents);
-    toast.success(t('unifiedSelector.recommendationsApplied'));
-  }, [recommendations, solventSelections, onRecommendationApplied, t]);
 
   const clearAllSelections = useCallback(() => {
     setLocalSelectedAgents([]);
-    setSolventSelections({});
     setGroupedPremedications({ groups: [], individual: [] });
     toast.success(t('unifiedSelector.selectionsCleared'));
   }, [t]);
@@ -556,18 +483,10 @@ export default function UnifiedProtocolSelector({
   return (
     <div className="space-y-6">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="recommendations" className="flex items-center gap-2">
-            <Lightbulb className="h-4 w-4" />
-            {t('unifiedSelector.tabs.recommendations')}
-          </TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="categories" className="flex items-center gap-2">
             <ShoppingCart className="h-4 w-4" />
             {t('unifiedSelector.tabs.categories')}
-          </TabsTrigger>
-          <TabsTrigger value="solvents" className="flex items-center gap-2">
-            <Beaker className="h-4 w-4" />
-            {t('unifiedSelector.tabs.solvents')}
           </TabsTrigger>
           <TabsTrigger value="grouping" className="flex items-center gap-2">
             <Settings className="h-4 w-4" />
@@ -578,70 +497,6 @@ export default function UnifiedProtocolSelector({
             {t('unifiedSelector.tabs.selected')} ({localSelectedAgents.length})
           </TabsTrigger>
         </TabsList>
-
-        <TabsContent value="recommendations" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Lightbulb className="h-5 w-5" />
-                {t('unifiedSelector.recommendations.title')}
-              </CardTitle>
-              <CardDescription>
-                {t('unifiedSelector.recommendations.description', { 
-                  risk: emetogenicRisk, 
-                  drugs: drugNames.join(', ') 
-                })}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {recommendations.length === 0 ? (
-                <p className="text-muted-foreground text-sm">
-                  {t('unifiedSelector.recommendations.noRecommendations')}
-                </p>
-              ) : (
-                <>
-                  <div className="space-y-2">
-                    {recommendations.map((agent) => (
-                      <div
-                        key={agent.name}
-                        className="flex items-center justify-between p-3 border rounded-lg"
-                      >
-                        <div className="flex items-center space-x-3">
-                          <Checkbox
-                            checked={isAgentSelected(agent.name)}
-                            onCheckedChange={(checked) => 
-                              handleAgentToggle(agent, checked as boolean)
-                            }
-                          />
-                          <div>
-                            <div className="font-medium">{agent.name}</div>
-                            <div className="text-sm text-muted-foreground">
-                              {agent.dosage} {agent.unit} {agent.route} - {agent.indication}
-                            </div>
-                          </div>
-                        </div>
-                        <Badge 
-                          variant={agent.isRequired ? "default" : "secondary"}
-                          className="ml-2"
-                        >
-                          {agent.isRequired ? t('unifiedSelector.required') : t('unifiedSelector.optional')}
-                        </Badge>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex gap-2">
-                    <Button onClick={applyRecommendations} className="flex-1">
-                      {t('unifiedSelector.recommendations.apply')}
-                    </Button>
-                    <Button onClick={clearAllSelections} variant="outline">
-                      {t('unifiedSelector.recommendations.clear')}
-                    </Button>
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
 
         <TabsContent value="categories" className="space-y-4">
           {premedCategories.map((category) => (
@@ -719,68 +574,6 @@ export default function UnifiedProtocolSelector({
             </Card>
           ))}</TabsContent>
 
-        <TabsContent value="solvents" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Beaker className="h-5 w-5" />
-                {t('solventGroups.title')}
-              </CardTitle>
-              <CardDescription>
-                {t('solventGroups.selectSolventDescription')}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {localSelectedAgents.length === 0 ? (
-                <p className="text-muted-foreground text-sm">
-                  {t('solventGroups.noAgentsSelected')}
-                </p>
-              ) : (
-                <div className="space-y-4">
-                  {localSelectedAgents.map((agent) => (
-                    <div
-                      key={agent.name}
-                      className="flex items-center justify-between p-3 border rounded-lg"
-                    >
-                      <div>
-                        <div className="font-medium">{agent.name}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {agent.dosage} {agent.unit} {agent.route}
-                        </div>
-                      </div>
-                      <Select
-                        value={solventSelections[agent.name] || ""}
-                        onValueChange={(value: SolventType) => 
-                          handleSolventChange(agent.name, value)
-                        }
-                      >
-                        <SelectTrigger className="w-48">
-                          <SelectValue 
-                            placeholder={t('solventGroups.selectSolvent')}
-                          />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {AVAILABLE_SOLVENTS.map((solvent) => (
-                            <SelectItem key={solvent} value={solvent}>
-                              {t(`solvents.${solvent.toLowerCase().replace(/[^a-z0-9]/g, '')}`)}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  ))}
-                  <Button 
-                    onClick={() => setSolventSelections({})}
-                    variant="outline"
-                    className="w-full"
-                  >
-                    {t('solventGroups.clearAll')}
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </TabsContent>
 
         <TabsContent value="grouping" className="space-y-4">
         <SolventGroupManager
@@ -821,11 +614,6 @@ export default function UnifiedProtocolSelector({
                         <div className="text-sm text-muted-foreground">
                           {agent.dosage} {agent.unit} {agent.route} - {agent.indication}
                         </div>
-                        {agent.solvent && (
-                          <div className="text-xs text-blue-600 bg-blue-50 px-2 py-1 rounded mt-1">
-                            {t('solventGroups.solvent')}: {t(`solvents.${agent.solvent.toLowerCase().replace(/[^a-z0-9]/g, '')}`)}
-                          </div>
-                        )}
                       </div>
                       <Button
                         variant="ghost"

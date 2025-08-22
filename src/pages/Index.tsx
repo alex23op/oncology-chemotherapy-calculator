@@ -247,7 +247,6 @@ const IndexContent = () => {
                 emetogenicRisk={emetogenicRiskLevel}
                 selectedAgents={convertToLocalPremedAgents(selectedAntiemetics)}
                 onSelectionChange={(agents) => setSelectedAntiemetics(convertFromLocalPremedAgents(agents))}
-                onRecommendationApplied={(agents) => setSelectedAntiemetics(convertFromLocalPremedAgents(agents))}
                 onGroupingChange={setGroupedPremedications}
                 patientWeight={weightKg}
               />

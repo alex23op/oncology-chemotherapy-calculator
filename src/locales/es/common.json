@@ -1,13 +1,4 @@
 {
-  "unifiedSelector": {
-    "recommendations": {
-      "title": "Protocolos Recomendados",
-      "description": "Recomendaciones basadas en evidencia para {{drugs}} con riesgo emetógeno {{risk}}",
-      "noRecommendations": "No hay recomendaciones específicas disponibles para este régimen",
-      "apply": "Aplicar Todas las Recomendaciones",
-      "clear": "Borrar Todas las Selecciones"
-    }
-  },
   "cancerSelector": {
     "filter": "Filtrar por entorno de tratamiento",
     "categories": {
