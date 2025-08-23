@@ -103,10 +103,29 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
   };
 
   const addMedicationsToGroup = (groupId: string, medications: PremedAgent[]) => {
+    const group = localGrouping.groups.find(g => g.id === groupId);
+    if (!group) return;
+    
+    // Filter out medications that are already in the group to avoid duplicates
+    const newMedications = medications.filter(med => 
+      !group.medications.some(existing => existing.name === med.name)
+    );
+    
+    updateGrouping({
+      ...localGrouping,
+      groups: localGrouping.groups.map(g =>
+        g.id === groupId ? { ...g, medications: [...g.medications, ...newMedications] } : g
+      )
+    });
+  };
+
+  const removeMedicationFromGroup = (groupId: string, medicationName: string) => {
     updateGrouping({
       ...localGrouping,
       groups: localGrouping.groups.map(group =>
-        group.id === groupId ? { ...group, medications: [...group.medications, ...medications] } : group
+        group.id === groupId 
+          ? { ...group, medications: group.medications.filter(med => med.name !== medicationName) }
+          : group
       )
     });
   };
@@ -170,7 +189,7 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
     });
   };
 
-  const renderMedication = (medication: PremedAgent, index: number) => (
+  const renderMedication = (medication: PremedAgent, index: number, groupId?: string) => (
     <Draggable key={medication.name} draggableId={medication.name} index={index}>
       {(provided, snapshot) => (
         <div
@@ -191,6 +210,16 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
           <Badge variant="outline" className="text-xs">
             {medication.category}
           </Badge>
+          {groupId && (
+            <Button
+              onClick={() => removeMedicationFromGroup(groupId, medication.name)}
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+            >
+              <Trash2 className="h-3 w-3" />
+            </Button>
+          )}
         </div>
       )}
     </Draggable>
@@ -258,6 +287,7 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Medications in Group */}
                 <Droppable droppableId={group.id}>
                   {(provided, snapshot) => (
                     <div
@@ -270,20 +300,13 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
                       }`}
                     >
                       {group.medications.length === 0 ? (
-                        <div className="space-y-4">
-                          <MedicationMultiSelector
-                            selectedMedications={[]}
-                            onSelectionChange={(medications) => addMedicationsToGroup(group.id, medications)}
-                            placeholder="Selectează medicamente pentru acest PEV..."
-                          />
-                          <div className="text-center text-muted-foreground text-xs border-t pt-2">
-                            {tSafe('solventGroups.dropHere', 'Trageți medicamentele aici pentru a le grupa')}
-                          </div>
+                        <div className="text-center text-muted-foreground text-sm py-4">
+                          {tSafe('solventGroups.dropHere', 'Trageți medicamentele aici pentru a le grupa')}
                         </div>
                       ) : (
                         <div className="space-y-2">
                           {group.medications.map((medication, index) =>
-                            renderMedication(medication, index)
+                            renderMedication(medication, index, group.id)
                           )}
                         </div>
                       )}
@@ -291,6 +314,16 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
                     </div>
                   )}
                 </Droppable>
+
+                {/* Add Medications Selector - Always Visible */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">{tSafe('solventGroups.addMedications', 'Adaugă medicamente')}</Label>
+                  <MedicationMultiSelector
+                    selectedMedications={[]}
+                    onSelectionChange={(medications) => addMedicationsToGroup(group.id, medications)}
+                    placeholder="Selectează medicamente suplimentare pentru acest PEV..."
+                  />
+                </div>
                 
                 {/* Notes Section */}
                 <div className="space-y-2">
