@@ -52,6 +52,7 @@ export interface PremedSolventGroup {
   id: string;
   solvent: string;
   medications: PremedAgent[];
+  notes?: string;
 }
 
 export interface GroupedPremedications {

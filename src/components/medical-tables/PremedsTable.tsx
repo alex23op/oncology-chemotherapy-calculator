@@ -40,16 +40,33 @@ export const PremedsTable: React.FC<PremedsTableProps> = ({ premedications, solv
       <TableBody>
         {/* Solvent Groups */}
         {solventGroups?.groups && solventGroups.groups.length > 0 && 
-          solventGroups.groups.map((group) =>
-            group.medications.map((med, index) => (
-              <TableRow key={`group-${group.id}-${index}`} className="border-b border-gray-200">
-                <TableCell className="border border-gray-300 p-0.5 text-xs">{med.name}</TableCell>
-                <TableCell className="border border-gray-300 p-0.5 text-xs text-center">{med.dosage} {med.unit}</TableCell>
-                <TableCell className="border border-gray-300 p-0.5 text-xs text-center">{med.route}, {med.timing}</TableCell>
-                <TableCell className="border border-gray-300 p-0.5 text-xs">{group.solvent}, {med.administrationDuration || 'Standard'}</TableCell>
+          solventGroups.groups.map((group, groupIndex) => (
+            <React.Fragment key={`group-${group.id}`}>
+              {/* Group header row */}
+              <TableRow className="bg-gray-50 border-b-2 border-gray-400">
+                <TableCell colSpan={4} className="border border-gray-300 p-1 text-xs font-bold">
+                  PEV {groupIndex + 1} - {group.solvent}
+                </TableCell>
               </TableRow>
-            ))
-          )
+              {/* Group medications */}
+              {group.medications.map((med, medIndex) => (
+                <TableRow key={`group-${group.id}-med-${medIndex}`} className="border-b border-gray-200">
+                  <TableCell className="border border-gray-300 p-0.5 text-xs pl-4">• {med.name}</TableCell>
+                  <TableCell className="border border-gray-300 p-0.5 text-xs text-center">{med.dosage} {med.unit}</TableCell>
+                  <TableCell className="border border-gray-300 p-0.5 text-xs text-center">{med.route}, {med.timing}</TableCell>
+                  <TableCell className="border border-gray-300 p-0.5 text-xs">{med.administrationDuration || 'Standard'}</TableCell>
+                </TableRow>
+              ))}
+              {/* Group notes row */}
+              {group.notes && (
+                <TableRow className="border-b border-gray-300">
+                  <TableCell colSpan={4} className="border border-gray-300 p-1 text-xs italic bg-gray-25">
+                    <strong>Note:</strong> {group.notes}
+                  </TableCell>
+                </TableRow>
+              )}
+            </React.Fragment>
+          ))
         }
         
         {/* Individual Premedications */}

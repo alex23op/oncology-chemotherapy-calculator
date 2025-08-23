@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Textarea } from '@/components/ui/textarea';
 import { PremedAgent, PremedSolventGroup, GroupedPremedications } from '@/types/clinicalTreatment';
 import { Trash2, Plus, GripVertical, Beaker, Droplets, AlertTriangle } from 'lucide-react';
 import { useTSafe } from '@/i18n/tSafe';
@@ -63,7 +64,8 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
     const newGroup: PremedSolventGroup = {
       id: `group-${Date.now()}`,
       solvent: '',
-      medications: []
+      medications: [],
+      notes: ''
     };
     
     updateGrouping({
@@ -87,6 +89,15 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
       ...localGrouping,
       groups: localGrouping.groups.map(group =>
         group.id === groupId ? { ...group, solvent } : group
+      )
+    });
+  };
+
+  const updateGroupNotes = (groupId: string, notes: string) => {
+    updateGrouping({
+      ...localGrouping,
+      groups: localGrouping.groups.map(group =>
+        group.id === groupId ? { ...group, notes } : group
       )
     });
   };
@@ -246,7 +257,7 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
                   </Select>
                 </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-4">
                 <Droppable droppableId={group.id}>
                   {(provided, snapshot) => (
                     <div
@@ -280,6 +291,17 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
                     </div>
                   )}
                 </Droppable>
+                
+                {/* Notes Section */}
+                <div className="space-y-2">
+                  <Label className="text-sm font-medium">{tSafe('solventGroups.notes', 'Note')}</Label>
+                  <Textarea
+                    value={group.notes || ''}
+                    onChange={(e) => updateGroupNotes(group.id, e.target.value)}
+                    placeholder={tSafe('solventGroups.notesPlaceholder', 'Adăugați informații suplimentare despre acest PEV...')}
+                    className="min-h-[60px] text-sm"
+                  />
+                </div>
               </CardContent>
             </Card>
           ))}

@@ -83,22 +83,35 @@ export const PrintableProtocol = React.forwardRef<HTMLDivElement, PrintableProto
                     <tbody>
                       {/* Render PEV Groups */}
                       {solventGroups!.groups.map((group, index) => (
-                        <tr key={`group-${group.id}`} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-25 print:bg-gray-50'}>
-                          <td className="border border-gray-300 px-3 py-2 font-medium print:px-1 print:py-0.5">
-                            {index + 1} PEV
-                          </td>
-                          <td className="border border-gray-300 px-3 py-2 print:px-1 print:py-0.5">
-                            {group.medications.map((med, medIndex) => (
-                              <span key={medIndex}>
-                                {medIndex > 0 && ' + '}
-                                <span className="font-medium">{med.name}</span>
-                                <span className="text-muted-foreground ml-1">({med.dosage})</span>
-                              </span>
-                            ))}
-                          </td>
-                          <td className="border border-gray-300 px-3 py-2 print:px-1 print:py-0.5">{group.solvent}</td>
-                          <td className="border border-gray-300 px-3 py-2 text-center print:px-1 print:py-0.5">☐</td>
-                        </tr>
+                        <React.Fragment key={`group-${group.id}`}>
+                          <tr className={index % 2 === 0 ? 'bg-white' : 'bg-gray-25 print:bg-gray-50'}>
+                            <td className="border border-gray-300 px-3 py-2 font-medium print:px-1 print:py-0.5">
+                              {index + 1} PEV
+                            </td>
+                            <td className="border border-gray-300 px-3 py-2 print:px-1 print:py-0.5">
+                              <div className="space-y-1">
+                                {group.medications.map((med, medIndex) => (
+                                  <div key={medIndex} className="flex items-center">
+                                    <span className="mr-1">•</span>
+                                    <span className="font-medium">{med.name}</span>
+                                    <span className="text-muted-foreground ml-1">({med.dosage})</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </td>
+                            <td className="border border-gray-300 px-3 py-2 print:px-1 print:py-0.5">{group.solvent}</td>
+                            <td className="border border-gray-300 px-3 py-2 text-center print:px-1 print:py-0.5">☐</td>
+                          </tr>
+                          {/* Notes row */}
+                          {group.notes && (
+                            <tr className={index % 2 === 0 ? 'bg-white' : 'bg-gray-25 print:bg-gray-50'}>
+                              <td className="border border-gray-300 px-3 py-2 print:px-1 print:py-0.5"></td>
+                              <td colSpan={3} className="border border-gray-300 px-3 py-2 text-sm italic print:px-1 print:py-0.5 print:text-xs">
+                                <strong>Note:</strong> {group.notes}
+                              </td>
+                            </tr>
+                          )}
+                        </React.Fragment>
                       ))}
                       {/* Render Individual Medications as separate PEVs */}
                       {solventGroups!.individual.map((med, index) => {
