@@ -75,12 +75,9 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
   };
 
   const deleteGroup = (groupId: string) => {
-    const group = localGrouping.groups.find(g => g.id === groupId);
-    if (!group) return;
-
     updateGrouping({
       groups: localGrouping.groups.filter(g => g.id !== groupId),
-      individual: [...localGrouping.individual, ...group.medications]
+      individual: localGrouping.individual
     });
   };
 
@@ -131,61 +128,51 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
   };
 
   const onDragEnd = (result: DropResult) => {
-    const { destination, source, draggableId } = result;
+    const { destination, source } = result;
     
     if (!destination) return;
     
     const sourceDroppableId = source.droppableId;
     const destDroppableId = destination.droppableId;
     
+    // Only allow drag & drop between groups (no individual medications)
+    if (sourceDroppableId === 'individual' || destDroppableId === 'individual') {
+      return;
+    }
+    
     // Find the medication being moved
     let medicationToMove: PremedAgent | null = null;
-    
-    if (sourceDroppableId === 'individual') {
-      medicationToMove = localGrouping.individual[source.index];
-    } else {
-      const sourceGroup = localGrouping.groups.find(g => g.id === sourceDroppableId);
-      if (sourceGroup) {
-        medicationToMove = sourceGroup.medications[source.index];
-      }
+    const sourceGroup = localGrouping.groups.find(g => g.id === sourceDroppableId);
+    if (sourceGroup) {
+      medicationToMove = sourceGroup.medications[source.index];
     }
     
     if (!medicationToMove) return;
     
-    // Remove from source
-    let newIndividual = [...localGrouping.individual];
+    // Remove from source and add to destination
     let newGroups = [...localGrouping.groups];
     
-    if (sourceDroppableId === 'individual') {
-      newIndividual.splice(source.index, 1);
-    } else {
-      newGroups = newGroups.map(group => {
-        if (group.id === sourceDroppableId) {
-          const newMedications = [...group.medications];
-          newMedications.splice(source.index, 1);
-          return { ...group, medications: newMedications };
-        }
-        return group;
-      });
-    }
+    newGroups = newGroups.map(group => {
+      if (group.id === sourceDroppableId) {
+        const newMedications = [...group.medications];
+        newMedications.splice(source.index, 1);
+        return { ...group, medications: newMedications };
+      }
+      return group;
+    });
     
-    // Add to destination
-    if (destDroppableId === 'individual') {
-      newIndividual.splice(destination.index, 0, medicationToMove);
-    } else {
-      newGroups = newGroups.map(group => {
-        if (group.id === destDroppableId) {
-          const newMedications = [...group.medications];
-          newMedications.splice(destination.index, 0, medicationToMove);
-          return { ...group, medications: newMedications };
-        }
-        return group;
-      });
-    }
+    newGroups = newGroups.map(group => {
+      if (group.id === destDroppableId) {
+        const newMedications = [...group.medications];
+        newMedications.splice(destination.index, 0, medicationToMove);
+        return { ...group, medications: newMedications };
+      }
+      return group;
+    });
     
     updateGrouping({
       groups: newGroups,
-      individual: newIndividual
+      individual: localGrouping.individual
     });
   };
 
@@ -226,7 +213,6 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
   );
 
   const unassignedMedications = selectedAgents.filter(agent => 
-    !localGrouping.individual.some(ind => ind.name === agent.name) &&
     !localGrouping.groups.some(group => group.medications.some(med => med.name === agent.name))
   );
 
@@ -340,43 +326,6 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
           ))}
         </div>
 
-        {/* Individual Medications */}
-        <Card className="border-2 border-muted">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-base">
-              <Beaker className="h-4 w-4" />
-              {tSafe('solventGroups.individual', 'Medicamente individuale')} ({localGrouping.individual.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Droppable droppableId="individual">
-              {(provided, snapshot) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  className={`min-h-[60px] p-3 border-2 border-dashed rounded-lg transition-colors ${
-                    snapshot.isDraggingOver
-                      ? 'border-primary bg-primary/5'
-                      : 'border-muted-foreground/25 bg-muted/25'
-                  }`}
-                >
-                  {localGrouping.individual.length === 0 ? (
-                    <div className="text-center text-muted-foreground text-sm py-4">
-                      {tSafe('solventGroups.noIndividual', 'Niciun medicament individual')}
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {localGrouping.individual.map((medication, index) =>
-                        renderMedication(medication, index)
-                      )}
-                    </div>
-                  )}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </CardContent>
-        </Card>
 
         {/* Unassigned Medications */}
         {unassignedMedications.length > 0 && (
