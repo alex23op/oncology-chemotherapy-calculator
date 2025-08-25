@@ -179,6 +179,19 @@ export const PatientForm = ({ onPatientDataChange, selectedRegimen }: PatientFor
   const handleInputChange = useCallback((field: keyof PatientData, value: string | number | boolean) => {
     // Sanitize input to prevent XSS for string values
     const sanitizedValue = typeof value === 'string' ? sanitizeInput(value) : value;
+    
+    // Debug logging for name field to track space preservation
+    if (field === 'fullName' && typeof value === 'string' && typeof sanitizedValue === 'string') {
+      logger.debug('Full name input processing', {
+        component: 'PatientForm',
+        action: 'handleInputChange',
+        originalValue: value,
+        sanitizedValue,
+        containsSpace: value.includes(' '),
+        sanitizedContainsSpace: sanitizedValue.includes(' ')
+      });
+    }
+    
     const newData = { ...localPatientData, [field]: sanitizedValue };
     setLocalPatientData(newData);
     

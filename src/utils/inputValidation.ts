@@ -185,11 +185,12 @@ if (drugName.toLowerCase().includes('cisplatin')) {
 export const sanitizeInput = (input: string): string => {
   if (!input || typeof input !== 'string') return '';
   
-  // Remove potentially dangerous characters
+  // Remove potentially dangerous characters but preserve spaces and normal text
   return input
-    .replace(/[<>'"]/g, '') // Remove HTML-like characters
+    .replace(/[<>"]/g, '') // Remove HTML-like characters (excluding single quotes to preserve contractions)
     .replace(/javascript:/gi, '') // Remove javascript: protocol
-    .replace(/on\w+=/gi, '') // Remove event handlers
+    .replace(/on\w+\s*=/gi, '') // Remove event handlers
+    .replace(/\s+/g, ' ') // Normalize multiple spaces to single space
     .trim();
 };
 
