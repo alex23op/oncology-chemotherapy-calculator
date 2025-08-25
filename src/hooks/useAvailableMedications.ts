@@ -399,6 +399,135 @@ const premedCategories: CategoryData[] = [
         solvent: null
       }
     ]
+  },
+  {
+    id: "nutritional_supplements",
+    name: "Suplimente nutritive",
+    description: "Vitamine și suplimente pentru suportul nutrițional în timpul chimioterapiei",
+    icon: Zap,
+    color: "bg-emerald-50 border-emerald-200 text-emerald-800",
+    agents: [
+      {
+        name: "Vitamina B1 (fiolă)",
+        category: "Supliment vitaminic",
+        class: "Vitamina hidrosolubilă",
+        dosage: "100",
+        unit: "mg",
+        route: "IV",
+        timing: "Per protocol",
+        indication: "Suport metabolic, deficiență vitamina B1",
+        rationale: "Esențială pentru metabolismul carbohidraților și funcția neurologică",
+        isRequired: false,
+        isStandard: true,
+        evidenceLevel: "IIB",
+        solvent: null
+      },
+      {
+        name: "Vitamina B6 (fiolă)",
+        category: "Supliment vitaminic",
+        class: "Vitamina hidrosolubilă",
+        dosage: "50",
+        unit: "mg",
+        route: "IV",
+        timing: "Per protocol",
+        indication: "Suport metabolic, deficiență vitamina B6",
+        rationale: "Important pentru metabolismul aminoacizilor și sinteza neurotransmițătorilor",
+        isRequired: false,
+        isStandard: true,
+        evidenceLevel: "IIB",
+        solvent: null
+      },
+      {
+        name: "Vitamina C (fiolă)",
+        category: "Supliment vitaminic",
+        class: "Vitamina hidrosolubilă",
+        dosage: "500",
+        unit: "mg",
+        route: "IV",
+        timing: "Per protocol",
+        indication: "Suport antioxidant, vindecarea rănilor",
+        rationale: "Antioxidant puternic, suportă sistemul imunitar și sinteza colagenului",
+        isRequired: false,
+        isStandard: true,
+        evidenceLevel: "IIB",
+        solvent: null
+      },
+      {
+        name: "Solu-Vit (fiolă)",
+        category: "Complex vitaminic",
+        class: "Multivitamine",
+        dosage: "1",
+        unit: "fiolă",
+        route: "IV",
+        timing: "Per protocol",
+        indication: "Suport vitaminic complex",
+        rationale: "Complex de vitamine pentru suportul general al organismului",
+        isRequired: false,
+        isStandard: true,
+        evidenceLevel: "IIB",
+        solvent: null
+      },
+      {
+        name: "Aspatofort",
+        category: "Hepatoprotector",
+        class: "Aminoacid",
+        dosage: "Per protocol",
+        unit: "",
+        route: "IV",
+        timing: "Per protocol",
+        indication: "Protecția hepatică",
+        rationale: "Suport pentru funcția hepatică în timpul chimioterapiei",
+        isRequired: false,
+        isStandard: true,
+        evidenceLevel: "IIB",
+        solvent: null
+      },
+      {
+        name: "Aminosteril N-Hepa",
+        category: "Supliment aminoacizi",
+        class: "Aminoacizi",
+        dosage: "Per protocol",
+        unit: "",
+        route: "IV",
+        timing: "Per protocol",
+        indication: "Suport nutrițional hepatic",
+        rationale: "Aminoacizi specializați pentru suportul funcției hepatice",
+        isRequired: false,
+        isStandard: true,
+        evidenceLevel: "IIB",
+        solvent: null
+      },
+      {
+        name: "Arginina Sorbitol",
+        category: "Supliment aminoacizi",
+        class: "Aminoacid + Sorbitol",
+        dosage: "Per protocol",
+        unit: "",
+        route: "IV",
+        timing: "Per protocol",
+        indication: "Suport metabolic și cicatrizare",
+        rationale: "Suportă sinteza proteinelor și procesele de vindeccare",
+        isRequired: false,
+        isStandard: true,
+        evidenceLevel: "IIB",
+        solvent: null
+      },
+      {
+        name: "Hepa-Merz",
+        category: "Hepatoprotector",
+        class: "L-ornitină L-aspartat",
+        dosage: "Per protocol",
+        unit: "",
+        route: "IV",
+        timing: "Per protocol",
+        indication: "Protecția hepatică, detoxifiere",
+        rationale: "Suportă detoxifierea hepatică și funcția metabolică",
+        isRequired: false,
+        isStandard: true,
+        evidenceLevel: "IIB",
+        solvent: null
+      }
+    ]
   }
 ];
 

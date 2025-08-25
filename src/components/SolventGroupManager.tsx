@@ -7,9 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Textarea } from '@/components/ui/textarea';
 import { PremedAgent, PremedSolventGroup, GroupedPremedications } from '@/types/clinicalTreatment';
-import { Trash2, Plus, GripVertical, Beaker, Droplets, AlertTriangle } from 'lucide-react';
+import { Trash2, Plus, Beaker, Droplets, AlertTriangle } from 'lucide-react';
 import { useTSafe } from '@/i18n/tSafe';
-import { DragDropContext, Droppable, Draggable, DropResult } from '@hello-pangea/dnd';
 import { MedicationMultiSelector } from './MedicationMultiSelector';
 
 interface SolventGroupManagerProps {
@@ -19,6 +18,7 @@ interface SolventGroupManagerProps {
 }
 
 const SOLVENT_OPTIONS = [
+  { value: '', key: 'noSolvent', label: 'Fără solvent' },
   { value: 'Soluție NaCl 0.9% 100ml', key: 'normalSaline100' },
   { value: 'Soluție NaCl 0.9% 250ml', key: 'normalSaline250' },
   { value: 'Soluție NaCl 0.9% 500ml', key: 'normalSaline500' },
@@ -49,9 +49,6 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
     const errors: string[] = [];
     
     localGrouping.groups.forEach((group, index) => {
-      if (!group.solvent.trim()) {
-        errors.push(tSafe('solventGroups.validation.noSolvent', `PEV ${index + 1}: Niciun solvent selectat`, { pev: index + 1 }));
-      }
       if (group.medications.length === 0) {
         errors.push(tSafe('solventGroups.validation.emptyPev', `PEV ${index + 1}: Niciun medicament asignat`, { pev: index + 1 }));
       }
@@ -127,89 +124,28 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
     });
   };
 
-  const onDragEnd = (result: DropResult) => {
-    const { destination, source } = result;
-    
-    if (!destination) return;
-    
-    const sourceDroppableId = source.droppableId;
-    const destDroppableId = destination.droppableId;
-    
-    // Only allow drag & drop between groups (no individual medications)
-    if (sourceDroppableId === 'individual' || destDroppableId === 'individual') {
-      return;
-    }
-    
-    // Find the medication being moved
-    let medicationToMove: PremedAgent | null = null;
-    const sourceGroup = localGrouping.groups.find(g => g.id === sourceDroppableId);
-    if (sourceGroup) {
-      medicationToMove = sourceGroup.medications[source.index];
-    }
-    
-    if (!medicationToMove) return;
-    
-    // Remove from source and add to destination
-    let newGroups = [...localGrouping.groups];
-    
-    newGroups = newGroups.map(group => {
-      if (group.id === sourceDroppableId) {
-        const newMedications = [...group.medications];
-        newMedications.splice(source.index, 1);
-        return { ...group, medications: newMedications };
-      }
-      return group;
-    });
-    
-    newGroups = newGroups.map(group => {
-      if (group.id === destDroppableId) {
-        const newMedications = [...group.medications];
-        newMedications.splice(destination.index, 0, medicationToMove);
-        return { ...group, medications: newMedications };
-      }
-      return group;
-    });
-    
-    updateGrouping({
-      groups: newGroups,
-      individual: localGrouping.individual
-    });
-  };
-
-  const renderMedication = (medication: PremedAgent, index: number, groupId?: string) => (
-    <Draggable key={medication.name} draggableId={medication.name} index={index}>
-      {(provided, snapshot) => (
-        <div
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          className={`flex items-center gap-2 p-2 bg-background border rounded-md transition-all ${
-            snapshot.isDragging ? 'shadow-lg border-primary' : 'border-border hover:bg-muted/50'
-          }`}
-        >
-          <GripVertical className="h-4 w-4 text-muted-foreground" />
-          <div className="flex-1">
-            <div className="font-medium text-sm">{medication.name}</div>
-            <div className="text-xs text-muted-foreground">
-              {medication.dosage} {medication.route}
-            </div>
-          </div>
-          <Badge variant="outline" className="text-xs">
-            {medication.category}
-          </Badge>
-          {groupId && (
-            <Button
-              onClick={() => removeMedicationFromGroup(groupId, medication.name)}
-              variant="ghost"
-              size="sm"
-              className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
-            >
-              <Trash2 className="h-3 w-3" />
-            </Button>
-          )}
+  const renderMedication = (medication: PremedAgent, groupId?: string) => (
+    <div className="flex items-center gap-2 p-2 bg-background border rounded-md transition-all border-border hover:bg-muted/50">
+      <div className="flex-1">
+        <div className="font-medium text-sm">{medication.name}</div>
+        <div className="text-xs text-muted-foreground">
+          {medication.dosage} {medication.route}
         </div>
+      </div>
+      <Badge variant="outline" className="text-xs">
+        {medication.category}
+      </Badge>
+      {groupId && (
+        <Button
+          onClick={() => removeMedicationFromGroup(groupId, medication.name)}
+          variant="ghost"
+          size="sm"
+          className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+        >
+          <Trash2 className="h-3 w-3" />
+        </Button>
       )}
-    </Draggable>
+    </div>
   );
 
   const unassignedMedications = selectedAgents.filter(agent => 
@@ -225,140 +161,129 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
         </AlertDescription>
       </Alert>
 
-      <DragDropContext onDragEnd={onDragEnd}>
-        {/* Solvent Groups */}
-        <div className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">{tSafe('solventGroups.pevTitle', 'Grupuri PEV')}</h3>
-            <Button onClick={createNewGroup} variant="outline" size="sm">
-              <Plus className="h-4 w-4 mr-1" />
-              {tSafe('solventGroups.addNewPev', 'Adaugă PEV nou')}
-            </Button>
-          </div>
-
-          {localGrouping.groups.map((group, index) => (
-            <Card key={group.id} className="border-2 border-primary/20">
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center gap-2 text-base">
-                    <Droplets className="h-4 w-4 text-primary" />
-                    {tSafe('solventGroups.pevNumber', 'PEV {{number}}', { number: index + 1 })}
-                  </CardTitle>
-                  <Button
-                    onClick={() => deleteGroup(group.id)}
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">{tSafe('unifiedSelector.solvent', 'Solvent')}</Label>
-                  <Select
-                    value={group.solvent}
-                    onValueChange={(value) => updateGroupSolvent(group.id, value)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={tSafe('doseCalculator.selectSolvent', 'Selectează solventul')} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {SOLVENT_OPTIONS.map((option) => (
-                        <SelectItem key={option.value} value={option.value}>
-                          {tSafe(`doseCalculator.solvents.${option.key}`, option.key)}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {/* Medications in Group */}
-                <Droppable droppableId={group.id}>
-                  {(provided, snapshot) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      className={`min-h-[60px] p-3 border-2 border-dashed rounded-lg transition-colors ${
-                        snapshot.isDraggingOver
-                          ? 'border-primary bg-primary/5'
-                          : 'border-muted-foreground/25 bg-muted/25'
-                      }`}
-                    >
-                      {group.medications.length === 0 ? (
-                        <div className="text-center text-muted-foreground text-sm py-4">
-                          {tSafe('solventGroups.dropHere', 'Trageți medicamentele aici pentru a le grupa')}
-                        </div>
-                      ) : (
-                        <div className="space-y-2">
-                          {group.medications.map((medication, index) =>
-                            renderMedication(medication, index, group.id)
-                          )}
-                        </div>
-                      )}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-
-                {/* Add Medications Selector - Always Visible */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">{tSafe('solventGroups.addMedications', 'Adaugă medicamente')}</Label>
-                  <MedicationMultiSelector
-                    selectedMedications={[]}
-                    onSelectionChange={(medications) => addMedicationsToGroup(group.id, medications)}
-                    placeholder="Selectează medicamente suplimentare pentru acest PEV..."
-                  />
-                </div>
-                
-                {/* Notes Section */}
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium">{tSafe('solventGroups.notes', 'Note')}</Label>
-                  <Textarea
-                    value={group.notes || ''}
-                    onChange={(e) => updateGroupNotes(group.id, e.target.value)}
-                    placeholder={tSafe('solventGroups.notesPlaceholder', 'Adăugați informații suplimentare despre acest PEV...')}
-                    className="min-h-[60px] text-sm"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+      {/* Solvent Groups */}
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h3 className="text-lg font-semibold">{tSafe('solventGroups.pevTitle', 'Grupuri PEV')}</h3>
+          <Button onClick={createNewGroup} variant="outline" size="sm">
+            <Plus className="h-4 w-4 mr-1" />
+            {tSafe('solventGroups.addNewPev', 'Adaugă PEV nou')}
+          </Button>
         </div>
 
-
-        {/* Unassigned Medications */}
-        {unassignedMedications.length > 0 && (
-          <Card className="border-2 border-warning/20">
+        {localGrouping.groups.map((group, index) => (
+          <Card key={group.id} className="border-2 border-primary/20">
             <CardHeader className="pb-3">
-              <CardTitle className="flex items-center gap-2 text-base text-warning">
-                <GripVertical className="h-4 w-4" />
-                {tSafe('solventGroups.unassigned', 'Medicamente neasignate')} ({unassignedMedications.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {unassignedMedications.map((medication, index) => (
-                  <div key={medication.name} className="flex items-center gap-2 p-2 bg-warning/5 border border-warning/20 rounded-md">
-                    <div className="flex-1">
-                      <div className="font-medium text-sm">{medication.name}</div>
-                      <div className="text-xs text-muted-foreground">
-                        {medication.dosage} {medication.route}
-                      </div>
-                    </div>
-                    <Badge variant="outline" className="text-xs border-warning/50">
-                      {medication.category}
-                    </Badge>
-                  </div>
-                ))}
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Droplets className="h-4 w-4 text-primary" />
+                  {tSafe('solventGroups.pevNumber', 'PEV {{number}}', { number: index + 1 })}
+                </CardTitle>
+                <Button
+                  onClick={() => deleteGroup(group.id)}
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
-              <p className="text-xs text-warning mt-2">
-                {tSafe('solventGroups.unassignedHelp', 'Aceste medicamente trebuie să fie asignate la un grup sau mutate la administrarea individuală.')}
-              </p>
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">{tSafe('unifiedSelector.solvent', 'Solvent')} ({tSafe('solventGroups.optional', 'opțional')})</Label>
+                <Select
+                  value={group.solvent}
+                  onValueChange={(value) => updateGroupSolvent(group.id, value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={tSafe('doseCalculator.selectSolvent', 'Selectează solventul (opțional)')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SOLVENT_OPTIONS.map((option) => (
+                      <SelectItem key={option.key} value={option.value}>
+                        {option.label || tSafe(`doseCalculator.solvents.${option.key}`, option.key)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {/* Medications in Group */}
+              <div className="space-y-2">
+                {group.medications.length > 0 && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">{tSafe('solventGroups.medications', 'Medicamente în grup')}</Label>
+                    {group.medications.map((medication) =>
+                      renderMedication(medication, group.id)
+                    )}
+                  </div>
+                )}
+              </div>
+
+              {/* Add Medications Selector */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">{tSafe('solventGroups.addMedications', 'Adaugă medicamente')}</Label>
+                <MedicationMultiSelector
+                  selectedMedications={[]}
+                  onSelectionChange={(medications) => addMedicationsToGroup(group.id, medications)}
+                  placeholder="Selectează medicamente pentru acest PEV..."
+                />
+              </div>
+              
+              {/* Notes Section */}
+              <div className="space-y-2">
+                <Label className="text-sm font-medium">{tSafe('solventGroups.notes', 'Note')}</Label>
+                <Textarea
+                  value={group.notes || ''}
+                  onChange={(e) => updateGroupNotes(group.id, e.target.value)}
+                  placeholder={tSafe('solventGroups.notesPlaceholder', 'Adăugați informații suplimentare despre acest PEV...')}
+                  className="min-h-[60px] text-sm"
+                />
+              </div>
             </CardContent>
           </Card>
-        )}
-      </DragDropContext>
+        ))}
+
+        {/* Bottom Add PEV Button */}
+        <div className="flex justify-center pt-4">
+          <Button onClick={createNewGroup} variant="outline" size="sm">
+            <Plus className="h-4 w-4 mr-1" />
+            {tSafe('solventGroups.addNewPev', 'Adaugă PEV nou')}
+          </Button>
+        </div>
+      </div>
+
+      {/* Unassigned Medications */}
+      {unassignedMedications.length > 0 && (
+        <Card className="border-2 border-warning/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-base text-warning">
+              <AlertTriangle className="h-4 w-4" />
+              {tSafe('solventGroups.unassigned', 'Medicamente neasignate')} ({unassignedMedications.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {unassignedMedications.map((medication) => (
+                <div key={medication.name} className="flex items-center gap-2 p-2 bg-warning/5 border border-warning/20 rounded-md">
+                  <div className="flex-1">
+                    <div className="font-medium text-sm">{medication.name}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {medication.dosage} {medication.route}
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="text-xs border-warning/50">
+                    {medication.category}
+                  </Badge>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-warning mt-2">
+              {tSafe('solventGroups.unassignedHelp', 'Aceste medicamente trebuie să fie asignate la un grup.')}
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Validation Errors */}
       {(() => {
