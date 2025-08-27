@@ -15,7 +15,7 @@ export const AppHeader = () => {
             </div>
             <div>
               <h1 className="text-xl font-bold text-foreground" id="app-title">
-                {tSafe('header.title', 'ChemoCalc Pro')}
+                {tSafe('header.title', 'Onco-Cal')}
               </h1>
               <p className="text-sm text-muted-foreground" aria-describedby="app-title">
                 {tSafe('header.subtitle', 'Oncology Dose Calculator')}

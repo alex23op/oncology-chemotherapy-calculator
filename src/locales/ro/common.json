@@ -9,7 +9,7 @@
     }
   },
   "header": {
-    "title": "ChemoCalc Pro",
+    "title": "Onco-Cal",
     "subtitle": "Calculator de doze oncologice",
     "hipaa": "Conform HIPAA",
     "clinicalUseOnly": "Numai pentru uz clinic",
@@ -37,7 +37,7 @@
       "body": "Această aplicație este un instrument de suport decizional clinic. Toate calculele trebuie verificate independent, iar dozele trebuie revizuite de specialiști înainte de administrare. Întotdeauna luați în considerare factorii specifici pacientului, contraindicațiile și protocoalele instituționale la prescrierea chimioterapiei."
     },
     "seo": {
-      "title": "ChemoCalc Pro – Calculator doze oncologice",
+      "title": "Onco-Cal – Calculator doze oncologice",
       "description": "Calculați doze oncologice, premedicație și imprimați protocoale clinice de chimioterapie."
     }
   },

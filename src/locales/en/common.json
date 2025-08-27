@@ -9,7 +9,7 @@
     }
   },
   "header": {
-    "title": "ChemoCalc Pro",
+    "title": "Onco-Cal",
     "subtitle": "Oncology Dose Calculator",
     "hipaa": "HIPAA Compliant",
     "clinicalUseOnly": "Clinical Use Only",
@@ -37,7 +37,7 @@
       "body": "This application is designed as a clinical decision support tool. All calculations should be verified independently and doses should be reviewed by qualified healthcare professionals before administration. Always consider patient-specific factors, contraindications, and institutional protocols when prescribing chemotherapy."
     },
     "seo": {
-      "title": "ChemoCalc Pro – Oncology Dose Calculator",
+      "title": "Onco-Cal – Oncology Dose Calculator",
       "description": "Calculate oncology doses, premedication, and print clinical chemotherapy protocols."
     }
   },
