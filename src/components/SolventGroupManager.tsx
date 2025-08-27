@@ -18,7 +18,7 @@ interface SolventGroupManagerProps {
 }
 
 const SOLVENT_OPTIONS = [
-  { value: '', key: 'noSolvent', label: 'Fără solvent' },
+  { value: 'no-solvent', key: 'noSolvent', label: 'Fără solvent' },
   { value: 'Soluție NaCl 0.9% 100ml', key: 'normalSaline100' },
   { value: 'Soluție NaCl 0.9% 250ml', key: 'normalSaline250' },
   { value: 'Soluție NaCl 0.9% 500ml', key: 'normalSaline500' },
@@ -60,7 +60,7 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
   const createNewGroup = () => {
     const newGroup: PremedSolventGroup = {
       id: `group-${Date.now()}`,
-      solvent: '',
+      solvent: 'no-solvent',
       medications: [],
       notes: ''
     };
@@ -73,8 +73,8 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
 
   const deleteGroup = (groupId: string) => {
     updateGrouping({
-      groups: localGrouping.groups.filter(g => g.id !== groupId),
-      individual: localGrouping.individual
+      ...localGrouping,
+      groups: localGrouping.groups.filter(g => g.id !== groupId)
     });
   };
 
