@@ -39,24 +39,14 @@ export const ChemotherapyProtocolTable: React.FC<ChemotherapyProtocolTableProps>
                 <div className="text-gray-600 text-xs">{drug.route}, Z{drug.day}</div>
               </TableCell>
               <TableCell className="border border-gray-300 p-0.5 text-xs text-center">
-                <div className="font-medium">{drug.finalDose} mg</div>
-                <div className="text-gray-600 text-xs">({drug.calculatedDose} mg/m²)</div>
-              </TableCell>
-              <TableCell className="border border-gray-300 p-0.5 text-xs text-center">
-                <div>{drug.solvent}</div>
-              </TableCell>
-              <TableCell className="border border-gray-300 p-0.5 text-xs text-center">
-                <div>{drug.administrationDuration || 'Standard'}</div>
+                {drug.unitCount && drug.unitType ? (
+                  <div className="font-medium">{drug.unitCount} {drug.unitType}</div>
+                ) : (
+                  <div className="font-medium">{drug.finalDose} mg</div>
+                )}
               </TableCell>
               <TableCell className="border border-gray-300 p-0.5 text-xs">
-                <div className="space-y-0.5">
-                  {drug.adjustmentNotes && <div>{drug.adjustmentNotes}</div>}
-                  {drug.preparationInstructions && <div>{drug.preparationInstructions}</div>}
-                  {drug.notes && <div>{drug.notes}</div>}
-                  {(drug.monitoring && Array.isArray(drug.monitoring) && drug.monitoring.length > 0) && (
-                    <div className="text-gray-600">{drug.monitoring.join(', ')}</div>
-                  )}
-                </div>
+                <div>{drug.userNotes || ''}</div>
               </TableCell>
             </TableRow>
           ))}

@@ -26,6 +26,9 @@ export interface CalculatedDrug extends Drug {
   preparationInstructions?: string;
   administrationDuration?: string;
   solvent: SolventType;
+  unitCount?: number;
+  unitType?: string;
+  userNotes?: string;
 }
 
 export interface PremedAgent {
@@ -46,6 +49,9 @@ export interface PremedAgent {
   evidenceLevel?: string;
   drugSpecific?: string[];
   solvent: SolventType;
+  unitCount?: number;
+  unitType?: string;
+  userNotes?: string;
 }
 
 export interface PremedSolventGroup {

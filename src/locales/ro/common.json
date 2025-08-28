@@ -689,5 +689,16 @@
     "autoJumpDesc": "Navighează automat la următoarea secțiune",
     "calendarFirst": "Calendar primul",
     "calendarFirstDesc": "Afișează calendarul înaintea formularelor"
+  },
+  "units": {
+    "fiole": "fiole",
+    "comprimate": "comprimate",
+    "flacoane": "flacoane",
+    "mg": "mg",
+    "ml": "ml",
+    "unitCount": "Număr de unități",
+    "unitType": "Tip unitate",
+    "userNotes": "Note utilizator",
+    "userNotesPlaceholder": "Introduceți notele de administrare..."
   }
 }

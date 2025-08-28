@@ -700,6 +700,17 @@
     "autoJumpDesc": "Automatically navigate to the next section",
     "calendarFirst": "Calendar First",
     "calendarFirstDesc": "Show calendar view before forms"
+  },
+  "units": {
+    "fiole": "vials",
+    "comprimate": "tablets",
+    "flacoane": "bottles",
+    "mg": "mg",
+    "ml": "ml",
+    "unitCount": "Unit Count",
+    "unitType": "Unit Type",
+    "userNotes": "User Notes",
+    "userNotesPlaceholder": "Enter administration notes..."
   }
 }
 

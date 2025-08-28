@@ -47,6 +47,9 @@ interface EnhancedDoseCalculation extends DoseCalculationResult {
   solvent?: string;
   adjustmentNotes?: string;
   preparationInstructions?: string;
+  unitCount?: number;
+  unitType?: string;
+  userNotes?: string;
 }
 
 const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
@@ -150,6 +153,12 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
         calc.notes = value;
       } else if (field === 'administrationDuration') {
         calc.administrationDuration = value;
+      } else if (field === 'unitCount') {
+        calc.unitCount = parseInt(value) || undefined;
+      } else if (field === 'unitType') {
+        calc.unitType = value;
+      } else if (field === 'userNotes') {
+        calc.userNotes = value;
       }
       
       updated[index] = calc;
@@ -218,7 +227,10 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
         adjustmentNotes: calc.adjustmentNotes,
         preparationInstructions: calc.preparationInstructions,
         administrationDuration: calc.administrationDuration || calc.drug.administrationDuration,
-        solvent: calc.selectedSolventType || calc.solvent || 'Normal Saline 0.9%'
+        solvent: calc.selectedSolventType || calc.solvent || 'Normal Saline 0.9%',
+        unitCount: calc.unitCount,
+        unitType: calc.unitType,
+        userNotes: calc.userNotes
       })) : [],
       premedications: {
         antiemetics: selectedAntiemetics,
@@ -373,44 +385,61 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
                 </div>
               </div>
 
-              {/* Solvent and Notes */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t">
+              {/* Unit Details and User Notes */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 pt-4 border-t">
                 <div>
-                  <Label className="text-muted-foreground">{t('doseCalculator.solvent', 'Solvent')}</Label>
+                  <Label className="text-muted-foreground">{t('units.unitCount', 'Număr de unități')}</Label>
                   {isEditing ? (
-                    <select
-                      value={calc.solvent || 'Soluție NaCl 0.9% 250ml'}
-                      onChange={(e) => handleEditCalculation(index, 'solvent', e.target.value)}
-                      className="w-full mt-1 h-8 px-3 rounded-md border border-input bg-background text-sm"
-                      aria-label={t('doseCalculator.solventAria', 'Selectați solventul pentru {{drug}}', { drug: calc.drug.name })}
-                    >
-                      <option value="Soluție glucoză 5% 100ml">{t('doseCalculator.solventGlucose100', 'Soluție glucoză 5% 100ml')}</option>
-                      <option value="Soluție glucoză 5% 250ml">{t('doseCalculator.solventGlucose250', 'Soluție glucoză 5% 250ml')}</option>
-                      <option value="Soluție glucoză 5% 500ml">{t('doseCalculator.solventGlucose500', 'Soluție glucoză 5% 500ml')}</option>
-                      <option value="Soluție NaCl 0.9% 100ml">{t('doseCalculator.solventNaCl100', 'Soluție NaCl 0.9% 100ml')}</option>
-                      <option value="Soluție NaCl 0.9% 250ml">{t('doseCalculator.solventNaCl250', 'Soluție NaCl 0.9% 250ml')}</option>
-                      <option value="Soluție NaCl 0.9% 500ml">{t('doseCalculator.solventNaCl500', 'Soluție NaCl 0.9% 500ml')}</option>
-                      <option value="Water for Injection">{t('doseCalculator.solventWater', 'Apă pentru preparate injectabile')}</option>
-                    </select>
+                    <Input
+                      type="number"
+                      value={calc.unitCount || ''}
+                      onChange={(e) => handleEditCalculation(index, 'unitCount', e.target.value)}
+                      className="mt-1 h-8"
+                      min="1"
+                      placeholder="1, 2, 3..."
+                      aria-label={`Introduceți numărul de unități pentru ${calc.drug.name}`}
+                    />
                   ) : (
                     <p className="font-medium mt-1">
-                      {calc.solvent || 'Soluție NaCl 0.9% 250ml'}
+                      {calc.unitCount || '-'}
                     </p>
                   )}
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">{t('doseCalculator.notes', 'Note')}</Label>
+                  <Label className="text-muted-foreground">{t('units.unitType', 'Tip unitate')}</Label>
+                  {isEditing ? (
+                    <select
+                      value={calc.unitType || ''}
+                      onChange={(e) => handleEditCalculation(index, 'unitType', e.target.value)}
+                      className="w-full mt-1 h-8 px-3 rounded-md border border-input bg-background text-sm"
+                      aria-label={`Selectați tipul unității pentru ${calc.drug.name}`}
+                    >
+                      <option value="">Selectați tipul</option>
+                      <option value="fiole">{t('units.fiole', 'fiole')}</option>
+                      <option value="comprimate">{t('units.comprimate', 'comprimate')}</option>
+                      <option value="flacoane">{t('units.flacoane', 'flacoane')}</option>
+                      <option value="mg">{t('units.mg', 'mg')}</option>
+                      <option value="ml">{t('units.ml', 'ml')}</option>
+                    </select>
+                  ) : (
+                    <p className="font-medium mt-1">
+                      {calc.unitType ? t(`units.${calc.unitType}`, calc.unitType) : '-'}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Label className="text-muted-foreground">{t('units.userNotes', 'Note utilizator')}</Label>
                   {isEditing ? (
                     <Input
-                      value={calc.notes || ''}
-                      onChange={(e) => handleEditCalculation(index, 'notes', e.target.value)}
+                      value={calc.userNotes || ''}
+                      onChange={(e) => handleEditCalculation(index, 'userNotes', e.target.value)}
                       className="mt-1 h-8"
-                      placeholder={t('doseCalculator.notesPlaceholder', 'Adăugați note pentru ajustarea dozei...')}
-                      aria-label={t('doseCalculator.notesAria', 'Adăugați note pentru {{drug}}', { drug: calc.drug.name })}
+                      placeholder={t('units.userNotesPlaceholder', 'Introduceți notele de administrare...')}
+                      aria-label={`Adăugați note pentru ${calc.drug.name}`}
                     />
                   ) : (
                     <p className="font-medium mt-1">
-                      {calc.notes || '-'}
+                      {calc.userNotes || '-'}
                     </p>
                   )}
                 </div>
