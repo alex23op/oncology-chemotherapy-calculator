@@ -680,5 +680,14 @@
     "requiredTestedCount": "{{done}}/{{total}} biomarkeri necesari testați",
     "completeProfile": "Finalizează profilul de biomarkeri",
     "completeRequired": "Finalizează testările necesare"
+  },
+  "smartNav": {
+    "title": "Setări navigare inteligentă",
+    "autoCollapse": "Restrângere automată",
+    "autoCollapseDesc": "Restrânge automat secțiunile completate",
+    "autoJump": "Navigare automată",
+    "autoJumpDesc": "Navighează automat la următoarea secțiune",
+    "calendarFirst": "Calendar primul",
+    "calendarFirstDesc": "Afișează calendarul înaintea formularelor"
   }
 }

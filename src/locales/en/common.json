@@ -691,6 +691,15 @@
     "requiredTestedCount": "{{done}}/{{total}} required biomarkers tested",
     "completeProfile": "Complete Biomarker Profile",
     "completeRequired": "Complete Required Testing"
+  },
+  "smartNav": {
+    "title": "Smart Navigation Settings",
+    "autoCollapse": "Auto Collapse",
+    "autoCollapseDesc": "Automatically collapse completed sections",
+    "autoJump": "Auto Jump",
+    "autoJumpDesc": "Automatically navigate to the next section",
+    "calendarFirst": "Calendar First",
+    "calendarFirstDesc": "Show calendar view before forms"
   }
 }
 
