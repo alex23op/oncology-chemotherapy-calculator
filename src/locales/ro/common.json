@@ -699,6 +699,7 @@
     "unitCount": "Număr de unități",
     "unitType": "Tip unitate",
     "userNotes": "Note utilizator",
-    "userNotesPlaceholder": "Introduceți notele de administrare..."
+    "userNotesPlaceholder": "Introduceți notele de administrare...",
+    "selectType": "Selectați tipul"
   }
 }

@@ -28,7 +28,6 @@ export const ChemotherapyProtocolTable: React.FC<ChemotherapyProtocolTableProps>
             <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center w-16">DOZĂ</TableHead>
             <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center w-20">SOLVENȚI</TableHead>
             <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center w-16">DURATĂ ADMINISTRARE</TableHead>
-            <TableHead className="border border-gray-300 p-0.5 text-xs font-bold text-center">OBSERVAȚII</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -39,14 +38,13 @@ export const ChemotherapyProtocolTable: React.FC<ChemotherapyProtocolTableProps>
                 <div className="text-gray-600 text-xs">{drug.route}, Z{drug.day}</div>
               </TableCell>
               <TableCell className="border border-gray-300 p-0.5 text-xs text-center">
-                {drug.unitCount && drug.unitType ? (
-                  <div className="font-medium">{drug.unitCount} {drug.unitType}</div>
-                ) : (
-                  <div className="font-medium">{drug.finalDose} mg</div>
-                )}
+                <div className="font-medium">{drug.finalDose} mg</div>
               </TableCell>
               <TableCell className="border border-gray-300 p-0.5 text-xs">
-                <div>{drug.userNotes || ''}</div>
+                {drug.solvent}
+              </TableCell>
+              <TableCell className="border border-gray-300 p-0.5 text-xs text-center">
+                {drug.administrationDuration || '-'}
               </TableCell>
             </TableRow>
           ))}

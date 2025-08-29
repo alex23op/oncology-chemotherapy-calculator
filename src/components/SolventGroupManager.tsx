@@ -4,10 +4,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Textarea } from '@/components/ui/textarea';
 import { PremedAgent, PremedSolventGroup, GroupedPremedications } from '@/types/clinicalTreatment';
-import { Trash2, Plus, Beaker, Droplets, AlertTriangle } from 'lucide-react';
+import { Trash2, Plus, Beaker, Droplets, AlertTriangle, Edit2 } from 'lucide-react';
 import { useTSafe } from '@/i18n/tSafe';
 import { MedicationMultiSelector } from './MedicationMultiSelector';
 
@@ -124,26 +125,88 @@ export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
     });
   };
 
+  const updateMedicationInGroup = (groupId: string, medicationName: string, field: string, value: any) => {
+    updateGrouping({
+      ...localGrouping,
+      groups: localGrouping.groups.map(group =>
+        group.id === groupId 
+          ? { 
+              ...group, 
+              medications: group.medications.map(med => 
+                med.name === medicationName 
+                  ? { ...med, [field]: value }
+                  : med
+              )
+            }
+          : group
+      )
+    });
+  };
+
   const renderMedication = (medication: PremedAgent, groupId?: string) => (
-    <div className="flex items-center gap-2 p-2 bg-background border rounded-md transition-all border-border hover:bg-muted/50">
-      <div className="flex-1">
-        <div className="font-medium text-sm">{medication.name}</div>
-        <div className="text-xs text-muted-foreground">
-          {medication.dosage} {medication.route}
+    <div className="border rounded-md p-3 bg-background transition-all border-border hover:bg-muted/50">
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex-1">
+          <div className="font-medium text-sm">{medication.name}</div>
+          <div className="text-xs text-muted-foreground">
+            {medication.dosage} {medication.route}
+          </div>
+        </div>
+        <div className="flex items-center gap-1">
+          <Badge variant="outline" className="text-xs">
+            {medication.category}
+          </Badge>
+          {groupId && (
+            <Button
+              onClick={() => removeMedicationFromGroup(groupId, medication.name)}
+              variant="ghost"
+              size="sm"
+              className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
+            >
+              <Trash2 className="h-3 w-3" />
+            </Button>
+          )}
         </div>
       </div>
-      <Badge variant="outline" className="text-xs">
-        {medication.category}
-      </Badge>
+      
       {groupId && (
-        <Button
-          onClick={() => removeMedicationFromGroup(groupId, medication.name)}
-          variant="ghost"
-          size="sm"
-          className="h-6 w-6 p-0 text-muted-foreground hover:text-destructive"
-        >
-          <Trash2 className="h-3 w-3" />
-        </Button>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+          <div>
+            <Label className="text-xs text-muted-foreground">{tSafe('units.unitCount', 'Număr unități')}</Label>
+            <Input
+              type="number"
+              value={medication.unitCount || ''}
+              onChange={(e) => updateMedicationInGroup(groupId, medication.name, 'unitCount', parseInt(e.target.value) || undefined)}
+              className="h-8 mt-1"
+              min="1"
+              placeholder="1, 2, 3..."
+            />
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground">{tSafe('units.unitType', 'Tip unitate')}</Label>
+            <select
+              value={medication.unitType || ''}
+              onChange={(e) => updateMedicationInGroup(groupId, medication.name, 'unitType', e.target.value)}
+              className="w-full h-8 mt-1 px-2 rounded-md border border-input bg-background text-sm"
+            >
+              <option value="">{tSafe('units.selectType', 'Selectați tipul')}</option>
+              <option value="fiole">{tSafe('units.fiole', 'fiole')}</option>
+              <option value="comprimate">{tSafe('units.comprimate', 'comprimate')}</option>
+              <option value="flacoane">{tSafe('units.flacoane', 'flacoane')}</option>
+              <option value="mg">{tSafe('units.mg', 'mg')}</option>
+              <option value="ml">{tSafe('units.ml', 'ml')}</option>
+            </select>
+          </div>
+          <div>
+            <Label className="text-xs text-muted-foreground">{tSafe('units.userNotes', 'Note utilizator')}</Label>
+            <Input
+              value={medication.userNotes || ''}
+              onChange={(e) => updateMedicationInGroup(groupId, medication.name, 'userNotes', e.target.value)}
+              className="h-8 mt-1"
+              placeholder={tSafe('units.userNotesPlaceholder', 'Note administrare...')}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

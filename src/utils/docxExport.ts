@@ -242,20 +242,16 @@ function createChemotherapyTable(treatmentData: TreatmentData): Table {
 
   // Add chemotherapy drugs
   treatmentData.calculatedDrugs.forEach(drug => {
-    const doseText = drug.unitCount && drug.unitType 
-      ? `${drug.unitCount} ${drug.unitType}`
-      : drug.finalDose;
-
     rows.push(new TableRow({
       children: [
         new TableCell({
           children: [new Paragraph({ text: drug.name })],
         }),
         new TableCell({
-          children: [new Paragraph({ text: doseText })],
+          children: [new Paragraph({ text: `${drug.finalDose} mg` })],
         }),
         new TableCell({
-          children: [new Paragraph({ text: drug.userNotes || '' })],
+          children: [new Paragraph({ text: drug.solvent || '-' })],
         }),
       ],
     }));

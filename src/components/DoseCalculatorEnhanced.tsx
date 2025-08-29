@@ -47,9 +47,6 @@ interface EnhancedDoseCalculation extends DoseCalculationResult {
   solvent?: string;
   adjustmentNotes?: string;
   preparationInstructions?: string;
-  unitCount?: number;
-  unitType?: string;
-  userNotes?: string;
 }
 
 const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
@@ -153,12 +150,6 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
         calc.notes = value;
       } else if (field === 'administrationDuration') {
         calc.administrationDuration = value;
-      } else if (field === 'unitCount') {
-        calc.unitCount = parseInt(value) || undefined;
-      } else if (field === 'unitType') {
-        calc.unitType = value;
-      } else if (field === 'userNotes') {
-        calc.userNotes = value;
       }
       
       updated[index] = calc;
@@ -227,10 +218,7 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
         adjustmentNotes: calc.adjustmentNotes,
         preparationInstructions: calc.preparationInstructions,
         administrationDuration: calc.administrationDuration || calc.drug.administrationDuration,
-        solvent: calc.selectedSolventType || calc.solvent || 'Normal Saline 0.9%',
-        unitCount: calc.unitCount,
-        unitType: calc.unitType,
-        userNotes: calc.userNotes
+        solvent: calc.selectedSolventType || calc.solvent || 'Normal Saline 0.9%'
       })) : [],
       premedications: {
         antiemetics: selectedAntiemetics,
@@ -380,66 +368,6 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
                   ) : (
                     <p className="font-medium">
                       {calc.administrationDuration || calc.drug.administrationDuration || '-'}
-                    </p>
-                  )}
-                </div>
-              </div>
-
-              {/* Unit Details and User Notes */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4 pt-4 border-t">
-                <div>
-                  <Label className="text-muted-foreground">{t('units.unitCount', 'Număr de unități')}</Label>
-                  {isEditing ? (
-                    <Input
-                      type="number"
-                      value={calc.unitCount || ''}
-                      onChange={(e) => handleEditCalculation(index, 'unitCount', e.target.value)}
-                      className="mt-1 h-8"
-                      min="1"
-                      placeholder="1, 2, 3..."
-                      aria-label={`Introduceți numărul de unități pentru ${calc.drug.name}`}
-                    />
-                  ) : (
-                    <p className="font-medium mt-1">
-                      {calc.unitCount || '-'}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">{t('units.unitType', 'Tip unitate')}</Label>
-                  {isEditing ? (
-                    <select
-                      value={calc.unitType || ''}
-                      onChange={(e) => handleEditCalculation(index, 'unitType', e.target.value)}
-                      className="w-full mt-1 h-8 px-3 rounded-md border border-input bg-background text-sm"
-                      aria-label={`Selectați tipul unității pentru ${calc.drug.name}`}
-                    >
-                      <option value="">Selectați tipul</option>
-                      <option value="fiole">{t('units.fiole', 'fiole')}</option>
-                      <option value="comprimate">{t('units.comprimate', 'comprimate')}</option>
-                      <option value="flacoane">{t('units.flacoane', 'flacoane')}</option>
-                      <option value="mg">{t('units.mg', 'mg')}</option>
-                      <option value="ml">{t('units.ml', 'ml')}</option>
-                    </select>
-                  ) : (
-                    <p className="font-medium mt-1">
-                      {calc.unitType ? t(`units.${calc.unitType}`, calc.unitType) : '-'}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">{t('units.userNotes', 'Note utilizator')}</Label>
-                  {isEditing ? (
-                    <Input
-                      value={calc.userNotes || ''}
-                      onChange={(e) => handleEditCalculation(index, 'userNotes', e.target.value)}
-                      className="mt-1 h-8"
-                      placeholder={t('units.userNotesPlaceholder', 'Introduceți notele de administrare...')}
-                      aria-label={`Adăugați note pentru ${calc.drug.name}`}
-                    />
-                  ) : (
-                    <p className="font-medium mt-1">
-                      {calc.userNotes || '-'}
                     </p>
                   )}
                 </div>

@@ -710,7 +710,8 @@
     "unitCount": "Unit Count",
     "unitType": "Unit Type",
     "userNotes": "User Notes",
-    "userNotesPlaceholder": "Enter administration notes..."
+    "userNotesPlaceholder": "Enter administration notes...",
+    "selectType": "Select type"
   }
 }
 
