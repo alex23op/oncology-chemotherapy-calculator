@@ -350,10 +350,9 @@ const IndexContent = () => {
                   <button
                     className="inline-flex items-center gap-2 px-3 py-2 rounded border bg-background hover-scale"
                     onClick={async () => {
-                      const { generateClinicalTreatmentPDF } = await import('@/utils/pdfExport');
-                      await generateClinicalTreatmentPDF({
+                      const { generateClinicalTreatmentDOCX } = await import('@/utils/docxExport');
+                      await generateClinicalTreatmentDOCX({
                         ...treatmentData,
-                        elementId: 'protocol-print',
                         orientation: reviewOrientation,
                       });
                       // Mark session as complete and clean up immediately
@@ -363,7 +362,7 @@ const IndexContent = () => {
                       }, 100);
                     }}
                   >
-                    {t('doseCalculator.exportPdf')}
+                    {t('doseCalculator.exportDocx')}
                   </button>
                   <button
                     className="inline-flex items-center gap-2 px-3 py-2 rounded border bg-background hover-scale"

@@ -181,7 +181,7 @@
     "completionNote": "Această fișă trebuie completată și semnată înainte de administrarea tratamentului",
     "footer": "Protocol generat de calculator. Verificați toate calculele înainte de administrare. Versiunea documentului: {{date}}"
   },
-  "pdf": {
+  "docx": {
     "headerTitle": "PROTOCOL TRATAMENT CHIMIOTERAPIC",
     "premedHeaderTitle": "Protocol de premedicație pentru chimioterapie",
     "patientName": "Nume pacient:",
@@ -301,7 +301,7 @@
     },
     "generateSheet": "Generează fișa",
     "exportData": "Exportă date",
-    "exportPdf": "Exportă PDF",
+    "exportDocx": "Exportă DOCX",
     "print": "Printează",
     "orientation": "Orientare",
     "portrait": "Portret",

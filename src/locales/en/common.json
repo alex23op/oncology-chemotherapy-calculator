@@ -301,7 +301,7 @@
     "save": "Save",
     "generateSheet": "Generate Sheet",
     "exportData": "Export Data",
-  "exportPdf": "Export PDF",
+  "exportDocx": "Export DOCX",
   "print": "Print",
   "orientation": "Orientation",
   "portrait": "Portrait",
