@@ -200,18 +200,34 @@ const IndexContent = () => {
     }
   };
 
-  const handleExport = (calculations: any[]) => {
-    const exportData = {
-      patient: patientData,
-      regimen: selectedRegimen,
-      calculations,
-      timestamp: new Date().toISOString(),
-    };
-    logger.info("Export data", { component: 'Index', data: exportData });
-    toast({
-      title: t("index.toasts.exportSuccess.title"),
-      description: t("index.toasts.exportSuccess.description"),
-    });
+  const handleExport = async (calculations: any[]) => {
+    if (!treatmentData) {
+      toast({
+        title: t("index.toasts.exportError.title", { defaultValue: "Export Error" }),
+        description: t("index.toasts.exportError.description", { defaultValue: "Treatment data is incomplete." }),
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const { generateClinicalTreatmentDOCX } = await import('@/utils/docxExport');
+      await generateClinicalTreatmentDOCX({
+        ...treatmentData,
+        orientation: reviewOrientation,
+      });
+      toast({
+        title: t("index.toasts.exportSuccess.title"),
+        description: t("index.toasts.exportSuccess.description"),
+      });
+    } catch (error) {
+      logger.error("Export failed", { component: 'Index', error });
+      toast({
+        title: t("index.toasts.exportError.title", { defaultValue: "Export Error" }),
+        description: t("index.toasts.exportError.description", { defaultValue: "Failed to export treatment sheet." }),
+        variant: "destructive",
+      });
+    }
   };
 
   // Convert AntiemeticAgent to LocalPremedAgent
