@@ -1,6 +1,7 @@
 import React from 'react';
 import { CalculatedDrug } from '@/types/clinicalTreatment';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { formatDayInRomanian } from '@/utils/translationHelper';
 
 interface ChemotherapyProtocolTableProps {
   calculatedDrugs: CalculatedDrug[];
@@ -35,7 +36,7 @@ export const ChemotherapyProtocolTable: React.FC<ChemotherapyProtocolTableProps>
             <TableRow key={index} className="border-b border-gray-200">
               <TableCell className="border border-gray-300 p-0.5 text-xs">
                 <div className="font-medium">{drug.name}</div>
-                <div className="text-gray-600 text-xs">{drug.route}, Z{drug.day}</div>
+                <div className="text-gray-600 text-xs">{drug.route}, {formatDayInRomanian(drug.day)}</div>
               </TableCell>
               <TableCell className="border border-gray-300 p-0.5 text-xs text-center">
                 <div className="font-medium">{drug.finalDose} mg</div>

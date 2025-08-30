@@ -28,6 +28,23 @@ export const tWithFallback = (t: TFunction, key: string, fallback?: string): str
 };
 
 /**
+ * Format day display in Romanian
+ * Converts "Day X" to "Ziua X"
+ */
+export const formatDayInRomanian = (day: string): string => {
+  if (typeof day !== 'string') return day;
+  
+  // Match "Day X" pattern and extract the number
+  const dayMatch = day.match(/Day\s+(\d+)/i);
+  if (dayMatch) {
+    return `Ziua ${dayMatch[1]}`;
+  }
+  
+  // Return original if no match
+  return day;
+};
+
+/**
  * Get solvent label with fallback
  */
 export const getSolventLabel = (t: TFunction, solventCode: string): string => {
