@@ -358,7 +358,7 @@ const originalRegimens: Regimen[] = [
         unit: "mg/m²",
         route: "IV",
         day: "Day 1 cycle 1",
-        notes: "Loading dose, then 250 mg/m² weekly"
+        notes: "Doză inițială, apoi 250 mg/m² săptămânal"
       }
     ],
     biomarkerRequirements: [
@@ -601,7 +601,7 @@ const originalRegimens: Regimen[] = [
         day: "Day 1 cycle 1",
         drugClass: "targeted",
         administrationDuration: "2 h",
-        notes: "Loading dose, then 250 mg/m² weekly"
+        notes: "Doză inițială, apoi 250 mg/m² săptămânal"
       }
     ],
     biomarkerRequirements: [
@@ -721,7 +721,7 @@ const originalRegimens: Regimen[] = [
         route: "IV",
         day: "Day 1 cycle 1",
         drugClass: "targeted",
-        notes: "Loading dose, then 250 mg/m² weekly"
+        notes: "Doză inițială, apoi 250 mg/m² săptămânal"
       }
     ],
     biomarkerRequirements: [
@@ -892,7 +892,7 @@ const originalRegimens: Regimen[] = [
         route: "IV",
         day: "Day 1 cycle 1",
         drugClass: "targeted",
-        notes: "Loading dose, then 250 mg/m² weekly"
+        notes: "Doză inițială, apoi 250 mg/m² săptămânal"
       }
     ],
     biomarkerRequirements: [
@@ -2291,7 +2291,7 @@ const originalRegimens: Regimen[] = [
         day: "Day 1 cycle 1",
         drugClass: "targeted",
         administrationDuration: "90 min",
-        notes: "Loading dose, then 6 mg/kg q3w"
+        notes: "Doză inițială, apoi 6 mg/kg la 3 săptămâni"
       },
       {
         name: "Pertuzumab",
@@ -2301,7 +2301,7 @@ const originalRegimens: Regimen[] = [
         day: "Day 1 cycle 1",
         drugClass: "targeted",
         administrationDuration: "60 min",
-        notes: "Loading dose, then 420 mg q3w"
+        notes: "Doză inițială, apoi 420 mg la 3 săptămâni"
       }
     ],
     biomarkerRequirements: [
@@ -2415,7 +2415,7 @@ const originalRegimens: Regimen[] = [
         route: "IV",
         day: "Day 1 cycle 1",
         drugClass: "targeted",
-        notes: "Loading dose, then 250 mg/m² weekly"
+        notes: "Doză inițială, apoi 250 mg/m² săptămânal"
       }
     ],
     biomarkerRequirements: [
@@ -2453,7 +2453,7 @@ const originalRegimens: Regimen[] = [
         route: "IV",
         day: "Day 1 cycle 1",
         drugClass: "targeted",
-        notes: "Loading dose, then 250 mg/m² weekly"
+        notes: "Doză inițială, apoi 250 mg/m² săptămânal"
       }
     ],
     biomarkerRequirements: [
@@ -2650,7 +2650,7 @@ const additionalColorectalRegimens: Regimen[] = [
         route: "IV",
         day: "Day 1 cycle 1",
         drugClass: "targeted",
-        notes: "Loading dose, then 250 mg/m² weekly"
+        notes: "Doză inițială, apoi 250 mg/m² săptămânal"
       }
     ],
     biomarkerRequirements: [
@@ -2812,7 +2812,7 @@ const additionalColorectalRegimens: Regimen[] = [
         day: "Day 1 cycle 1",
         drugClass: "targeted",
         administrationDuration: "2 h",
-        notes: "Loading dose, then 250 mg/m² weekly"
+        notes: "Doză inițială, apoi 250 mg/m² săptămânal"
       }
     ],
     biomarkerRequirements: [
@@ -2960,7 +2960,7 @@ const additionalColorectalRegimens: Regimen[] = [
         day: "Day 1 cycle 1",
         drugClass: "targeted",
         administrationDuration: "90 min",
-        notes: "Loading dose, then 6 mg/kg q3w"
+        notes: "Doză inițială, apoi 6 mg/kg la 3 săptămâni"
       },
       {
         name: "Lapatinib",
@@ -3004,7 +3004,7 @@ const additionalColorectalRegimens: Regimen[] = [
         day: "Day 1 cycle 1",
         drugClass: "targeted",
         administrationDuration: "90 min",
-        notes: "Loading dose, then 6 mg/kg q3w"
+        notes: "Doză inițială, apoi 6 mg/kg la 3 săptămâni"
       },
       {
         name: "Tucatinib",
@@ -3092,7 +3092,7 @@ const additionalColorectalRegimens: Regimen[] = [
         route: "IV",
         day: "Day 1 cycle 1",
         drugClass: "targeted",
-        notes: "Loading dose, then 250 mg/m² weekly"
+        notes: "Doză inițială, apoi 250 mg/m² săptămânal"
       }
     ],
     biomarkerRequirements: [

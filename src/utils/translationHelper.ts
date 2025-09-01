@@ -48,13 +48,51 @@ export const formatDayInRomanian = (day: string): string => {
  * Get solvent label with fallback
  */
 export const getSolventLabel = (t: TFunction, solventCode: string): string => {
-  const key = `doseCalculator.solvents.${solventCode}`;
+  const key = `solvents.${solventCode}`;
   const fallbacks: Record<string, string> = {
-    normalSaline: 'Normal Saline',
-    dextrose5: 'Dextrose 5%',
-    ringer: 'Ringer Solution',
-    waterForInjection: 'Water for Injection'
+    normalSaline: 'Ser fiziologic 0.9%',
+    dextrose5: 'Glucoză 5%',
+    ringer: 'Soluție Ringer',
+    waterForInjection: 'Apă pentru preparate injectabile'
   };
   
   return tWithFallback(t, key, fallbacks[solventCode]);
+};
+
+/**
+ * Format timing text in Romanian
+ */
+export const formatTimingInRomanian = (timing: string): string => {
+  if (typeof timing !== 'string') return timing;
+  
+  // Handle common timing patterns
+  const patterns = [
+    { 
+      pattern: /(\d+)\s*minutes?\s*before/i, 
+      replacement: (match: string, minutes: string) => `${minutes} minute înainte` 
+    },
+    { 
+      pattern: /(\d+)\s*min\s*before/i, 
+      replacement: (match: string, minutes: string) => `${minutes} min înainte` 
+    },
+    { 
+      pattern: /1\s*hour\s*before/i, 
+      replacement: () => '1 oră înainte' 
+    },
+    { 
+      pattern: /(\d+)\s*hours?\s*before/i, 
+      replacement: (match: string, hours: string) => `${hours} ore înainte` 
+    },
+    { 
+      pattern: /loading\s*dose/i, 
+      replacement: () => 'Doză inițială' 
+    }
+  ];
+  
+  let result = timing;
+  for (const { pattern, replacement } of patterns) {
+    result = result.replace(pattern, replacement);
+  }
+  
+  return result;
 };

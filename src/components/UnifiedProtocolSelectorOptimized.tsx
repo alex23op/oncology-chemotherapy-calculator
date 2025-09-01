@@ -24,6 +24,7 @@ import {
   Eye
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { useTSafe } from '@/i18n/tSafe';
 import { Regimen, Premedication } from '@/types/regimens';
 import { toast } from 'sonner';
 import { logger } from '@/utils/logger';
@@ -329,6 +330,7 @@ const UnifiedProtocolSelectorCore: React.FC<UnifiedProtocolSelectorProps> = ({
   className
 }) => {
   const { t } = useTranslation();
+  const tSafe = useTSafe();
   const [selectedPremedications, setSelectedPremedications] = useState<EnhancedPremedAgent[]>([]);
   const [customInstructions, setCustomInstructions] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -489,7 +491,7 @@ const UnifiedProtocolSelectorCore: React.FC<UnifiedProtocolSelectorProps> = ({
           <div className="relative flex-1">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search premedications..."
+              placeholder={tSafe('search.premedications', 'Caută premedicații...')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -497,14 +499,14 @@ const UnifiedProtocolSelectorCore: React.FC<UnifiedProtocolSelectorProps> = ({
           </div>
           <Select value={selectedCategory} onValueChange={setSelectedCategory}>
             <SelectTrigger className="w-48">
-              <SelectValue placeholder="Filter by category" />
+              <SelectValue placeholder={tSafe('search.filterByCategory', 'Filtrează după categorie')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Categories</SelectItem>
-              <SelectItem value="antiemetic">Antiemetic</SelectItem>
-              <SelectItem value="antihistamine">Antihistamine</SelectItem>
-              <SelectItem value="corticosteroid">Corticosteroid</SelectItem>
-              <SelectItem value="anticholinergic">Anticholinergic</SelectItem>
+              <SelectItem value="all">{tSafe('search.allCategories', 'Toate categoriile')}</SelectItem>
+              <SelectItem value="antiemetic">{tSafe('categories.antiemetic', 'Antiemetic')}</SelectItem>
+              <SelectItem value="antihistamine">{tSafe('categories.antihistamine', 'Antihistaminic')}</SelectItem>
+              <SelectItem value="corticosteroid">{tSafe('categories.corticosteroid', 'Corticosteroid')}</SelectItem>
+              <SelectItem value="anticholinergic">{tSafe('categories.anticholinergic', 'Anticolinergic')}</SelectItem>
             </SelectContent>
           </Select>
         </div>

@@ -701,5 +701,37 @@
     "userNotes": "Note utilizator",
     "userNotesPlaceholder": "Introduceți notele de administrare...",
     "selectType": "Selectați tipul"
+  },
+  "search": {
+    "premedications": "Caută premedicații...",
+    "filterByCategory": "Filtrează după categorie",
+    "allCategories": "Toate categoriile"
+  },
+  "categories": {
+    "antiemetic": "Antiemetic",
+    "antihistamine": "Antihistaminic",
+    "corticosteroid": "Corticosteroid",
+    "anticholinergic": "Anticolinergic"
+  },
+  "timing": {
+    "minutesBefore": "{{minutes}} minute înainte",
+    "hourBefore": "1 oră înainte",
+    "hoursBefore": "{{hours}} ore înainte",
+    "minBefore": "{{minutes}} min înainte",
+    "beforeChemotherapy": "înainte de chimioterapie",
+    "beforeInfusion": "înainte de perfuzie",
+    "beforeDose": "înainte de doză",
+    "loadingDose": "Doză inițială",
+    "daily": "zilnic",
+    "onceDailyOnEmptyStomach": "o dată pe zi pe stomacul gol",
+    "hourBeforeOrAfterMeals": "cu 1 oră înainte sau după mese"
+  },
+  "solvents": {
+    "normalSaline": "Ser fiziologic 0.9%",
+    "dextrose5": "Glucoză 5%",
+    "ringer": "Soluție Ringer",
+    "waterForInjection": "Apă pentru preparate injectabile",
+    "normalSalineShort": "ser fiziologic",
+    "dextrose5Short": "glucoză 5%"
   }
 }

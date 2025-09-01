@@ -260,7 +260,7 @@ export const colorectalTargetedRegimens: Regimen[] = [
         drugClass: "targeted",
         mechanismOfAction: "Dual EGFR/HER2 TKI",
         monitoring: ["LVEF", "LFTs", "Diarrhea"],
-        notes: "Once daily on empty stomach, 1 hour before or after meals"
+        notes: "O dată pe zi pe stomacul gol, cu 1 oră înainte sau după mese"
       }
     ],
     schedule: "Every 21 days",

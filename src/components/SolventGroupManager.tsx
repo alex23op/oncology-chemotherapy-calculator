@@ -26,7 +26,7 @@ const SOLVENT_OPTIONS = [
   { value: 'Soluție glucoză 5% 100ml', key: 'dextrose5_100' },
   { value: 'Soluție glucoză 5% 250ml', key: 'dextrose5_250' },
   { value: 'Soluție glucoză 5% 500ml', key: 'dextrose5_500' },
-  { value: 'Ringer Solution', key: 'ringer' }
+  { value: 'Soluție Ringer', key: 'ringer' }
 ];
 
 export const SolventGroupManager: React.FC<SolventGroupManagerProps> = ({
