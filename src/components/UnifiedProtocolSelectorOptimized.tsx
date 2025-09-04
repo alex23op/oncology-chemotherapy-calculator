@@ -605,11 +605,11 @@ const UnifiedProtocolSelectorCore: React.FC<UnifiedProtocolSelectorProps> = ({
         {/* Custom Instructions */}
         <div>
           <Label htmlFor="custom-instructions" className="text-sm font-medium">
-            Custom Instructions
+            {t('unifiedProtocolSelector.customInstructions')}
           </Label>
           <Textarea
             id="custom-instructions"
-            placeholder="Add any special instructions or modifications to the protocol..."
+            placeholder={t('unifiedProtocolSelector.customInstructionsPlaceholder')}
             value={customInstructions}
             onChange={(e) => setCustomInstructions(e.target.value)}
             className="mt-1"
@@ -622,9 +622,9 @@ const UnifiedProtocolSelectorCore: React.FC<UnifiedProtocolSelectorProps> = ({
           <Alert>
             <CheckCircle className="h-4 w-4" />
             <AlertDescription>
-              <strong>Protocol Summary:</strong> {selectedPremedications.length} premedication(s) selected.
+              <strong>{t('unifiedProtocolSelector.protocolSummary')}</strong> {selectedPremedications.length} {t('unifiedProtocolSelector.premedicationsSelected')}.
               {selectedPremedications.some(a => a.isRequired) && (
-                <span className="text-destructive"> Includes required medications.</span>
+                <span className="text-destructive"> {t('unifiedProtocolSelector.includesRequired')}</span>
               )}
             </AlertDescription>
           </Alert>

@@ -409,6 +409,26 @@
     "guidelinesTitle": "Ghiduri clinice:",
     "guidelinesBody": "Clasificare bazată pe NCCN 2024, ASCO 2020 și MASCC/ESMO 2023 pentru utilizarea antiemeticelor în oncologie. Nivelurile de risc determină strategiile adecvate de profilaxie antiemetică."
   },
+  "unifiedProtocolSelector": {
+    "customInstructions": "Instrucțiuni personalizate",
+    "customInstructionsPlaceholder": "Adăugați instrucțiuni speciale sau modificări la protocol...",
+    "protocolSummary": "Rezumat protocol:",
+    "premedicationsSelected": "premedicații selectate",
+    "includesRequired": "Include medicamente obligatorii.",
+    "categoryLabels": {
+      "antiemeticTherapy": "Terapie antiemetică",
+      "antihistamine": "Antihistaminic (H1)",
+      "muscarinicAntagonist": "Antagonist muscarinic"
+    },
+    "timingLabels": {
+      "30MinutesBefore": "30 minute înainte",
+      "1HourBefore": "1 oră înainte",
+      "2HoursBefore": "2 ore înainte"
+    }
+  },
+  "datePicker": {
+    "selectDate": "Selectați data"
+  },
   "antiemeticSelector": {
     "title": "Selecție protocol antiemetic",
     "description": "Profilaxie antiemetică bazată pe dovezi pentru regimuri cu risc emetogen {{riskLevel}}",

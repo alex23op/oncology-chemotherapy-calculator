@@ -1,5 +1,6 @@
 import * as React from "react";
 import { CalendarIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,9 @@ interface DatePickerFieldProps {
   disabled?: boolean;
 }
 
-export function DatePickerField({ id, value, onChange, placeholder = "Select date", className, disabled }: DatePickerFieldProps) {
+export function DatePickerField({ id, value, onChange, placeholder, className, disabled }: DatePickerFieldProps) {
+  const { t } = useTranslation();
+  const defaultPlaceholder = placeholder || t('datePicker.selectDate');
   const selected = React.useMemo(() => parseISODate(value || undefined) || undefined, [value]);
 
   const handleSelect = (date?: Date) => {
@@ -38,7 +41,7 @@ export function DatePickerField({ id, value, onChange, placeholder = "Select dat
           disabled={disabled}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {selected ? formatDate(selected) : <span>{placeholder}</span>}
+          {selected ? formatDate(selected) : <span>{defaultPlaceholder}</span>}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
