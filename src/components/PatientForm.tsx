@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calculator, User, AlertTriangle, CheckCircle, CalendarIcon } from "lucide-react";
-import { validatePatientData, sanitizeInput, showValidationToast, ValidationResult } from "@/utils/inputValidation";
+import { validatePatientData, sanitizeInput, sanitizeName, validateFullName, showValidationToast, ValidationResult } from "@/utils/inputValidation";
 import { ClinicalErrorBoundary } from "@/components/ClinicalErrorBoundary";
 import { useDebouncedCalculation, usePerformanceMonitoring } from "@/hooks/usePerformanceOptimization";
 import { toKg } from "@/utils/units";
@@ -177,8 +177,13 @@ export const PatientForm = ({ onPatientDataChange, selectedRegimen }: PatientFor
   }, 300, []);
 
   const handleInputChange = useCallback((field: keyof PatientData, value: string | number | boolean) => {
-    // Sanitize input to prevent XSS for string values
-    const sanitizedValue = typeof value === 'string' ? sanitizeInput(value) : value;
+    // Use specific sanitization for names
+    let sanitizedValue = value;
+    if (field === 'fullName' && typeof value === 'string') {
+      sanitizedValue = sanitizeName(value);
+    } else if (typeof value === 'string') {
+      sanitizedValue = sanitizeInput(value);
+    }
     
     // Debug logging for name field to track space preservation
     if (field === 'fullName' && typeof value === 'string' && typeof sanitizedValue === 'string') {

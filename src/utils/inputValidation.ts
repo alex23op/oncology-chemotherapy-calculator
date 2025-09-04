@@ -194,6 +194,54 @@ export const sanitizeInput = (input: string): string => {
     .trim();
 };
 
+// New function specifically for validating and sanitizing names
+export const sanitizeName = (input: string): string => {
+  if (!input || typeof input !== 'string') return '';
+  
+  // Allow letters, spaces, hyphens, apostrophes, and dots for names
+  // Remove numbers and special characters except allowed ones
+  return input
+    .replace(/[^a-zA-ZăâîșțĂÂÎȘȚ\s\-'\.]/g, '') // Keep only letters (including Romanian), spaces, hyphens, apostrophes, dots
+    .replace(/\s+/g, ' ') // Normalize multiple spaces to single space
+    .trim();
+};
+
+export const validateFullName = (name: string): ValidationResult => {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  if (!name || name.trim().length === 0) {
+    errors.push('Numele și prenumele sunt obligatorii');
+    return { isValid: false, errors, warnings };
+  }
+
+  // Check for minimum length
+  if (name.trim().length < 2) {
+    errors.push('Numele trebuie să conțină cel puțin 2 caractere');
+  }
+
+  // Check for numbers
+  if (/\d/.test(name)) {
+    errors.push('Numele nu poate conține cifre');
+  }
+
+  // Check for invalid special characters
+  if (/[!@#$%^&*()+={}[\]|\\:";?/<>,~`]/.test(name)) {
+    errors.push('Numele conține caractere nevalide');
+  }
+
+  // Warn if only one word (missing surname or first name)
+  if (!name.includes(' ')) {
+    warnings.push('Vă rugăm să introduceți atât numele cât și prenumele');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    warnings
+  };
+};
+
 export const showValidationToast = (validation: ValidationResult, context: string = "") => {
   if (!validation.isValid && validation.errors.length > 0) {
     toast({
