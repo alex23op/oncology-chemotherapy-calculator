@@ -7,6 +7,7 @@ export const breastCancerRegimens: Regimen[] = [
     name: "AC-T (Neoadjuvant)",
     description: "Doxorubicin/Cyclophosphamide followed by Paclitaxel",
     category: "neoadjuvant",
+    cycleLength: 21,
     premedications: [
       { 
         name: "Ondansetron", 

@@ -23,6 +23,7 @@ import { toKg } from "@/utils/units";
 import { logger } from '@/utils/logger';
 import { TreatmentData } from '@/types/clinicalTreatment';
 import { useDataPersistence } from '@/context/DataPersistenceContext';
+import { TreatmentDetailsForm } from "@/components/TreatmentDetailsForm";
 
 
 interface PatientData {
@@ -328,9 +329,23 @@ const IndexContent = () => {
             onGenerateSheet={(data: TreatmentData) => {
               console.debug('[GenerateSheet] treatmentData', data);
               setTreatmentData(data);
-              goTo('review');
+              goTo('treatment');
             }}
-            onGoToReview={() => goTo('review')}
+            onGoToReview={() => goTo('treatment')}
+          />
+        </SafeComponentWrapper>
+      </WizardStep>
+
+      <WizardStep id="treatment" title={t('wizard.steps.treatment', { defaultValue: 'Treatment details' })}>
+        <SafeComponentWrapper componentName="Treatment Details" fallbackMessage={t('errors.treatmentDetailsFailed', { defaultValue: 'Failed to load treatment details form' })}>
+          <TreatmentDetailsForm
+            selectedRegimen={selectedRegimen}
+            onTreatmentDetailsChange={(data) => {
+              // Treatment details are automatically saved to persistence context
+              if (autoJumpEnabled) {
+                goTo('review');
+              }
+            }}
           />
         </SafeComponentWrapper>
       </WizardStep>
@@ -435,6 +450,7 @@ const Index = () => {
     { id: 'regimen', title: t('wizard.steps.regimen', { defaultValue: 'Regimen selection' }) },
     { id: 'support', title: t('wizard.steps.support', { defaultValue: 'Supportive care' }) },
     { id: 'doses', title: t('wizard.steps.doses', { defaultValue: 'Dose calculation' }) },
+    { id: 'treatment', title: t('wizard.steps.treatment', { defaultValue: 'Treatment details' }) },
     { id: 'review', title: t('wizard.steps.review', { defaultValue: 'Review & Print' }) },
   ];
 

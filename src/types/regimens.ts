@@ -59,6 +59,7 @@ export interface Regimen {
   premedications?: Premedication[];
   schedule: string;
   cycles: number | string;
+  cycleLength?: number; // Duration in days between cycles
   biomarkerRequirements?: Biomarker[];
   eligibilityCriteria?: {
     ecogStatus: number[];

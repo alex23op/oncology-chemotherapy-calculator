@@ -45,10 +45,9 @@ interface PatientData {
 
 interface PatientFormProps {
   onPatientDataChange: (data: PatientData & { bsa: number; creatinineClearance: number; effectiveBsa: number }) => void;
-  selectedRegimen?: { schedule?: string; cycles?: string | number } | null;
 }
 
-export const PatientForm = ({ onPatientDataChange, selectedRegimen }: PatientFormProps) => {
+export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
   const { t } = useTranslation();
   const { state, setPatientData: savePatientData } = useDataPersistence();
   
@@ -338,30 +337,6 @@ export const PatientForm = ({ onPatientDataChange, selectedRegimen }: PatientFor
     }
   }, []); // Run only on mount - empty dependency array
 
-  // Auto-calculate next cycle date based on regimen schedule
-  useEffect(() => {
-    if (selectedRegimen && localPatientData.treatmentDate && !localPatientData.nextCycleDate) {
-      const treatmentDate = parseISO(localPatientData.treatmentDate);
-      
-      if (isValid(treatmentDate)) {
-        const schedule = selectedRegimen.schedule?.toLowerCase() || '';
-        let daysToAdd = 14; // Default: 2 weeks
-        
-        if (schedule.includes("3 weeks") || schedule.includes("21 days")) {
-          daysToAdd = 21;
-        } else if (schedule.includes("4 weeks") || schedule.includes("28 days")) {
-          daysToAdd = 28;
-        } else if (schedule.includes("weekly") || schedule.includes("7 days")) {
-          daysToAdd = 7;
-        }
-        
-        const calculatedNextDate = addDays(treatmentDate, daysToAdd);
-        const nextDateISO = toLocalISODate(calculatedNextDate);
-        
-        handleInputChange('nextCycleDate', nextDateISO);
-      }
-    }
-  }, [selectedRegimen, localPatientData.treatmentDate, localPatientData.nextCycleDate, handleInputChange]);
 
   // CNP validation handler
   const handleCNPChange = useCallback((value: string) => {
@@ -378,22 +353,11 @@ export const PatientForm = ({ onPatientDataChange, selectedRegimen }: PatientFor
     const cycleNum = parseInt(value, 10);
     if (!isNaN(cycleNum) && cycleNum > 0) {
       handleInputChange('cycleNumber', cycleNum);
-      
-      // Validate against regimen max cycles
-      if (selectedRegimen?.cycles) {
-        const maxCycles = typeof selectedRegimen.cycles === 'number' 
-          ? selectedRegimen.cycles 
-          : parseInt(selectedRegimen.cycles.split('-')[1] || selectedRegimen.cycles, 10);
-        
-        if (maxCycles && cycleNum > maxCycles) {
-          toast.error(`Numărul ciclului depășește maximul permis (${maxCycles}) pentru acest regim`);
-        }
-      }
     }
-  }, [selectedRegimen, handleInputChange]);
+  }, [handleInputChange]);
 
   const isFormValid = localPatientData.weight && localPatientData.height && localPatientData.age && localPatientData.sex && 
-                     localPatientData.fullName && localPatientData.cnp && localPatientData.foNumber && localPatientData.treatmentDate;
+                     localPatientData.fullName && localPatientData.cnp && localPatientData.foNumber;
 
   return (
     <ClinicalErrorBoundary context="PatientForm">
@@ -597,89 +561,6 @@ export const PatientForm = ({ onPatientDataChange, selectedRegimen }: PatientFor
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Cycle Number */}
-            <div className="space-y-2">
-              <Label htmlFor="cycleNumber">Număr ciclu *</Label>
-              <Input
-                id="cycleNumber"
-                type="number"
-                value={localPatientData.cycleNumber}
-                onChange={(e) => handleCycleChange(e.target.value)}
-                placeholder="1"
-                min="1"
-                required
-              />
-              {selectedRegimen && (
-                <p className="text-sm text-muted-foreground">
-                  Total cicluri: {selectedRegimen.cycles}
-                </p>
-              )}
-            </div>
-
-            {/* Treatment Date */}
-            <div className="space-y-2">
-              <Label>Data administrării *</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !localPatientData.treatmentDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {localPatientData.treatmentDate 
-                      ? format(parseISO(localPatientData.treatmentDate), "dd/MM/yyyy") 
-                      : "Selectați data"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={localPatientData.treatmentDate ? parseISO(localPatientData.treatmentDate) : undefined}
-                    onSelect={(date) => date && handleInputChange('treatmentDate', toLocalISODate(date))}
-                    initialFocus
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-
-            {/* Next Cycle Date */}
-            <div className="space-y-2">
-              <Label>Data următorului ciclu (sugerată automat, editabilă)</Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !localPatientData.nextCycleDate && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {localPatientData.nextCycleDate 
-                      ? format(parseISO(localPatientData.nextCycleDate), "dd/MM/yyyy") 
-                      : "Selectați data"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={localPatientData.nextCycleDate ? parseISO(localPatientData.nextCycleDate) : undefined}
-                    onSelect={(date) => date && handleInputChange('nextCycleDate', toLocalISODate(date))}
-                    initialFocus
-                    className="pointer-events-auto"
-                  />
-                </PopoverContent>
-              </Popover>
-              {selectedRegimen && localPatientData.treatmentDate && (
-                <p className="text-sm text-muted-foreground">
-                  Automat calculată bazată pe regimul selectat
-                </p>
-              )}
-            </div>
 
             {/* BSA Cap Option */}
             <div className="space-y-2">

@@ -8,6 +8,7 @@ export const lungCancerRegimens: Regimen[] = [
     subtype: "SCLC",
     description: "SCLC extensive stage (HSE/NCCP 00271)",
     category: "advanced",
+    cycleLength: 21,
     drugs: [
       { name: "Carboplatin", dosage: "AUC5", unit: "AUC", route: "IV", day: "Day 1", administrationDuration: "30 min", dilution: "500 mL Glu 5%" },
       { name: "Etoposide", dosage: "100", unit: "mg/m²", route: "IV", day: "Days 1-3", administrationDuration: "60 min", dilution: "1000 mL NaCl" }

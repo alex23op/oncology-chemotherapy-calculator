@@ -7,6 +7,7 @@ export const colorectalCancerRegimens: Regimen[] = [
     name: "FOLFOX (Neoadjuvant)",
     description: "Neoadjuvant FOLFOX for locally advanced rectal cancer",
     category: "neoadjuvant",
+    cycleLength: 14,
     lineOfTherapy: "first-line",
     eligibilityCriteria: {
       ecogStatus: [0, 1, 2],

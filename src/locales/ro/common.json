@@ -5,6 +5,7 @@
       "regimen": "Selectare regim",
       "support": "Îngrijiri suportive",
       "doses": "Calcul doze",
+      "treatment": "Detalii tratament",
       "review": "Revizuire & Print"
     }
   },
@@ -245,6 +246,9 @@
       "noRegimens": "Nu există regimuri disponibile pentru criteriile selectate.",
       "noResults": "Nu s-au găsit tipuri de cancer care să corespundă căutării."
     }
+  },
+  "treatmentDetails": {
+    "title": "Detalii Tratament"
   },
   "doseCalculator": {
     "title": "Calcul Doze",
