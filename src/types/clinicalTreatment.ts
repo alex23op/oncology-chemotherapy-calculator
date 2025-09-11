@@ -4,7 +4,8 @@ import { SolventType } from './solvents';
 export interface PatientInfo {
   cnp: string;
   foNumber?: string;
-  fullName?: string;
+  firstName?: string;
+  lastName?: string;
   weight: number;
   height: number;
   age: number;

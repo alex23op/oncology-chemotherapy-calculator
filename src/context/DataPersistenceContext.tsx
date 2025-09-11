@@ -4,6 +4,7 @@ import { TreatmentData } from '@/types/clinicalTreatment';
 import { AntiemeticAgent } from '@/types/emetogenicRisk';
 import { toast } from 'sonner';
 import { logger } from '@/utils/logger';
+import { getFullName } from '@/utils/inputValidation';
 
 interface PatientData {
   weight: string;
@@ -17,7 +18,8 @@ interface PatientData {
   bsa: number;
   creatinineClearance: number;
   // Patient identification fields
-  fullName: string;
+  firstName: string;
+  lastName: string;
   cnp: string;
   foNumber: string;
   // Treatment details fields
@@ -25,6 +27,8 @@ interface PatientData {
   treatmentDate: string; // ISO date string
   nextCycleDate?: string; // ISO date string
   bsaCapEnabled: boolean;
+  // Legacy field for migration
+  fullName?: string;
 }
 
 interface RegimenData {
@@ -82,6 +86,8 @@ const DATA_EXPIRY_HOURS = 24;
 // Helper to check if data contains meaningful information
 const hasValidData = (data: PersistedState): boolean => {
   const hasPatientInfo = !!(
+    data.patientData?.firstName ||
+    data.patientData?.lastName ||
     data.patientData?.fullName ||
     data.patientData?.cnp ||
     data.patientData?.weight ||
@@ -187,10 +193,24 @@ const serializeForStorage = (state: PersistedState): string => {
   return JSON.stringify(state);
 };
 
-// Helper to deserialize dates from localStorage
+// Helper to deserialize dates from localStorage and migrate fullName
 const deserializeFromStorage = (data: string): PersistedState => {
-  // PatientData dates are stored as ISO strings, no conversion needed
-  return JSON.parse(data);
+  const parsed = JSON.parse(data);
+  
+  // Handle migration from fullName to firstName/lastName
+  if (parsed.patientData?.fullName && !parsed.patientData.firstName && !parsed.patientData.lastName) {
+    const nameParts = parsed.patientData.fullName.trim().split(' ');
+    if (nameParts.length === 1) {
+      parsed.patientData.firstName = nameParts[0];
+      parsed.patientData.lastName = '';
+    } else if (nameParts.length >= 2) {
+      parsed.patientData.firstName = nameParts[0];
+      parsed.patientData.lastName = nameParts.slice(1).join(' ');
+    }
+    // Keep fullName for backward compatibility but priority goes to firstName/lastName
+  }
+  
+  return parsed;
 };
 
 export const DataPersistenceProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -334,8 +354,8 @@ export const DataPersistenceProvider: React.FC<{ children: React.ReactNode }> = 
               {storedData?.lastUpdated && (
                 <>din {new Date(storedData.lastUpdated).toLocaleString('ro-RO')}</>
               )}
-              {storedData?.patientData?.fullName && (
-                <> pentru pacientul "{storedData.patientData.fullName}"</>
+              {storedData?.patientData && (storedData.patientData.firstName || storedData.patientData.lastName || storedData.patientData.fullName) && (
+                <> pentru pacientul "{getFullName(storedData.patientData.firstName, storedData.patientData.lastName) || storedData.patientData.fullName}"</>
               )}.
               {' '}Doriți să continuați cu aceste date?
             </p>

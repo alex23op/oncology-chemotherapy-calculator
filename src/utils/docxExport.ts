@@ -3,6 +3,7 @@ import { TreatmentData } from '@/types/clinicalTreatment';
 import i18n from '@/i18n';
 import { formatDate, toLocalISODate } from '@/utils/dateFormat';
 import { logger } from '@/utils/logger';
+import { getFullName } from '@/utils/inputValidation';
 
 interface ClinicalTreatmentExportData extends TreatmentData {
   orientation?: 'portrait' | 'landscape';
@@ -33,7 +34,7 @@ export const generateClinicalTreatmentDOCX = async (
           new Paragraph({
             children: [
               new TextRun({ text: `${i18n.t('docx.patientName')} `, bold: true }),
-              new TextRun({ text: treatmentData.patient.fullName || i18n.t('compactSheet.na') }),
+              new TextRun({ text: getFullName(treatmentData.patient.firstName, treatmentData.patient.lastName) || i18n.t('compactSheet.na') }),
               new TextRun({ text: `     ${i18n.t('docx.patientId')} `, bold: true }),
               new TextRun({ text: treatmentData.patient.cnp }),
             ],

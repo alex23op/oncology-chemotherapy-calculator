@@ -206,33 +206,28 @@ export const sanitizeName = (input: string): string => {
     .trim();
 };
 
-export const validateFullName = (name: string): ValidationResult => {
+export const validateFirstName = (name: string): ValidationResult => {
   const errors: string[] = [];
   const warnings: string[] = [];
 
   if (!name || name.trim().length === 0) {
-    errors.push('Numele și prenumele sunt obligatorii');
+    errors.push('Prenumele este obligatoriu');
     return { isValid: false, errors, warnings };
   }
 
   // Check for minimum length
   if (name.trim().length < 2) {
-    errors.push('Numele trebuie să conțină cel puțin 2 caractere');
+    errors.push('Prenumele trebuie să conțină cel puțin 2 caractere');
   }
 
   // Check for numbers
   if (/\d/.test(name)) {
-    errors.push('Numele nu poate conține cifre');
+    errors.push('Prenumele nu poate conține cifre');
   }
 
   // Check for invalid special characters
   if (/[!@#$%^&*()+={}[\]|\\:";?/<>,~`]/.test(name)) {
-    errors.push('Numele conține caractere nevalide');
-  }
-
-  // Warn if only one word (missing surname or first name)
-  if (!name.includes(' ')) {
-    warnings.push('Vă rugăm să introduceți atât numele cât și prenumele');
+    errors.push('Prenumele conține caractere nevalide');
   }
 
   return {
@@ -240,6 +235,48 @@ export const validateFullName = (name: string): ValidationResult => {
     errors,
     warnings
   };
+};
+
+export const validateLastName = (name: string): ValidationResult => {
+  const errors: string[] = [];
+  const warnings: string[] = [];
+
+  if (!name || name.trim().length === 0) {
+    errors.push('Numele de familie este obligatoriu');
+    return { isValid: false, errors, warnings };
+  }
+
+  // Check for minimum length
+  if (name.trim().length < 2) {
+    errors.push('Numele de familie trebuie să conțină cel puțin 2 caractere');
+  }
+
+  // Check for numbers
+  if (/\d/.test(name)) {
+    errors.push('Numele de familie nu poate conține cifre');
+  }
+
+  // Check for invalid special characters
+  if (/[!@#$%^&*()+={}[\]|\\:";?/<>,~`]/.test(name)) {
+    errors.push('Numele de familie conține caractere nevalide');
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+    warnings
+  };
+};
+
+export const getFullName = (firstName: string = '', lastName: string = ''): string => {
+  const trimmedFirst = firstName.trim();
+  const trimmedLast = lastName.trim();
+  
+  if (!trimmedFirst && !trimmedLast) return '';
+  if (!trimmedFirst) return trimmedLast;
+  if (!trimmedLast) return trimmedFirst;
+  
+  return `${trimmedFirst} ${trimmedLast}`;
 };
 
 export const showValidationToast = (validation: ValidationResult, context: string = "") => {

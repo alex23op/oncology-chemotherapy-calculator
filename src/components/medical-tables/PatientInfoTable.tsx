@@ -1,7 +1,7 @@
-import React from 'react';
 import { PatientInfo } from '@/types/clinicalTreatment';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { EditableDateField } from './EditableDateField';
+import { getFullName } from '@/utils/inputValidation';
 
 interface PatientInfoTableProps {
   patient: PatientInfo;
@@ -14,7 +14,7 @@ export const PatientInfoTable: React.FC<PatientInfoTableProps> = ({ patient, onP
       <TableBody>
         <TableRow className="border-b border-gray-300">
           <TableCell className="font-semibold border-r border-gray-300 w-2/5 p-0.5 text-xs bg-gray-50">Nume și prenume:</TableCell>
-          <TableCell className="p-0.5 text-xs">{patient.fullName || 'N/A'}</TableCell>
+          <TableCell className="p-0.5 text-xs">{getFullName(patient.firstName, patient.lastName) || 'N/A'}</TableCell>
         </TableRow>
         <TableRow className="border-b border-gray-300">
           <TableCell className="font-semibold border-r border-gray-300 w-2/5 p-0.5 text-xs bg-gray-50">CNP:</TableCell>

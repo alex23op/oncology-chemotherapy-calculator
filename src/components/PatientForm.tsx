@@ -12,7 +12,7 @@ import { Separator } from "@/components/ui/separator";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Calculator, User, AlertTriangle, CheckCircle, CalendarIcon } from "lucide-react";
-import { validatePatientData, sanitizeInput, sanitizeName, validateFullName, showValidationToast, ValidationResult } from "@/utils/inputValidation";
+import { validatePatientData, sanitizeInput, sanitizeName, validateFirstName, validateLastName, getFullName, showValidationToast, ValidationResult } from "@/utils/inputValidation";
 import { ClinicalErrorBoundary } from "@/components/ClinicalErrorBoundary";
 import { useDebouncedCalculation, usePerformanceMonitoring } from "@/hooks/usePerformanceOptimization";
 import { toKg } from "@/utils/units";
@@ -33,7 +33,8 @@ interface PatientData {
   heightUnit: string;
   creatinineUnit: string;
   // Patient identification fields
-  fullName: string;
+  firstName: string;
+  lastName: string;
   cnp: string;
   foNumber: string;
   // Treatment details fields
@@ -56,6 +57,21 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
     const currentDate = toLocalISODate(new Date()); // YYYY-MM-DD format
     
     if (state.patientData) {
+      // Handle migration from fullName to firstName/lastName
+      let firstName = state.patientData.firstName || '';
+      let lastName = state.patientData.lastName || '';
+      
+      // Migrate from fullName if new fields are empty
+      if (!firstName && !lastName && state.patientData.fullName) {
+        const nameParts = state.patientData.fullName.trim().split(' ');
+        if (nameParts.length === 1) {
+          firstName = nameParts[0];
+        } else if (nameParts.length >= 2) {
+          firstName = nameParts[0];
+          lastName = nameParts.slice(1).join(' ');
+        }
+      }
+      
       return {
         weight: state.patientData.weight || "",
         height: state.patientData.height || "",
@@ -65,7 +81,8 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
         weightUnit: state.patientData.weightUnit || "kg",
         heightUnit: state.patientData.heightUnit || "cm",
         creatinineUnit: state.patientData.creatinineUnit || "mg/dL",
-        fullName: state.patientData.fullName || "",
+        firstName,
+        lastName,
         cnp: state.patientData.cnp || "",
         foNumber: state.patientData.foNumber || "",
         cycleNumber: state.patientData.cycleNumber || 1,
@@ -83,7 +100,8 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
       weightUnit: "kg",
       heightUnit: "cm",
       creatinineUnit: "mg/dL",
-      fullName: "",
+      firstName: "",
+      lastName: "",
       cnp: "",
       foNumber: "",
       cycleNumber: 1,
@@ -178,17 +196,18 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
   const handleInputChange = useCallback((field: keyof PatientData, value: string | number | boolean) => {
     // Use specific sanitization for names
     let sanitizedValue = value;
-    if (field === 'fullName' && typeof value === 'string') {
+    if ((field === 'firstName' || field === 'lastName') && typeof value === 'string') {
       sanitizedValue = sanitizeName(value);
     } else if (typeof value === 'string') {
       sanitizedValue = sanitizeInput(value);
     }
     
-    // Debug logging for name field to track space preservation
-    if (field === 'fullName' && typeof value === 'string' && typeof sanitizedValue === 'string') {
-      logger.debug('Full name input processing', {
+    // Debug logging for name fields to track space preservation
+    if ((field === 'firstName' || field === 'lastName') && typeof value === 'string' && typeof sanitizedValue === 'string') {
+      logger.debug('Name input processing', {
         component: 'PatientForm',
         action: 'handleInputChange',
+        field,
         originalValue: value,
         sanitizedValue,
         containsSpace: value.includes(' '),
@@ -249,6 +268,22 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
   useEffect(() => {
     if (state.patientData) {
       const currentDate = toLocalISODate(new Date());
+      
+      // Handle migration from fullName to firstName/lastName
+      let firstName = state.patientData.firstName || '';
+      let lastName = state.patientData.lastName || '';
+      
+      // Migrate from fullName if new fields are empty
+      if (!firstName && !lastName && state.patientData.fullName) {
+        const nameParts = state.patientData.fullName.trim().split(' ');
+        if (nameParts.length === 1) {
+          firstName = nameParts[0];
+        } else if (nameParts.length >= 2) {
+          firstName = nameParts[0];
+          lastName = nameParts.slice(1).join(' ');
+        }
+      }
+      
       const restoredData = {
         weight: state.patientData.weight || "",
         height: state.patientData.height || "",
@@ -258,7 +293,8 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
         weightUnit: state.patientData.weightUnit || "kg",
         heightUnit: state.patientData.heightUnit || "cm",
         creatinineUnit: state.patientData.creatinineUnit || "mg/dL",
-        fullName: state.patientData.fullName || "",
+        firstName,
+        lastName,
         cnp: state.patientData.cnp || "",
         foNumber: state.patientData.foNumber || "",
         cycleNumber: state.patientData.cycleNumber || 1,
@@ -357,7 +393,7 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
   }, [handleInputChange]);
 
   const isFormValid = localPatientData.weight && localPatientData.height && localPatientData.age && localPatientData.sex && 
-                     localPatientData.fullName && localPatientData.cnp && localPatientData.foNumber;
+                     localPatientData.firstName && localPatientData.lastName && localPatientData.cnp && localPatientData.foNumber;
 
   return (
     <ClinicalErrorBoundary context="PatientForm">
@@ -400,18 +436,33 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
             <h3 className="text-lg font-medium text-primary">Date de identificare pacient</h3>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Full Name */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* First Name */}
             <div className="space-y-2">
-              <Label htmlFor="fullName">Nume și prenume *</Label>
+              <Label htmlFor="firstName">{t('patientForm.firstName')} *</Label>
               <Input
-                id="fullName"
-                value={localPatientData.fullName}
-                onChange={(e) => handleInputChange("fullName", e.target.value)}
-                placeholder="Introduceți numele complet"
+                id="firstName"
+                value={localPatientData.firstName}
+                onChange={(e) => handleInputChange("firstName", e.target.value)}
+                placeholder={t('patientForm.firstNamePlaceholder')}
                 required
               />
             </div>
+
+            {/* Last Name */}
+            <div className="space-y-2">
+              <Label htmlFor="lastName">{t('patientForm.lastName')} *</Label>
+              <Input
+                id="lastName"
+                value={localPatientData.lastName}
+                onChange={(e) => handleInputChange("lastName", e.target.value)}
+                placeholder={t('patientForm.lastNamePlaceholder')}
+                required
+              />
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 
             {/* CNP */}
             <div className="space-y-2">

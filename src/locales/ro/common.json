@@ -44,6 +44,10 @@
   },
   "patientForm": {
     "title": "Date pacient",
+    "firstName": "Prenume",
+    "lastName": "Nume de familie",
+    "firstNamePlaceholder": "Introduceți prenumele",
+    "lastNamePlaceholder": "Introduceți numele de familie",
     "weight": "Greutate",
     "height": "Înălțime",
     "age": "Vârstă",
