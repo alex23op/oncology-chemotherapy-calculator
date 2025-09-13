@@ -61,7 +61,7 @@ export const lungCancerRegimens: Regimen[] = [
     category: "neoadjuvant",
     drugs: [
       { name: "Nivolumab", dosage: "360", unit: "mg", route: "IV", day: "Day 1", administrationDuration: "30 min", dilution: "100 mL NaCl" },
-      { name: "Carboplatin", dosage: "AUC5-6", unit: "AUC", route: "IV", day: "Day 1", administrationDuration: "30 min", dilution: "500 mL Glu 5%" },
+      { name: "Carboplatin", dosage: "AUC5", unit: "AUC", route: "IV", day: "Day 1", administrationDuration: "30 min", dilution: "500 mL Glu 5%" },
       { name: "Paclitaxel", dosage: "200", unit: "mg/m²", route: "IV", day: "Day 1", administrationDuration: "3 hours", dilution: "500 mL NaCl" }
     ],
     schedule: "Every 21 days",

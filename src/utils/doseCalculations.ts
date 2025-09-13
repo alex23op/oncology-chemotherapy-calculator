@@ -42,6 +42,24 @@ export const calculateWeightBasedDose = (drug: Drug, weight: number): number => 
 };
 
 /**
+ * Validates AUC format and detectes multiple values
+ */
+export const validateAUCFormat = (dosage: string): { isValid: boolean; error?: string } => {
+  const aucValue = dosage.replace(/^AUC/i, '');
+  const parsed = parseFloat(aucValue);
+  
+  if (isNaN(parsed)) {
+    return { isValid: false, error: `Invalid AUC format: ${dosage}` };
+  }
+  
+  if (aucValue.includes('-')) {
+    return { isValid: false, error: `Multiple AUC values not allowed: ${dosage}` };
+  }
+  
+  return { isValid: true };
+};
+
+/**
  * Calculate AUC-based dose using Calvert formula
  * Dose (mg) = AUC × (GFR + 25)
  */

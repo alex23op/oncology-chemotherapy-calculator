@@ -18,13 +18,13 @@ export const cervicalCancerRegimens: Regimen[] = [
   },
   {
     id: "00717a", 
-    name: "Carboplatin (AUC5-7.5) + Paclitaxel 175 mg/m²",
+    name: "Carboplatin (AUC5) + Paclitaxel 175 mg/m²",
     category: "advanced",
     description: "Cervical recurrent/metastatic",
     schedule: "Day 1 every 21 days", 
     cycles: 6,
     drugs: [
-      { name: "Carboplatin", dosage: "AUC5-7.5", unit: "AUC", route: "IV", day: "Day 1", administrationDuration: "60 min" },
+      { name: "Carboplatin", dosage: "AUC5", unit: "AUC", route: "IV", day: "Day 1", administrationDuration: "60 min" },
       { name: "Paclitaxel", dosage: "175", unit: "mg/m²", route: "IV", day: "Day 1", administrationDuration: "3 h" }
     ]
   },
@@ -235,13 +235,13 @@ export const ovarianCancerRegimens: Regimen[] = [
   // HSE/NCCP Regimens
   {
     id: "00722a",
-    name: "Carboplatin (AUC5-6) + Paclitaxel 175 mg/m²",
+    name: "Carboplatin (AUC5) + Paclitaxel 175 mg/m²",
     category: "adjuvant",
     description: "Ovarian carcinoma first-line treatment",
     schedule: "Day 1 every 21 days",
     cycles: 6,
     drugs: [
-      { name: "Carboplatin", dosage: "AUC5-6", unit: "AUC", route: "IV", day: "Day 1", administrationDuration: "60 min" },
+      { name: "Carboplatin", dosage: "AUC5", unit: "AUC", route: "IV", day: "Day 1", administrationDuration: "60 min" },
       { name: "Paclitaxel", dosage: "175", unit: "mg/m²", route: "IV", day: "Day 1", administrationDuration: "3 h" }
     ]
   },
@@ -267,7 +267,7 @@ export const ovarianCancerRegimens: Regimen[] = [
     schedule: "Day 1 every 21 days",
     cycles: 6,
     drugs: [
-      { name: "Carboplatin", dosage: "AUC5-6", unit: "AUC", route: "IV", day: "Day 1", administrationDuration: "60 min" },
+      { name: "Carboplatin", dosage: "AUC5", unit: "AUC", route: "IV", day: "Day 1", administrationDuration: "60 min" },
       { name: "Paclitaxel", dosage: "175", unit: "mg/m²", route: "IV", day: "Day 1", administrationDuration: "3 h" },
       { name: "Bevacizumab", dosage: "15", unit: "mg/kg", route: "IV", day: "Day 1", administrationDuration: "90 min (first dose)" }
     ]
