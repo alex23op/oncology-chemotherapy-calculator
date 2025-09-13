@@ -276,7 +276,7 @@ export const getFullName = (firstName: string = '', lastName: string = ''): stri
   if (!trimmedFirst) return trimmedLast;
   if (!trimmedLast) return trimmedFirst;
   
-  return `${trimmedFirst} ${trimmedLast}`;
+  return `${trimmedLast} ${trimmedFirst}`;
 };
 
 export const showValidationToast = (validation: ValidationResult, context: string = "") => {

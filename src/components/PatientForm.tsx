@@ -437,18 +437,6 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* First Name */}
-            <div className="space-y-2">
-              <Label htmlFor="firstName">{t('patientForm.firstName')} *</Label>
-              <Input
-                id="firstName"
-                value={localPatientData.firstName}
-                onChange={(e) => handleInputChange("firstName", e.target.value)}
-                placeholder={t('patientForm.firstNamePlaceholder')}
-                required
-              />
-            </div>
-
             {/* Last Name */}
             <div className="space-y-2">
               <Label htmlFor="lastName">{t('patientForm.lastName')} *</Label>
@@ -457,6 +445,18 @@ export const PatientForm = ({ onPatientDataChange }: PatientFormProps) => {
                 value={localPatientData.lastName}
                 onChange={(e) => handleInputChange("lastName", e.target.value)}
                 placeholder={t('patientForm.lastNamePlaceholder')}
+                required
+              />
+            </div>
+
+            {/* First Name */}
+            <div className="space-y-2">
+              <Label htmlFor="firstName">{t('patientForm.firstName')} *</Label>
+              <Input
+                id="firstName"
+                value={localPatientData.firstName}
+                onChange={(e) => handleInputChange("firstName", e.target.value)}
+                placeholder={t('patientForm.firstNamePlaceholder')}
                 required
               />
             </div>
