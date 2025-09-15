@@ -1,5 +1,6 @@
 import { Drug } from "@/types/regimens";
 import { drugLimits, checkDoseLimit } from "@/data/drugLimits";
+import { logCarboplatinCalculation } from "./carboplatin-logger";
 
 export interface DoseCalculationResult {
   calculatedDose: number;
@@ -42,17 +43,34 @@ export const calculateWeightBasedDose = (drug: Drug, weight: number): number => 
 };
 
 /**
- * Validates AUC format and detectes multiple values
+ * Parse AUC value from dosage string, handling various formats
+ */
+export const parseAUCValue = (dosage: string): number => {
+  // Handle formats like "AUC5", "AUC 6", "AUC 1.5", etc.
+  const aucValue = dosage.replace(/^AUC\s*/i, '').trim();
+  const parsed = parseFloat(aucValue);
+  return isNaN(parsed) ? 0 : parsed;
+};
+
+/**
+ * Check if a drug uses AUC-based dosing
+ */
+export const isAUCBasedDrug = (drug: Drug): boolean => {
+  return drug.unit === "AUC" || 
+         (drug.dosage && drug.dosage.toLowerCase().startsWith('auc'));
+};
+
+/**
+ * Validates AUC format and detects multiple values
  */
 export const validateAUCFormat = (dosage: string): { isValid: boolean; error?: string } => {
-  const aucValue = dosage.replace(/^AUC/i, '');
-  const parsed = parseFloat(aucValue);
+  const aucValue = parseAUCValue(dosage);
   
-  if (isNaN(parsed)) {
+  if (aucValue === 0) {
     return { isValid: false, error: `Invalid AUC format: ${dosage}` };
   }
   
-  if (aucValue.includes('-')) {
+  if (dosage.includes('-')) {
     return { isValid: false, error: `Multiple AUC values not allowed: ${dosage}` };
   }
   
@@ -69,16 +87,13 @@ export const calculateAUCDose = (
   gfr: number,
   cappedGFR: boolean = true
 ): number => {
-  const dosage = parseFloat(drug.dosage);
-  if (isNaN(dosage)) return 0;
-  
-  if (drug.unit === "AUC") {
-    // Cap GFR at 125 mL/min for safety as per guidelines
-    const effectiveGFR = cappedGFR ? Math.min(gfr, 125) : gfr;
-    return targetAUC * (effectiveGFR + 25);
+  if (!isAUCBasedDrug(drug)) {
+    return parseFloat(drug.dosage) || 0;
   }
   
-  return dosage;
+  // Cap GFR at 125 mL/min for safety as per guidelines
+  const effectiveGFR = cappedGFR ? Math.min(gfr, 125) : gfr;
+  return targetAUC * (effectiveGFR + 25);
 };
 
 /**
@@ -216,10 +231,12 @@ export const calculateCompleteDose = (
 ): DoseCalculationResult => {
   let calculatedDose = 0;
   
-  // Calculate base dose based on unit type
-  if (drug.unit === "AUC") {
-    const targetAUC = parseFloat(drug.dosage);
-    calculatedDose = calculateAUCDose(drug, targetAUC, creatinineClearance);
+  // Calculate base dose based on unit type or drug characteristics
+  if (isAUCBasedDrug(drug)) {
+    const targetAUC = parseAUCValue(drug.dosage);
+    if (targetAUC > 0) {
+      calculatedDose = calculateAUCDose(drug, targetAUC, creatinineClearance);
+    }
   } else if (drug.unit === "mg/kg") {
     calculatedDose = calculateWeightBasedDose(drug, weight);
   } else {
@@ -230,6 +247,9 @@ export const calculateCompleteDose = (
   calculatedDose = applyAgeAdjustment(calculatedDose, age, drug);
   calculatedDose = applyRenalAdjustment(calculatedDose, creatinineClearance, drug);
   
+  // Log Carboplatin calculations for debugging
+  logCarboplatinCalculation(drug, bsa, weight, age, creatinineClearance, calculatedDose, Math.round(calculatedDose * 10) / 10);
+
   // Check dose limits
   const doseAlert = checkDoseLimit(drug.name, calculatedDose, schedule);
   

@@ -93,7 +93,7 @@ export const breastCancerRegimens: Regimen[] = [
     category: "neoadjuvant",
     drugs: [
       { name: "Paclitaxel", dosage: "80", unit: "mg/m²", route: "IV", day: "Weekly", dilution: "Normal saline 250mL", administrationDuration: "1 hour" },
-      { name: "Carboplatin", dosage: "AUC 6", unit: "", route: "IV", day: "Day 1", dilution: "5% Dextrose or Normal saline 250-500mL", administrationDuration: "30-60 minutes" }
+      { name: "Carboplatin", dosage: "AUC6", unit: "AUC", route: "IV", day: "Day 1", dilution: "5% Dextrose or Normal saline 250-500mL", administrationDuration: "30-60 minutes" }
     ],
     schedule: "Weekly paclitaxel x 12 weeks, carboplatin q3wk x 4 cycles",
     cycles: 4
@@ -169,7 +169,7 @@ export const breastCancerRegimens: Regimen[] = [
     description: "Combination therapy for metastatic breast cancer",
     category: "metastatic",
     drugs: [
-      { name: "Carboplatin", dosage: "AUC 6", unit: "", route: "IV", day: "Day 1", dilution: "5% Dextrose or Normal saline 250-500mL", administrationDuration: "30-60 minutes" },
+      { name: "Carboplatin", dosage: "AUC6", unit: "AUC", route: "IV", day: "Day 1", dilution: "5% Dextrose or Normal saline 250-500mL", administrationDuration: "30-60 minutes" },
       { name: "Paclitaxel", dosage: "175", unit: "mg/m²", route: "IV", day: "Day 1", dilution: "Normal saline 250-500mL", administrationDuration: "3 hours" }
     ],
     schedule: "Every 3 weeks",
@@ -182,7 +182,7 @@ export const breastCancerRegimens: Regimen[] = [
     category: "metastatic",
     drugs: [
       { name: "Gemcitabine", dosage: "1000", unit: "mg/m²", route: "IV", day: "Days 1, 8", dilution: "Normal saline 100-250mL", administrationDuration: "30 minutes" },
-      { name: "Carboplatin", dosage: "AUC 2", unit: "", route: "IV", day: "Days 1, 8", dilution: "5% Dextrose or Normal saline 250-500mL", administrationDuration: "30-60 minutes" }
+      { name: "Carboplatin", dosage: "AUC2", unit: "AUC", route: "IV", day: "Days 1, 8", dilution: "5% Dextrose or Normal saline 250-500mL", administrationDuration: "30-60 minutes" }
     ],
     schedule: "Days 1, 8 q3wk",
     cycles: 6

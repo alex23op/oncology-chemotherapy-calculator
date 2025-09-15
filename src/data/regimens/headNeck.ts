@@ -13,7 +13,7 @@ export const headNeckRegimens: Regimen[] = [
     drugs: [
       {
         name: "Carboplatin",
-        dosage: "AUC 1.5",
+        dosage: "AUC1.5",
         unit: "AUC",
         route: "IV",
         day: "Day 1",
@@ -126,7 +126,7 @@ export const headNeckRegimens: Regimen[] = [
     drugs: [
       {
         name: "Carboplatin",
-        dosage: "AUC 4",
+        dosage: "AUC4",
         unit: "AUC",
         route: "IV",
         day: "Day 1",
@@ -192,7 +192,7 @@ export const headNeckRegimens: Regimen[] = [
     drugs: [
       {
         name: "Carboplatin",
-        dosage: "AUC 5",
+        dosage: "AUC5",
         unit: "AUC",
         route: "IV",
         day: "Day 1",
@@ -523,7 +523,7 @@ export const headNeckRegimens: Regimen[] = [
       },
       {
         name: "Carboplatin",
-        dosage: "AUC 5",
+        dosage: "AUC5",
         unit: "AUC",
         route: "IV",
         day: "Day 1",
@@ -1117,7 +1117,7 @@ export const headNeckRegimens: Regimen[] = [
       },
       {
         name: "Carboplatin",
-        dosage: "AUC 5",
+        dosage: "AUC5",
         unit: "AUC",
         route: "IV",
         day: "Day 1",

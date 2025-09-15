@@ -247,8 +247,8 @@ export const breastCancerTargetedRegimens: Regimen[] = [
       },
       {
         name: "Carboplatin",
-        dosage: "AUC 6",
-        unit: "mg",
+        dosage: "AUC6",
+        unit: "AUC",
         route: "IV",
         day: "1",
         drugClass: "chemotherapy",
