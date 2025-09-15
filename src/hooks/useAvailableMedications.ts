@@ -78,15 +78,16 @@ const premedCategories: CategoryData[] = [
         name: "Dexamethasone",
         category: "Corticosteroid",
         class: "Anti-inflammatory",
-        dosage: "12",
+        dosage: "8",
         unit: "mg",
         route: "IV",
         timing: "30 minutes before chemotherapy",
-        indication: "CINV prevention, antiemetic potentiation",
-        rationale: "Synergistic antiemetic effect, reduces delayed emesis",
+        indication: "CINV prevention, hypersensitivity reaction prevention",
+        rationale: "Synergistic antiemetic effect, reduces delayed emesis, and prevents severe hypersensitivity reactions",
         isRequired: true,
         isStandard: true,
         evidenceLevel: "IA",
+        drugSpecific: ["paclitaxel", "docetaxel", "carboplatin", "oxaliplatin", "cisplatin", "doxorubicin", "cyclophosphamide"],
         solvent: null
       },
       {
@@ -196,22 +197,6 @@ const premedCategories: CategoryData[] = [
         drugSpecific: ["paclitaxel", "docetaxel", "carboplatin", "oxaliplatin"],
         solvent: null
       },
-      {
-        name: "Dexamethasone",
-        category: "Corticosteroid",
-        class: "Anti-inflammatory",
-        dosage: "20",
-        unit: "mg",
-        route: "IV",
-        timing: "30-60 minutes before chemotherapy",
-        indication: "Hypersensitivity reaction prevention",
-        rationale: "Potent anti-inflammatory effect prevents severe hypersensitivity",
-        isRequired: true,
-        isStandard: true,
-        evidenceLevel: "IA",
-        drugSpecific: ["paclitaxel", "docetaxel"],
-        solvent: null
-      }
     ]
   },
   {
