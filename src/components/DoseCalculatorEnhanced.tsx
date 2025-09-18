@@ -312,65 +312,135 @@ const DoseCalculatorCore: React.FC<DoseCalculatorEnhancedProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-                <div>
-                  <Label className="text-muted-foreground">{t('doseCalculator.calculatedDose', 'Doză calculată')}</Label>
-                  <p className="font-medium text-lg">
-                    {calc.calculatedDose.toFixed(1)} mg
-                  </p>
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">Reducere (%)</Label>
-                  {isEditing ? (
-                    <Input
-                      type="number"
-                      value={calc.reductionPercentage || 0}
-                      onChange={(e) => handleEditCalculation(index, 'reductionPercentage', e.target.value)}
-                      className="mt-1 h-8"
-                      step="0.1"
-                      placeholder="10, 25"
-                      aria-label={`Introduceți procentul de reducere pentru ${calc.drug.name}`}
-                    />
-                  ) : (
-                    <p className="font-medium">
-                      {calc.reductionPercentage ? `Reducere: ${Math.abs(calc.reductionPercentage)}%` : '0%'}
-                    </p>
-                  )}
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">{t('doseCalculator.finalDose', 'Doză finală')}</Label>
-                  {isEditing ? (
-                    <Input
-                      type="number"
-                      value={calc.finalDose}
-                      onChange={(e) => handleEditCalculation(index, 'finalDose', e.target.value)}
-                      className="mt-1 h-8"
-                      min="0"
-                      step="0.1"
-                      aria-label={t('doseCalculator.finalDoseAria', 'Introduceți doza finală pentru {{drug}}', { drug: calc.drug.name })}
-                    />
-                  ) : (
+              {/* For AUC drugs (like Carboplatin), show only final dose to avoid confusion */}
+              {/* AUC drugs use the Calvert formula: Dose = AUC × (GFR + 25) - no separate calculated/final doses needed */}
+              {calc.drug.unit === 'AUC' ? (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                  <div>
+                    <Label className="text-muted-foreground">{t('doseCalculator.finalDose', 'Doză calculată (Calvert)')}</Label>
                     <p className="font-medium text-lg text-accent">
                       {calc.finalDose.toFixed(1)} mg
                     </p>
-                  )}
-                </div>
-                <div>
-                  <Label className="text-muted-foreground">{t('doseCalculator.administrationDuration', 'Timp de administrare')}</Label>
-                  {isEditing ? (
-                    <Input
-                      value={calc.administrationDuration || calc.drug.administrationDuration || ''}
-                      onChange={(e) => handleEditCalculation(index, 'administrationDuration', e.target.value)}
-                      className="mt-1 h-8"
-                      placeholder={t('doseCalculator.administrationDurationPlaceholder', 'ex: 30 minute, 1-2 ore')}
-                      aria-label={t('doseCalculator.administrationDurationAria', 'Introduceți timpul de administrare pentru {{drug}}', { drug: calc.drug.name })}
-                    />
-                  ) : (
-                    <p className="font-medium">
-                      {calc.administrationDuration || calc.drug.administrationDuration || '-'}
+                    <p className="text-xs text-muted-foreground mt-1">
+                      {calc.drug.dosage} × (GFR + 25) = {calc.finalDose.toFixed(1)} mg
                     </p>
-                  )}
+                  </div>
+                  <div>
+                    <Label className="text-muted-foreground">Ajustare (%)</Label>
+                    {isEditing ? (
+                      <Input
+                        type="number"
+                        value={calc.reductionPercentage || 0}
+                        onChange={(e) => handleEditCalculation(index, 'reductionPercentage', e.target.value)}
+                        className="mt-1 h-8"
+                        step="0.1"
+                        placeholder="0, -10, 25"
+                        aria-label={`Introduceți procentul de ajustare pentru ${calc.drug.name}`}
+                      />
+                    ) : (
+                      <p className="font-medium">
+                        {calc.reductionPercentage ? `${calc.reductionPercentage > 0 ? 'Reducere' : 'Majorare'}: ${Math.abs(calc.reductionPercentage)}%` : '0%'}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <Label className="text-muted-foreground">Doză ajustată</Label>
+                    {isEditing && calc.reductionPercentage !== 0 ? (
+                      <Input
+                        type="number"
+                        value={calc.finalDose}
+                        onChange={(e) => handleEditCalculation(index, 'finalDose', e.target.value)}
+                        className="mt-1 h-8"
+                        min="0"
+                        step="0.1"
+                        aria-label={t('doseCalculator.finalDoseAria', 'Introduceți doza finală pentru {{drug}}', { drug: calc.drug.name })}
+                      />
+                    ) : (
+                      <p className="font-medium text-lg">
+                        {calc.reductionPercentage !== 0 ? `${calc.finalDose.toFixed(1)} mg` : '-'}
+                      </p>
+                    )}
+                  </div>
                 </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+                  <div>
+                    <Label className="text-muted-foreground">{t('doseCalculator.calculatedDose', 'Doză calculată')}</Label>
+                    <p className="font-medium text-lg">
+                      {calc.calculatedDose.toFixed(1)} mg
+                    </p>
+                  </div>
+                  <div>
+                    <Label className="text-muted-foreground">Reducere (%)</Label>
+                    {isEditing ? (
+                      <Input
+                        type="number"
+                        value={calc.reductionPercentage || 0}
+                        onChange={(e) => handleEditCalculation(index, 'reductionPercentage', e.target.value)}
+                        className="mt-1 h-8"
+                        step="0.1"
+                        placeholder="10, 25"
+                        aria-label={`Introduceți procentul de reducere pentru ${calc.drug.name}`}
+                      />
+                    ) : (
+                      <p className="font-medium">
+                        {calc.reductionPercentage ? `Reducere: ${Math.abs(calc.reductionPercentage)}%` : '0%'}
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <Label className="text-muted-foreground">{t('doseCalculator.finalDose', 'Doză finală')}</Label>
+                    {isEditing ? (
+                      <Input
+                        type="number"
+                        value={calc.finalDose}
+                        onChange={(e) => handleEditCalculation(index, 'finalDose', e.target.value)}
+                        className="mt-1 h-8"
+                        min="0"
+                        step="0.1"
+                        aria-label={t('doseCalculator.finalDoseAria', 'Introduceți doza finală pentru {{drug}}', { drug: calc.drug.name })}
+                      />
+                    ) : (
+                      <p className="font-medium text-lg text-accent">
+                        {calc.finalDose.toFixed(1)} mg
+                      </p>
+                    )}
+                  </div>
+                  <div>
+                    <Label className="text-muted-foreground">{t('doseCalculator.administrationDuration', 'Timp de administrare')}</Label>
+                    {isEditing ? (
+                      <Input
+                        value={calc.administrationDuration || calc.drug.administrationDuration || ''}
+                        onChange={(e) => handleEditCalculation(index, 'administrationDuration', e.target.value)}
+                        className="mt-1 h-8"
+                        placeholder={t('doseCalculator.administrationDurationPlaceholder', 'ex: 30 minute, 1-2 ore')}
+                        aria-label={t('doseCalculator.administrationDurationAria', 'Introduceți timpul de administrare pentru {{drug}}', { drug: calc.drug.name })}
+                      />
+                    ) : (
+                      <p className="font-medium">
+                        {calc.administrationDuration || calc.drug.administrationDuration || '-'}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              )}
+              
+              {/* Administration Duration - common for both AUC and non-AUC drugs */}
+              <div className="mt-4">
+                <Label className="text-muted-foreground">{t('doseCalculator.administrationDuration', 'Timp de administrare')}</Label>
+                {isEditing ? (
+                  <Input
+                    value={calc.administrationDuration || calc.drug.administrationDuration || ''}
+                    onChange={(e) => handleEditCalculation(index, 'administrationDuration', e.target.value)}
+                    className="mt-1 h-8"
+                    placeholder={t('doseCalculator.administrationDurationPlaceholder', 'ex: 30 minute, 1-2 ore')}
+                    aria-label={t('doseCalculator.administrationDurationAria', 'Introduceți timpul de administrare pentru {{drug}}', { drug: calc.drug.name })}
+                  />
+                ) : (
+                  <p className="font-medium">
+                    {calc.administrationDuration || calc.drug.administrationDuration || '-'}
+                  </p>
+                )}
               </div>
             </div>
           ))}
