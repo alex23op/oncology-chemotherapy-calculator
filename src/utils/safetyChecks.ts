@@ -140,17 +140,25 @@ export const performDoseSafetyCheck = (
   }
 
   if (drugName.includes('carboplatin')) {
-    // Calvert formula check for carboplatin
-    const targetAUC = 5; // Typical AUC target
-    const calvertDose = targetAUC * (patient.creatinineClearance + 25);
-    
-    if (Math.abs(safeDose - calvertDose) > calvertDose * 0.2) {
+    // Basic carboplatin safety checks - dose calculation is handled in calculateCompleteDose
+    if (safeDose > 1000) {
       alerts.push({
-        id: `calvert-${drug.name}`,
+        id: `carboplatin-high-${drug.name}`,
+        severity: 'high',
+        category: 'dose',
+        message: `${drug.name}: Very high dose detected (${safeDose.toFixed(1)} mg)`,
+        recommendation: 'Verify AUC target and GFR calculation',
+        drugNames: [drug.name]
+      });
+    }
+    
+    if (patient.creatinineClearance > 125) {
+      alerts.push({
+        id: `carboplatin-gfr-${drug.name}`,
         severity: 'moderate',
         category: 'calculation',
-        message: `${drug.name}: Dose differs from Calvert formula (calculated: ${calvertDose.toFixed(1)} mg)`,
-        recommendation: 'Consider using Calvert formula for carboplatin dosing',
+        message: `${drug.name}: High GFR detected (${patient.creatinineClearance} mL/min)`,
+        recommendation: 'Consider GFR capping at 125 mL/min for safety',
         drugNames: [drug.name]
       });
     }
